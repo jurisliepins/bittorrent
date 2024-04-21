@@ -64,8 +64,7 @@ public class BDecoder {
         var sign = 1L;
         var result = 0L;
 
-        byte value;
-        while ((value = stream.readByte()) != (byte) 'e') {
+        for (byte value = stream.readByte(); value != (byte) 'e'; value = stream.readByte()) {
             switch (value) {
                 case '-' -> sign = -1L;
                 case '0',
@@ -89,8 +88,7 @@ public class BDecoder {
     private static BValue decodeByteString(BInputStream stream) throws IOException {
         var length = 0;
 
-        byte value;
-        while ((value = stream.readByte()) != (byte) ':') {
+        for (byte value = stream.readByte(); value != (byte) ':'; value = stream.readByte()) {
             switch (value) {
                 case '0',
                      '1',
