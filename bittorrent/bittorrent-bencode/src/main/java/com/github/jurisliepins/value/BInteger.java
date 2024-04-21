@@ -4,10 +4,7 @@ import com.github.jurisliepins.BException;
 
 import java.util.Objects;
 
-import static com.github.jurisliepins.value.BInteger.BExceptions.unexpectedTypeException;
-
 public record BInteger(long value) implements BValue {
-
     @Override
     public int hashCode() {
         return ((Long) value).hashCode();
@@ -18,7 +15,7 @@ public record BInteger(long value) implements BValue {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> ((Long) value).equals(val.toLong());
-            default -> throw unexpectedTypeException();
+            default -> throw new BException("Unexpected type");
         };
     }
 
@@ -47,11 +44,4 @@ public record BInteger(long value) implements BValue {
         Objects.requireNonNull(value, "value is null");
         return new BInteger(value);
     }
-
-    public static class BExceptions {
-        public static BException unexpectedTypeException() {
-            return new BException("Unexpected type");
-        }
-    }
-
 }

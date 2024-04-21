@@ -6,11 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.github.jurisliepins.value.BList.BExceptions.comparableNotSupported;
-import static com.github.jurisliepins.value.BList.BExceptions.unexpectedTypeException;
-
 public record BList(List<BValue> value) implements BValue {
-
     public BList {
         Objects.requireNonNull(value, "value is null");
     }
@@ -25,13 +21,13 @@ public record BList(List<BValue> value) implements BValue {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> value.equals(val.toList());
-            default -> throw unexpectedTypeException();
+            default -> throw new BException("Unexpected type");
         };
     }
 
     @Override
     public int compareTo(BValue other) {
-        throw comparableNotSupported();
+        throw new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
     }
 
     public static BList of() {
@@ -47,15 +43,4 @@ public record BList(List<BValue> value) implements BValue {
         Objects.requireNonNull(values, "values is null");
         return new BList(values);
     }
-
-    public static class BExceptions {
-        public static BException unexpectedTypeException() {
-            return new BException("Unexpected type");
-        }
-
-        public static BException comparableNotSupported() {
-            return new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
-        }
-    }
-
 }

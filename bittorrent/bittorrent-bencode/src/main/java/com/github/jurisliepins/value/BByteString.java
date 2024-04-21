@@ -6,10 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static com.github.jurisliepins.value.BByteString.BExceptions.unexpectedTypeException;
-
 public record BByteString(byte[] value) implements BValue {
-
     public BByteString {
         Objects.requireNonNull(value, "value is null");
     }
@@ -30,7 +27,7 @@ public record BByteString(byte[] value) implements BValue {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> Arrays.equals(value, val.toBytes());
-            default -> throw unexpectedTypeException();
+            default -> throw new BException("Unexpected type");
         };
     }
 
@@ -43,11 +40,4 @@ public record BByteString(byte[] value) implements BValue {
         Objects.requireNonNull(value, "value is null");
         return of(value.getBytes(StandardCharsets.UTF_8));
     }
-
-    public static class BExceptions {
-        public static BException unexpectedTypeException() {
-            return new BException("Unexpected type");
-        }
-    }
-
 }

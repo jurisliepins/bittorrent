@@ -1,7 +1,6 @@
 package com.github.jurisliepins;
 
 public class BException extends RuntimeException {
-
     public BException(String message) {
         super(message);
     }
@@ -13,5 +12,4 @@ public class BException extends RuntimeException {
     public BException(Throwable cause) {
         super(cause);
     }
-
 }

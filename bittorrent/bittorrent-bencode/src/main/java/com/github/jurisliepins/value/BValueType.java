@@ -2,8 +2,6 @@ package com.github.jurisliepins.value;
 
 import com.github.jurisliepins.BException;
 
-import static com.github.jurisliepins.value.BValueType.BExceptions.invalidCharException;
-
 public enum BValueType {
     BIntegerType,
     BByteStringType,
@@ -13,10 +11,19 @@ public enum BValueType {
     public static BValueType fromByte(byte value) {
         return switch (value) {
             case 'i' -> BIntegerType;
-            case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> BByteStringType;
+            case '0',
+                 '1',
+                 '2',
+                 '3',
+                 '4',
+                 '5',
+                 '6',
+                 '7',
+                 '8',
+                 '9' -> BByteStringType;
             case 'l' -> BListType;
             case 'd' -> BDictionaryType;
-            default -> throw invalidCharException(value);
+            default -> throw new BException(("Invalid BValueType char '%c'".formatted((char) value)));
         };
     }
 
@@ -28,11 +35,5 @@ public enum BValueType {
             case BListType -> "BList";
             case BDictionaryType -> "BDictionary";
         };
-    }
-
-    public static class BExceptions {
-        public static BException invalidCharException(byte value) {
-            return new BException(("Invalid BValueType char '%c'".formatted((char) value)));
-        }
     }
 }

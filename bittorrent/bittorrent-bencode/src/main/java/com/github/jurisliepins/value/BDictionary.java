@@ -6,11 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.github.jurisliepins.value.BDictionary.BExceptions.comparableNotSupported;
-import static com.github.jurisliepins.value.BDictionary.BExceptions.unexpectedTypeException;
-
 public record BDictionary(Map<BValue, BValue> value) implements BValue {
-
     public BDictionary {
         Objects.requireNonNull(value, "value is null");
     }
@@ -25,13 +21,13 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> value.equals(val.toMap());
-            default -> throw unexpectedTypeException();
+            default -> throw new BException("Unexpected type");
         };
     }
 
     @Override
     public int compareTo(BValue other) {
-        throw comparableNotSupported();
+        throw new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
     }
 
     public static BDictionary of() {
@@ -91,15 +87,5 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
         map.put(k4, v4);
         map.put(k5, v5);
         return new BDictionary(map);
-    }
-
-    public static class BExceptions {
-        public static BException unexpectedTypeException() {
-            return new BException("Unexpected type");
-        }
-
-        public static BException comparableNotSupported() {
-            return new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
-        }
     }
 }

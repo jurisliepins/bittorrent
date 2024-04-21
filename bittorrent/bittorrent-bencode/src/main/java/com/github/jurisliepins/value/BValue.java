@@ -27,7 +27,8 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
     default BInteger toBInteger() {
         return switch (this) {
             case BInteger val -> val;
-            default -> throw BValueExceptions.unexpectedBIntegerException();
+            default -> throw new BException("Unexpected BValue type - %s expected"
+                    .formatted(BValueType.BIntegerType));
         };
     }
 
@@ -42,7 +43,8 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
     default BByteString toBByteString() {
         return switch (this) {
             case BByteString val -> val;
-            default -> throw BValueExceptions.unexpectedBByteStringException();
+            default -> throw new BException("Unexpected BValue type - %s expected"
+                    .formatted(BValueType.BByteStringType));
         };
     }
 
@@ -53,7 +55,8 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
     default BList toBList() {
         return switch (this) {
             case BList val -> val;
-            default -> throw BValueExceptions.unexpectedBListException();
+            default -> throw new BException("Unexpected BValue type - %s expected"
+                    .formatted(BValueType.BListType));
         };
     }
 
@@ -64,29 +67,8 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
     default BDictionary toBDictionary() {
         return switch (this) {
             case BDictionary val -> val;
-            default -> throw BValueExceptions.unexpectedBDictionaryException();
+            default -> throw new BException("Unexpected BValue type - %s expected"
+                    .formatted(BValueType.BDictionaryType));
         };
-    }
-
-    class BValueExceptions {
-        public static BException unexpectedBIntegerException() {
-            return unexpectedBValueException(BValueType.BIntegerType);
-        }
-
-        public static BException unexpectedBByteStringException() {
-            return unexpectedBValueException(BValueType.BByteStringType);
-        }
-
-        public static BException unexpectedBListException() {
-            return unexpectedBValueException(BValueType.BListType);
-        }
-
-        public static BException unexpectedBDictionaryException() {
-            return unexpectedBValueException(BValueType.BDictionaryType);
-        }
-
-        private static BException unexpectedBValueException(BValueType type) {
-            return new BException("Unexpected BValue type - %s expected".formatted(type));
-        }
     }
 }

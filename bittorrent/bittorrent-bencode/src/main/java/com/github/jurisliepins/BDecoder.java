@@ -8,16 +8,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.github.jurisliepins.BDecoder.BExceptions.*;
-
 public class BDecoder {
-
-    private static final byte I_BYTE = 'i';
-    private static final byte S_BYTE = ':';
-    private static final byte L_BYTE = 'l';
-    private static final byte D_BYTE = 'd';
-    private static final byte E_BYTE = 'e';
-
     public static BValue fromStream(BInputStream value) throws IOException {
         return read(value);
     }
@@ -42,106 +33,116 @@ public class BDecoder {
     }
 
     private static BValue readInteger(BInputStream stream) {
-        switch (BValueType.fromByte(stream.readByte())) {
-            case BIntegerType -> {
-                var sign = 1L;
-                var result = 0L;
-
-                byte value;
-                while ((value = stream.readByte()) != E_BYTE) {
-                    switch (value) {
-                        case '-' -> sign = -1L;
-                        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ->
-                                result = (result * 10L) + ((long) (value - (byte) '0'));
-                        default -> throw unexpectedCharException(value, BValueType.BIntegerType);
-                    }
-                }
-
-                return new BInteger(sign * result);
-            }
-            default -> throw unexpectedTypeException(BValueType.BIntegerType);
-        }
+        return switch (BValueType.fromByte(stream.readByte())) {
+            case BIntegerType -> decodeInteger(stream);
+            default -> throw new BException("Expected %s".formatted(BValueType.BIntegerType));
+        };
     }
 
     private static BValue readByteString(BInputStream stream) throws IOException {
-        switch (BValueType.fromByte(stream.peekByte())) {
-            case BByteStringType -> {
-                var length = 0;
-
-                byte value;
-                while ((value = stream.readByte()) != S_BYTE) {
-                    switch (value) {
-                        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ->
-                                length = (length * 10) + ((int) (value - (byte) '0'));
-                        default -> throw unexpectedCharException(value, BValueType.BByteStringType);
-                    }
-                }
-                byte[] bytes = stream.readNBytes(length);
-                if (bytes.length != length) {
-                    throw unexpectedByteCountException(length, bytes.length);
-                }
-
-                return new BByteString(bytes);
-            }
-            default -> throw unexpectedTypeException(BValueType.BByteStringType);
-        }
+        return switch (BValueType.fromByte(stream.peekByte())) {
+            case BByteStringType -> decodeByteString(stream);
+            default -> throw new BException("Expected %s".formatted(BValueType.BByteStringType));
+        };
     }
 
     private static BValue readList(BInputStream stream) throws IOException {
-        switch (BValueType.fromByte(stream.readByte())) {
-            case BListType -> {
-                var result = new ArrayList<BValue>();
-
-                while (stream.peekByte() != E_BYTE) {
-                    var val = read(stream);
-                    result.add(val);
-                }
-                if (stream.readByte() != E_BYTE) {
-                    throw missingCharException(E_BYTE, BValueType.BListType);
-                }
-
-                return new BList(result);
-            }
-            default -> throw unexpectedTypeException(BValueType.BListType);
-        }
+        return switch (BValueType.fromByte(stream.readByte())) {
+            case BListType -> decodeList(stream);
+            default -> throw new BException("Expected %s".formatted(BValueType.BListType));
+        };
     }
 
     private static BValue readDictionary(BInputStream stream) throws IOException {
-        switch (BValueType.fromByte(stream.readByte())) {
-            case BDictionaryType -> {
-                var result = new HashMap<BValue, BValue>();
+        return switch (BValueType.fromByte(stream.readByte())) {
+            case BDictionaryType -> decodeDictionary(stream);
+            default -> throw new BException("Expected %s".formatted(BValueType.BDictionaryType));
+        };
+    }
 
-                while (stream.peekByte() != E_BYTE) {
-                    var key = read(stream);
-                    var val = read(stream);
-                    result.put(key, val);
-                }
-                if (stream.readByte() != E_BYTE) {
-                    throw missingCharException(E_BYTE, BValueType.BDictionaryType);
-                }
+    private static BValue decodeInteger(BInputStream stream) {
+        var sign = 1L;
+        var result = 0L;
 
-                return new BDictionary(result);
+        byte value;
+        while ((value = stream.readByte()) != (byte) 'e') {
+            switch (value) {
+                case '-' -> sign = -1L;
+                case '0',
+                     '1',
+                     '2',
+                     '3',
+                     '4',
+                     '5',
+                     '6',
+                     '7',
+                     '8',
+                     '9' -> result = (result * 10L) + ((long) (value - (byte) '0'));
+                default -> throw new BException(
+                        "Unexpected char '%c' when reading %s".formatted((char) value, BValueType.BIntegerType));
             }
-            default -> throw unexpectedTypeException(BValueType.BDictionaryType);
         }
+
+        return new BInteger(sign * result);
     }
 
-    public static class BExceptions {
-        public static BException unexpectedTypeException(BValueType type) {
-            return new BException("Expected %s".formatted(type));
+    private static BValue decodeByteString(BInputStream stream) throws IOException {
+        var length = 0;
+
+        byte value;
+        while ((value = stream.readByte()) != (byte) ':') {
+            switch (value) {
+                case '0',
+                     '1',
+                     '2',
+                     '3',
+                     '4',
+                     '5',
+                     '6',
+                     '7',
+                     '8',
+                     '9' -> length = (length * 10) + (value - (byte) '0');
+                default -> throw new BException(
+                        "Unexpected char '%c' when reading %s".formatted((char) value, BValueType.BByteStringType));
+            }
         }
 
-        public static BException unexpectedCharException(byte value, BValueType type) {
-            return new BException("Unexpected char '%c' when reading %s".formatted((char) value, type));
+        var bytes = stream.readNBytes(length);
+        if (bytes.length != length) {
+            throw new BException("Unexpected byte count '%d' when expected length '%d".formatted(length, bytes.length));
         }
 
-        public static BException missingCharException(byte value, BValueType type) {
-            return new BException("Missing char '%c' when reading %s".formatted((char) value, type));
-        }
-
-        public static BException unexpectedByteCountException(int expected, int actual) {
-            return new BException("Unexpected byte count '%d' when expected length '%d".formatted(actual, expected));
-        }
+        return new BByteString(bytes);
     }
 
+    private static BValue decodeList(BInputStream stream) throws IOException {
+        var result = new ArrayList<BValue>();
+
+        while (stream.peekByte() != (byte) 'e') {
+            var val = read(stream);
+            result.add(val);
+        }
+
+        if (stream.readByte() != (byte) 'e') {
+            throw new BException("Missing char '%c' when reading %s".formatted('e', BValueType.BListType));
+        }
+
+        return new BList(result);
+    }
+
+    private static BValue decodeDictionary(BInputStream stream) throws IOException {
+        var result = new HashMap<BValue, BValue>();
+
+        while (stream.peekByte() != (byte) 'e') {
+            var key = read(stream);
+            var val = read(stream);
+            result.put(key, val);
+        }
+
+        if (stream.readByte() != (byte) 'e') {
+            throw new BException("Missing char '%c' when reading %s".formatted('e', BValueType.BDictionaryType));
+        }
+
+        return new BDictionary(result);
+    }
 }
