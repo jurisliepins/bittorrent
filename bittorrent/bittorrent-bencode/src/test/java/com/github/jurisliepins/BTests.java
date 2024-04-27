@@ -166,11 +166,10 @@ public class BTests {
     @Test
     @DisplayName("Should encode/decode list")
     public void shouldEncodeDecodeList() throws IOException {
-        var value =
-                BList.of(
-                        BByteString.of("test"),
-                        BByteString.of("tests"),
-                        BByteString.of("tested"));
+        var value = BList.of(
+                BByteString.of("test"),
+                BByteString.of("tests"),
+                BByteString.of("tested"));
         shouldEncodeDecode(value);
     }
 
@@ -184,14 +183,13 @@ public class BTests {
     @Test
     @DisplayName("Should encode/decode stacked list")
     public void shouldEncodeDecodeStackedList() throws IOException {
-        var value =
+        var value = BList.of(
+                BByteString.of("string"),
                 BList.of(
-                        BByteString.of("string"),
-                        BList.of(
-                                BByteString.of("strings"),
-                                BList.of(BByteString.of("stringed")),
-                                BInteger.of(23456L)),
-                        BInteger.of(12345L));
+                        BByteString.of("strings"),
+                        BList.of(BByteString.of("stringed")),
+                        BInteger.of(23456L)),
+                BInteger.of(12345L));
         shouldEncodeDecode(value);
     }
 
@@ -228,11 +226,10 @@ public class BTests {
     @Test
     @DisplayName("Should encode/decode dictionary")
     public void shouldEncodeDecodeDictionary() throws IOException {
-        var value =
-                BDictionary.of(
-                        BByteString.of("spam"), BList.of(
-                                BByteString.of("a"),
-                                BByteString.of("b")));
+        var value = BDictionary.of(
+                BByteString.of("spam"), BList.of(
+                        BByteString.of("a"),
+                        BByteString.of("b")));
         shouldEncodeDecode(value);
     }
 
@@ -246,22 +243,20 @@ public class BTests {
     @Test
     @DisplayName("Should encode/decode dictionary")
     public void shouldEncodeDecodeStackedDictionary() throws IOException {
-        var value =
-                BDictionary.of(
-                        BByteString.of("test"), BDictionary.of(
-                                BByteString.of("to"), BDictionary.of(BByteString.of("tom"), BInteger.of(12345L)),
-                                BByteString.of("tests"), BList.of(BInteger.of(12345L), BInteger.of(12345L))));
+        var value = BDictionary.of(
+                BByteString.of("test"), BDictionary.of(
+                        BByteString.of("to"), BDictionary.of(BByteString.of("tom"), BInteger.of(12345L)),
+                        BByteString.of("tests"), BList.of(BInteger.of(12345L), BInteger.of(12345L))));
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode sorted dictionary")
     public void shouldEncodeDecodeSortedDictionary() throws IOException {
-        var value =
-                BDictionary.of(
-                        BByteString.of("c"), BByteString.of("c"),
-                        BByteString.of("b"), BByteString.of("b"),
-                        BByteString.of("a"), BByteString.of("a"));
+        var value = BDictionary.of(
+                BByteString.of("c"), BByteString.of("c"),
+                BByteString.of("b"), BByteString.of("b"),
+                BByteString.of("a"), BByteString.of("a"));
         var encoded = BEncoder.toString(value, StandardCharsets.UTF_8);
         var decoded = BDecoder.fromString(encoded, StandardCharsets.UTF_8);
         assertEquals(value, decoded);
