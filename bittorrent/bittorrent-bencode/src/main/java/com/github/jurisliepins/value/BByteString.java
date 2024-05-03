@@ -27,7 +27,7 @@ public record BByteString(byte[] value) implements BValue {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> Arrays.equals(value, val.toBytes());
-            default -> throw new BException("Unexpected type");
+            default -> throw new BException("Unexpected type.");
         };
     }
 

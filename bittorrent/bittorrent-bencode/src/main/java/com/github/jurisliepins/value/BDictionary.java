@@ -21,13 +21,13 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> value.equals(val.toMap());
-            default -> throw new BException("Unexpected type");
+            default -> throw new BException("Unexpected type.");
         };
     }
 
     @Override
     public int compareTo(BValue other) {
-        throw new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
+        throw new BException("Comparable not supported for %s.".formatted(BValueType.BDictionaryType));
     }
 
     public static BDictionary of() {

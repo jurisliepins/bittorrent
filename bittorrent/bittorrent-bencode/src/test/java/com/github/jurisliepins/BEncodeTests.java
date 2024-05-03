@@ -6,12 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("BEncode/BDecode tests")
-public class BTests {
+public class BEncodeTests {
 
     @Test
     @DisplayName("Should throw when decoding corrupt data")
@@ -42,7 +44,6 @@ public class BTests {
     public void shouldThrowWhenDecodingCorruptDictionary() {
         assertThrows(BException.class, () -> BDecoder.fromString("d3:3521:a3:aedddd", StandardCharsets.UTF_8));
     }
-
 
     private static void shouldDecodeEncode(String value) throws IOException {
         var decoded = BDecoder.fromString(value, StandardCharsets.UTF_8);
@@ -261,5 +262,4 @@ public class BTests {
         var decoded = BDecoder.fromString(encoded, StandardCharsets.UTF_8);
         assertEquals(value, decoded);
     }
-
 }

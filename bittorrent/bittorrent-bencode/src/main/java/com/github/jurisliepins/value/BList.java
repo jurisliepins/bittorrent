@@ -21,13 +21,13 @@ public record BList(List<BValue> value) implements BValue {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> value.equals(val.toList());
-            default -> throw new BException("Unexpected type");
+            default -> throw new BException("Unexpected type.");
         };
     }
 
     @Override
     public int compareTo(BValue other) {
-        throw new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
+        throw new BException("Comparable not supported for %s.".formatted(BValueType.BDictionaryType));
     }
 
     public static BList of() {

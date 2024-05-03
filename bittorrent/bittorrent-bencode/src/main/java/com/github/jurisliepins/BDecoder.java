@@ -35,28 +35,28 @@ public class BDecoder {
     private static BValue readInteger(BInputStream stream) {
         return switch (BValueType.fromByte(stream.readByte())) {
             case BIntegerType -> decodeInteger(stream);
-            default -> throw new BException("Expected %s".formatted(BValueType.BIntegerType));
+            default -> throw new BException("Expected %s.".formatted(BValueType.BIntegerType));
         };
     }
 
     private static BValue readByteString(BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.peekByte())) {
             case BByteStringType -> decodeByteString(stream);
-            default -> throw new BException("Expected %s".formatted(BValueType.BByteStringType));
+            default -> throw new BException("Expected %s.".formatted(BValueType.BByteStringType));
         };
     }
 
     private static BValue readList(BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.readByte())) {
             case BListType -> decodeList(stream);
-            default -> throw new BException("Expected %s".formatted(BValueType.BListType));
+            default -> throw new BException("Expected %s.".formatted(BValueType.BListType));
         };
     }
 
     private static BValue readDictionary(BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.readByte())) {
             case BDictionaryType -> decodeDictionary(stream);
-            default -> throw new BException("Expected %s".formatted(BValueType.BDictionaryType));
+            default -> throw new BException("Expected %s.".formatted(BValueType.BDictionaryType));
         };
     }
 
@@ -78,7 +78,7 @@ public class BDecoder {
                      '8',
                      '9' -> result = (result * 10L) + ((long) (value - (byte) '0'));
                 default -> throw new BException(
-                        "Unexpected char '%c' when reading %s".formatted((char) value, BValueType.BIntegerType));
+                        "Unexpected char '%c' when reading %s.".formatted((char) value, BValueType.BIntegerType));
             }
         }
 
@@ -101,13 +101,14 @@ public class BDecoder {
                      '8',
                      '9' -> length = (length * 10) + (value - (byte) '0');
                 default -> throw new BException(
-                        "Unexpected char '%c' when reading %s".formatted((char) value, BValueType.BByteStringType));
+                        "Unexpected char '%c' when reading %s.".formatted((char) value, BValueType.BByteStringType));
             }
         }
 
         var bytes = stream.readNBytes(length);
         if (bytes.length != length) {
-            throw new BException("Unexpected byte count '%d' when expected length '%d".formatted(length, bytes.length));
+            throw new BException(
+                    "Unexpected byte count '%d' when expected length '%d.".formatted(length, bytes.length));
         }
 
         return new BByteString(bytes);
@@ -122,7 +123,8 @@ public class BDecoder {
         }
 
         if (stream.readByte() != (byte) 'e') {
-            throw new BException("Missing char '%c' when reading %s".formatted('e', BValueType.BListType));
+            throw new BException(
+                    "Missing char '%c' when reading %s.".formatted('e', BValueType.BListType));
         }
 
         return new BList(result);
@@ -138,7 +140,8 @@ public class BDecoder {
         }
 
         if (stream.readByte() != (byte) 'e') {
-            throw new BException("Missing char '%c' when reading %s".formatted('e', BValueType.BDictionaryType));
+            throw new BException(
+                    "Missing char '%c' when reading %s.".formatted('e', BValueType.BDictionaryType));
         }
 
         return new BDictionary(result);

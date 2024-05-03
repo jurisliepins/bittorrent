@@ -15,7 +15,7 @@ public record BInteger(long value) implements BValue {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> ((Long) value).equals(val.toLong());
-            default -> throw new BException("Unexpected type");
+            default -> throw new BException("Unexpected type.");
         };
     }
 

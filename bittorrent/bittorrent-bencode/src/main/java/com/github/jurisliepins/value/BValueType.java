@@ -23,7 +23,7 @@ public enum BValueType {
                  '9' -> BByteStringType;
             case 'l' -> BListType;
             case 'd' -> BDictionaryType;
-            default -> throw new BException(("Invalid BValueType char '%c'".formatted((char) value)));
+            default -> throw new BException(("Invalid BValueType char '%c'.".formatted((char) value)));
         };
     }
 
