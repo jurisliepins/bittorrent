@@ -50,8 +50,7 @@ public class BObjectMapper {
             }
             case "char", "java.lang.Character" -> (char) value.value();
             case "java.time.OffsetDateTime" -> OffsetDateTime.ofInstant(
-                    Instant.ofEpochSecond(value.toLong()),
-                    ZoneOffset.UTC);
+                    Instant.ofEpochSecond(value.toLong()), ZoneOffset.UTC);
             default -> value.toLong();
         };
     }
