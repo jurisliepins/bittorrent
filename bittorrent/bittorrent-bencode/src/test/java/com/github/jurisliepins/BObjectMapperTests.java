@@ -239,22 +239,21 @@ public class BObjectMapperTests {
     @DisplayName("Should read/write meta-info")
     public void shouldReadWriteDictionary() {
         var value = BDictionary.of(new HashMap<>() {{
-            put(BByteString.of("info"), BDictionary.of(
-                    new HashMap<>() {{
-                        put(BByteString.of("piece length"), BInteger.of(1));
-                        put(BByteString.of("pieces"), BByteString.of(new byte[]{}));
-                        put(BByteString.of("private"), BInteger.of(1));
-                        put(BByteString.of("name"), BByteString.of("Название"));
-                        put(BByteString.of("length"), BInteger.of(1));
-                        put(BByteString.of("md5sum"), BByteString.of("abcdefghijklmnopqrstuvwxyz"));
-                        put(BByteString.of("files"), BDictionary.of(
-                                BByteString.of("length"), BInteger.of(1),
-                                BByteString.of("md5sum"), BByteString.of("abcdefghijklmnopqrstuvwxyz"),
-                                BByteString.of("path"), BList.of(
-                                        BByteString.of("Название-1"),
-                                        BByteString.of("Название-2"),
-                                        BByteString.of("Название-3"))));
-                    }}));
+            put(BByteString.of("info"), BDictionary.of(new HashMap<>() {{
+                put(BByteString.of("piece length"), BInteger.of(1));
+                put(BByteString.of("pieces"), BByteString.of(new byte[]{}));
+                put(BByteString.of("private"), BInteger.of(1));
+                put(BByteString.of("name"), BByteString.of("Название"));
+                put(BByteString.of("length"), BInteger.of(1));
+                put(BByteString.of("md5sum"), BByteString.of("abcdefghijklmnopqrstuvwxyz"));
+                put(BByteString.of("files"), BDictionary.of(
+                        BByteString.of("length"), BInteger.of(1),
+                        BByteString.of("md5sum"), BByteString.of("abcdefghijklmnopqrstuvwxyz"),
+                        BByteString.of("path"), BList.of(
+                                BByteString.of("Название-1"),
+                                BByteString.of("Название-2"),
+                                BByteString.of("Название-3"))));
+            }}));
             put(BByteString.of("announce"), BByteString.of("announce"));
             put(BByteString.of("announce-list"), BList.of(
                     BList.of(
