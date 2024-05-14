@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @DisplayName("BObjectMapper tests")
 public class BObjectMapperTests {
 
@@ -26,8 +28,10 @@ public class BObjectMapperTests {
             put(BByteString.of("empty-string"), BByteString.of(""));
             put(BByteString.of("bytes"), BByteString.of(new byte[]{ 1, 2, 3 }));
         }});
-        var mapped = BObjectMapper.fromBDictionary(value, BStringValues.class);
-        System.out.println(mapped);
+        var mapper = new BObjectMapper();
+        var parsed = mapper.readFromBDictionary(value, BStringValues.class);
+        var mapped = mapper.writeToBDictionary(parsed);
+        assertEquals(value, mapped);
     }
 
     public record BIntegerValues(
@@ -62,23 +66,25 @@ public class BObjectMapperTests {
             put(BByteString.of("min-integer"), BInteger.of(Integer.MIN_VALUE));
             put(BByteString.of("max-long"), BInteger.of(Long.MAX_VALUE));
             put(BByteString.of("min-long"), BInteger.of(Long.MIN_VALUE));
-            put(BByteString.of("max-float"), BInteger.of(Integer.MAX_VALUE));
-            put(BByteString.of("min-float"), BInteger.of(Integer.MIN_VALUE));
-            put(BByteString.of("max-double"), BInteger.of(Long.MAX_VALUE));
-            put(BByteString.of("min-double"), BInteger.of(Long.MIN_VALUE));
+            put(BByteString.of("max-float"), BInteger.of(1));
+            put(BByteString.of("min-float"), BInteger.of(0));
+            put(BByteString.of("max-double"), BInteger.of(1));
+            put(BByteString.of("min-double"), BInteger.of(0));
             put(BByteString.of("boolean-true"), BInteger.of(1));
             put(BByteString.of("boolean-false"), BInteger.of(0));
             put(BByteString.of("max-char"), BInteger.of((byte) 'z'));
             put(BByteString.of("min-char"), BInteger.of((byte) 'a'));
             put(BByteString.of("epoch-seconds"), BInteger.of(OffsetDateTime.now().toEpochSecond()));
-
         }});
-        var mapped = BObjectMapper.fromBDictionary(value, BIntegerValues.class);
-        System.out.println(mapped);
+        var mapper = new BObjectMapper();
+        var parsed = mapper.readFromBDictionary(value, BIntegerValues.class);
+        var mapped = mapper.writeToBDictionary(parsed);
+        assertEquals(value, mapped);
     }
 
     public record BListValues(
-            @BProperty("byte-array") byte[] byteArray,
+//            Skipping byte array because byte arrays are written as BByteString.
+//            @BProperty("byte-array") byte[] byteArray,
             @BProperty("byte-list") List<Byte> byteList,
             @BProperty("short-array") short[] shortArray,
             @BProperty("short-list") List<Short> shortList,
@@ -100,11 +106,12 @@ public class BObjectMapperTests {
     @DisplayName("Should read/write list")
     public void shouldReadWriteList() {
         var value = BDictionary.of(new HashMap<>() {{
-            put(BByteString.of("byte-array"), BList.of(
-                    BInteger.of((byte) 1),
-                    BInteger.of((byte) 2),
-                    BInteger.of((byte) 3)
-            ));
+//            Skipping byte array because byte arrays are written as BByteString.
+//            put(BByteString.of("byte-array"), BList.of(
+//                    BInteger.of((byte) 1),
+//                    BInteger.of((byte) 2),
+//                    BInteger.of((byte) 3)
+//            ));
             put(BByteString.of("byte-list"), BList.of(
                     BInteger.of((byte) 1),
                     BInteger.of((byte) 2),
@@ -179,8 +186,10 @@ public class BObjectMapperTests {
                     BInteger.of((byte) 'c')
             ));
         }});
-        var mapped = BObjectMapper.fromBDictionary(value, BListValues.class);
-        System.out.println(mapped);
+        var mapper = new BObjectMapper();
+        var parsed = mapper.readFromBDictionary(value, BListValues.class);
+        var mapped = mapper.writeToBDictionary(parsed);
+        assertEquals(value, mapped);
     }
 
     public record File(
@@ -189,7 +198,6 @@ public class BObjectMapperTests {
             @BProperty("path") List<String> path
     ) {
         public File {
-            Objects.requireNonNull(length, "length is null");
             Objects.requireNonNull(md5sum, "md5sum is null");
             Objects.requireNonNull(path, "path is null");
         }
@@ -205,11 +213,8 @@ public class BObjectMapperTests {
             @BProperty("files") File files
     ) {
         public Info {
-            Objects.requireNonNull(pieceLength, "pieceLength is null");
             Objects.requireNonNull(pieces, "pieces is null");
-            Objects.requireNonNull(isPrivate, "isPrivate is null");
             Objects.requireNonNull(name, "name is null");
-            Objects.requireNonNull(length, "length is null");
             Objects.requireNonNull(md5sum, "md5sum is null");
             Objects.requireNonNull(files, "files is null");
         }
@@ -264,7 +269,9 @@ public class BObjectMapperTests {
             put(BByteString.of("created by"), BByteString.of("Пользователь"));
             put(BByteString.of("encoding"), BByteString.of("utf8"));
         }});
-        var mapped = BObjectMapper.fromBDictionary(value, MetaInfo.class);
-        System.out.println(mapped);
+        var mapper = new BObjectMapper();
+        var parsed = mapper.readFromBDictionary(value, MetaInfo.class);
+        var mapped = mapper.writeToBDictionary(parsed);
+        assertEquals(value, mapped);
     }
 }

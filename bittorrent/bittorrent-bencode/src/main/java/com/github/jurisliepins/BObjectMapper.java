@@ -8,46 +8,49 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class BObjectMapper {
 
-    public static <T> T fromBDictionary(BDictionary value, Class<T> clazz) {
-        return (T) read(value, clazz);
+    public <T> T readFromBDictionary(BDictionary value, Class<T> clazz) {
+        return (T) readBDictionary(value, clazz);
+    }
+
+    public <T> BDictionary writeToBDictionary(T value) {
+        return writeBDictionary(value);
     }
 
     private static Object read(BValue value, Class<?> clazz) {
         return switch (value) {
-            case BByteString val -> read(val, clazz);
-            case BInteger val -> read(val, clazz);
-            case BList val -> read(val, clazz);
-            case BDictionary val -> read(val, clazz);
+            case BByteString val -> readBByteString(val, clazz);
+            case BInteger val -> readBInteger(val, clazz);
+            case BList val -> readBList(val, clazz);
+            case BDictionary val -> readBDictionary(val, clazz);
         };
     }
 
-    private static Object read(BByteString value, Class<?> clazz) {
+    private static Object readBByteString(BByteString value, Class<?> clazz) {
         return switch (clazz.getName()) {
             case "[B" -> value.toBytes();
             default -> value.toString(StandardCharsets.UTF_8);
         };
     }
 
-    private static Object read(BInteger value, Class<?> clazz) {
+    private static Object readBInteger(BInteger value, Class<?> clazz) {
         return switch (clazz.getName()) {
             case "byte", "java.lang.Byte" -> value.toByte();
             case "short", "java.lang.Short" -> value.toShort();
             case "int", "java.lang.Integer" -> value.toInteger();
             case "float", "java.lang.Float" -> (float) value.value();
             case "double", "java.lang.Double" -> (double) value.value();
-            case "boolean", "java.lang.Boolean" -> {
-                yield switch (value.toInteger()) {
-                    case 1 -> true;
-                    case 0 -> false;
-                    default -> throw new BException(
-                            "Cannot read value %d to boolean. Only 0 and 1 supported.".formatted(value.toInteger()));
-                };
-            }
+            case "boolean", "java.lang.Boolean" -> switch (value.toInteger()) {
+                case 1 -> true;
+                case 0 -> false;
+                default -> throw new BException(
+                        "Cannot read value %d to boolean. Only 0 and 1 supported.".formatted(value.toInteger()));
+            };
             case "char", "java.lang.Character" -> (char) value.value();
             case "java.time.OffsetDateTime" -> OffsetDateTime.ofInstant(
                     Instant.ofEpochSecond(value.toLong()), ZoneOffset.UTC);
@@ -55,7 +58,7 @@ public class BObjectMapper {
         };
     }
 
-    private static Object read(BList value, Class<?> clazz) {
+    private static Object readBList(BList value, Class<?> clazz) {
         return switch (clazz.getName()) {
             case "[B" -> mapToBytes(value.toList().stream()
                     .map(BObjectMapper::readByte)
@@ -87,7 +90,7 @@ public class BObjectMapper {
         };
     }
 
-    private static Object read(BDictionary value, Class<?> clazz) {
+    private static Object readBDictionary(BDictionary value, Class<?> clazz) {
         try {
             var values = Arrays.stream(clazz.getDeclaredFields())
                     .map(field -> {
@@ -103,7 +106,7 @@ public class BObjectMapper {
                     .toArray();
             return clazz.getDeclaredConstructors()[0].newInstance(values);
         } catch (Exception e) {
-            throw new BException("Failed to read BDictionary", e);
+            throw new BException("Failed to read BDictionary.", e);
         }
     }
 
@@ -201,5 +204,111 @@ public class BObjectMapper {
             array[idx] = value.get(idx);
         }
         return array;
+    }
+
+    private static BValue write(Object value) {
+        return switch (value.getClass().getName()) {
+            case "[B" -> BByteString.of((byte[]) value);
+            case "java.lang.String" -> BByteString.of((String) value);
+            case "byte", "java.lang.Byte" -> BInteger.of((byte) value);
+            case "short", "java.lang.Short" -> BInteger.of((short) value);
+            case "int", "java.lang.Integer" -> BInteger.of((int) value);
+            case "long", "java.lang.Long" -> BInteger.of((long) value);
+            case "float", "java.lang.Float" -> BInteger.of(((Float) value).longValue());
+            case "double", "java.lang.Double" -> BInteger.of(((Double) value).longValue());
+            case "boolean", "java.lang.Boolean" -> BInteger.of(((boolean) value) ? 1 : 0);
+            case "char", "java.lang.Character" -> BInteger.of((byte) ((char) value));
+            case "java.time.OffsetDateTime" -> BInteger.of(((OffsetDateTime) value).toEpochSecond());
+            case "[S" -> mapBList((short[]) value);
+            case "[I" -> mapBList((int[]) value);
+            case "[J" -> mapBList((long[]) value);
+            case "[F" -> mapBList((float[]) value);
+            case "[D" -> mapBList((double[]) value);
+            case "[Z" -> mapBList((boolean[]) value);
+            case "[C" -> mapBList((char[]) value);
+            case "java.util.Collection",
+                 "java.util.List",
+                 "java.util.ArrayList" -> BList.of(((Collection<?>) value).stream()
+                    .map(BObjectMapper::write)
+                    .collect(Collectors.toCollection(ArrayList::new)));
+            default -> writeBDictionary(value);
+        };
+    }
+
+    private static <T> BDictionary writeBDictionary(T value) {
+        var dictionary = BDictionary.of();
+        try {
+            Arrays.stream(value.getClass().getDeclaredFields())
+                    .forEach(field -> {
+                        var property = field.getAnnotation(BProperty.class);
+                        if (property != null) {
+                            try {
+                                field.setAccessible(true);
+                                dictionary.value().put(BByteString.of(property.value()), write(field.get(value)));
+                            } catch (IllegalAccessException e) {
+                                throw new BException(e);
+                            }
+                        }
+                    });
+        } catch (Exception e) {
+            throw new BException("Failed to write BDictionary.", e);
+        }
+        return dictionary;
+    }
+
+    private static BList mapBList(short[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList mapBList(int[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList mapBList(long[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList mapBList(float[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList mapBList(double[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList mapBList(boolean[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList mapBList(char[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
     }
 }
