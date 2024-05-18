@@ -208,31 +208,135 @@ public class BObjectMapper {
 
     private static BValue write(Object value) {
         return switch (value.getClass().getName()) {
-            case "[B" -> BByteString.of((byte[]) value);
-            case "java.lang.String" -> BByteString.of((String) value);
-            case "byte", "java.lang.Byte" -> BInteger.of((byte) value);
-            case "short", "java.lang.Short" -> BInteger.of((short) value);
-            case "int", "java.lang.Integer" -> BInteger.of((int) value);
-            case "long", "java.lang.Long" -> BInteger.of((long) value);
-            case "float", "java.lang.Float" -> BInteger.of(((Float) value).longValue());
-            case "double", "java.lang.Double" -> BInteger.of(((Double) value).longValue());
-            case "boolean", "java.lang.Boolean" -> BInteger.of(((boolean) value) ? 1 : 0);
-            case "char", "java.lang.Character" -> BInteger.of((byte) ((char) value));
-            case "java.time.OffsetDateTime" -> BInteger.of(((OffsetDateTime) value).toEpochSecond());
-            case "[S" -> mapBList((short[]) value);
-            case "[I" -> mapBList((int[]) value);
-            case "[J" -> mapBList((long[]) value);
-            case "[F" -> mapBList((float[]) value);
-            case "[D" -> mapBList((double[]) value);
-            case "[Z" -> mapBList((boolean[]) value);
-            case "[C" -> mapBList((char[]) value);
+            case "[B" -> writeBByteString((byte[]) value);
+            case "java.lang.String" -> writeBByteString((String) value);
+            case "byte", "java.lang.Byte" -> writeBInteger((byte) value);
+            case "short", "java.lang.Short" -> writeBInteger((short) value);
+            case "int", "java.lang.Integer" -> writeBInteger((int) value);
+            case "long", "java.lang.Long" -> writeBInteger((long) value);
+            case "float", "java.lang.Float" -> writeBInteger((float) value);
+            case "double", "java.lang.Double" -> writeBInteger((double) value);
+            case "boolean", "java.lang.Boolean" -> writeBInteger((boolean) value);
+            case "char", "java.lang.Character" -> writeBInteger((char) value);
+            case "java.time.OffsetDateTime" -> writeBInteger((OffsetDateTime) value);
+            case "[S" -> writeBList((short[]) value);
+            case "[I" -> writeBList((int[]) value);
+            case "[J" -> writeBList((long[]) value);
+            case "[F" -> writeBList((float[]) value);
+            case "[D" -> writeBList((double[]) value);
+            case "[Z" -> writeBList((boolean[]) value);
+            case "[C" -> writeBList((char[]) value);
             case "java.util.Collection",
                  "java.util.List",
-                 "java.util.ArrayList" -> BList.of(((Collection<?>) value).stream()
-                    .map(BObjectMapper::write)
-                    .collect(Collectors.toCollection(ArrayList::new)));
+                 "java.util.ArrayList" -> writeBList((Collection<?>) value);
             default -> writeBDictionary(value);
         };
+    }
+
+    private static BByteString writeBByteString(byte[] value) {
+        return BByteString.of(value);
+    }
+
+    private static BByteString writeBByteString(String value) {
+        return BByteString.of(value);
+    }
+
+    private static BInteger writeBInteger(byte value) {
+        return BInteger.of(value);
+    }
+
+    private static BInteger writeBInteger(short value) {
+        return BInteger.of(value);
+    }
+
+    private static BInteger writeBInteger(int value) {
+        return BInteger.of(value);
+    }
+
+    private static BInteger writeBInteger(long value) {
+        return BInteger.of(value);
+    }
+
+    private static BInteger writeBInteger(float value) {
+        return BInteger.of(((Float) value).longValue());
+    }
+
+    private static BInteger writeBInteger(double value) {
+        return BInteger.of(((Double) value).longValue());
+    }
+
+    private static BInteger writeBInteger(boolean value) {
+        return BInteger.of(value ? 1 : 0);
+    }
+
+    private static BInteger writeBInteger(char value) {
+        return BInteger.of((byte) value);
+    }
+
+    private static BInteger writeBInteger(OffsetDateTime value) {
+        return BInteger.of(value.toEpochSecond());
+    }
+
+    private static BList writeBList(Collection<?> value) {
+        return BList.of(value.stream()
+                .map(BObjectMapper::write)
+                .collect(Collectors.toCollection(ArrayList::new)));
+    }
+
+    private static BList writeBList(short[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList writeBList(int[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList writeBList(long[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList writeBList(float[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList writeBList(double[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList writeBList(boolean[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
+    }
+
+    private static BList writeBList(char[] value) {
+        List<BValue> list = new ArrayList<>(value.length);
+        for (var val : value) {
+            list.add(write(val));
+        }
+        return BList.of(list);
     }
 
     private static <T> BDictionary writeBDictionary(T value) {
@@ -256,59 +360,4 @@ public class BObjectMapper {
         return dictionary;
     }
 
-    private static BList mapBList(short[] value) {
-        List<BValue> list = new ArrayList<>(value.length);
-        for (var val : value) {
-            list.add(write(val));
-        }
-        return BList.of(list);
-    }
-
-    private static BList mapBList(int[] value) {
-        List<BValue> list = new ArrayList<>(value.length);
-        for (var val : value) {
-            list.add(write(val));
-        }
-        return BList.of(list);
-    }
-
-    private static BList mapBList(long[] value) {
-        List<BValue> list = new ArrayList<>(value.length);
-        for (var val : value) {
-            list.add(write(val));
-        }
-        return BList.of(list);
-    }
-
-    private static BList mapBList(float[] value) {
-        List<BValue> list = new ArrayList<>(value.length);
-        for (var val : value) {
-            list.add(write(val));
-        }
-        return BList.of(list);
-    }
-
-    private static BList mapBList(double[] value) {
-        List<BValue> list = new ArrayList<>(value.length);
-        for (var val : value) {
-            list.add(write(val));
-        }
-        return BList.of(list);
-    }
-
-    private static BList mapBList(boolean[] value) {
-        List<BValue> list = new ArrayList<>(value.length);
-        for (var val : value) {
-            list.add(write(val));
-        }
-        return BList.of(list);
-    }
-
-    private static BList mapBList(char[] value) {
-        List<BValue> list = new ArrayList<>(value.length);
-        for (var val : value) {
-            list.add(write(val));
-        }
-        return BList.of(list);
-    }
 }
