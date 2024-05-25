@@ -140,8 +140,8 @@ public class BObjectMapper {
                                         // Because collections can be generic, we need to figure out the genetic type
                                         // and pass it along to correctly parse entries in a collection.
                                         var fieldType = field.getType();
-                                        var genericFieldType = Optional.of((ParameterizedType) field.getGenericType())
-                                                .flatMap(type -> Arrays.stream(type.getActualTypeArguments()).findFirst())
+                                        var genericFieldType = Arrays.stream(((ParameterizedType) field.getGenericType()).getActualTypeArguments())
+                                                .findFirst()
                                                 .map(type -> switch (type) {
                                                     // The generic type of the collection is itself generic.
                                                     case ParameterizedType t -> (Class<?>) t.getRawType();
