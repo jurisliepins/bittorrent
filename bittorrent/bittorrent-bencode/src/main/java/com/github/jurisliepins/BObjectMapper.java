@@ -2,14 +2,13 @@ package com.github.jurisliepins;
 
 import com.github.jurisliepins.value.*;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BObjectMapper {
@@ -22,12 +21,12 @@ public class BObjectMapper {
         return writeBDictionary(value);
     }
 
-    private static Object read(BValue value, Class<?> clazz) {
+    private static Object read(BValue value, Class<?> type, Class<?> genericType) {
         return switch (value) {
-            case BByteString val -> readBByteString(val, clazz);
-            case BInteger val -> readBInteger(val, clazz);
-            case BList val -> readBList(val, clazz);
-            case BDictionary val -> readBDictionary(val, clazz);
+            case BByteString val -> readBByteString(val, type);
+            case BInteger val -> readBInteger(val, type);
+            case BList val -> readBList(val, type, genericType);
+            case BDictionary val -> readBDictionary(val, type);
         };
     }
 
@@ -58,8 +57,8 @@ public class BObjectMapper {
         };
     }
 
-    private static Object readBList(BList value, Class<?> clazz) {
-        return switch (clazz.getName()) {
+    private static Object readBList(BList value, Class<?> type, Class<?> genericType) {
+        return switch (type.getName()) {
             case "[B" -> mapToBytes(value.toList().stream()
                     .map(BObjectMapper::readByte)
                     .collect(Collectors.toList()));
@@ -85,7 +84,7 @@ public class BObjectMapper {
                     .map(BObjectMapper::readCharacter)
                     .collect(Collectors.toList()));
             default -> value.toList().stream()
-                    .map(val -> read(val, Object.class))
+                    .map(val -> read(val, genericType, genericType))
                     .collect(Collectors.toCollection(ArrayList::new));
         };
     }
@@ -98,7 +97,24 @@ public class BObjectMapper {
                         if (property != null) {
                             var val = value.value().get(BByteString.of(property.value()));
                             if (val != null) {
-                                return read(val, field.getType());
+                                return switch (field.getType().getTypeName()) {
+                                    case "java.util.Collection",
+                                         "java.util.List",
+                                         "java.util.ArrayList" -> {
+                                        // Because collections can be generic, we need to figure out the genetic type
+                                        // and pass it along to correctly parse entries in a collection.
+                                        Class<?> fieldType = field.getType();
+                                        Class<?> genericFieldType = Optional.of((ParameterizedType) field.getGenericType())
+                                                .flatMap(type -> Arrays.stream(type.getActualTypeArguments()).findFirst())
+                                                .map(type -> switch (type) {
+                                                    case ParameterizedType t -> (Class<?>) t.getRawType(); // The generic type of the collection is itself generic.
+                                                    case Type t -> (Class<?>) t; // Generic type of the collection is not generic.
+                                                })
+                                                .orElse(null);
+                                        yield read(val, fieldType, genericFieldType);
+                                    }
+                                    default -> read(val, field.getType(), null);
+                                };
                             }
                         }
                         return null;
@@ -111,35 +127,35 @@ public class BObjectMapper {
     }
 
     private static Byte readByte(BValue value) {
-        return (Byte) read(value, Byte.class);
+        return (Byte) read(value, Byte.class, null);
     }
 
     private static Short readShort(BValue value) {
-        return (Short) read(value, Short.class);
+        return (Short) read(value, Short.class, null);
     }
 
     private static Integer readInteger(BValue value) {
-        return (Integer) read(value, Integer.class);
+        return (Integer) read(value, Integer.class, null);
     }
 
     private static Long readLong(BValue value) {
-        return (Long) read(value, Long.class);
+        return (Long) read(value, Long.class, null);
     }
 
     private static Boolean readBoolean(BValue value) {
-        return (Boolean) read(value, Boolean.class);
+        return (Boolean) read(value, Boolean.class, null);
     }
 
     private static Character readCharacter(BValue value) {
-        return (Character) read(value, Character.class);
+        return (Character) read(value, Character.class, null);
     }
 
     private static Float readFloat(BValue value) {
-        return (Float) read(value, Float.class);
+        return (Float) read(value, Float.class, null);
     }
 
     private static Double readDouble(BValue value) {
-        return (Double) read(value, Double.class);
+        return (Double) read(value, Double.class, null);
     }
 
     private static byte[] mapToBytes(List<Byte> value) {

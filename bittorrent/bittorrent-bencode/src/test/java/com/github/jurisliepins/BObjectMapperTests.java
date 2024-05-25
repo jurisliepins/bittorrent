@@ -210,7 +210,7 @@ public class BObjectMapperTests {
             @BProperty("name") String name,
             @BProperty("length") long length,
             @BProperty("md5sum") String md5sum,
-            @BProperty("files") File files
+            @BProperty("files") List<File> files
     ) {
         public Info {
             Objects.requireNonNull(pieces, "pieces is null");
@@ -251,19 +251,19 @@ public class BObjectMapperTests {
                 put(BByteString.of("name"), BByteString.of("Название"));
                 put(BByteString.of("length"), BInteger.of(1));
                 put(BByteString.of("md5sum"), BByteString.of("abcdefghijklmnopqrstuvwxyz"));
-                put(BByteString.of("files"), BDictionary.of(
+                put(BByteString.of("files"), BList.of(BDictionary.of(
                         BByteString.of("length"), BInteger.of(1),
                         BByteString.of("md5sum"), BByteString.of("abcdefghijklmnopqrstuvwxyz"),
                         BByteString.of("path"), BList.of(
                                 BByteString.of("Название-1"),
                                 BByteString.of("Название-2"),
-                                BByteString.of("Название-3"))));
+                                BByteString.of("Название-3")))
+                ));
             }}));
             put(BByteString.of("announce"), BByteString.of("announce"));
-            put(BByteString.of("announce-list"), BList.of(
-                    BList.of(
-                            BByteString.of("announce-list-item-1"),
-                            BByteString.of("announce-list-item-2"))));
+            put(BByteString.of("announce-list"), BList.of(BList.of(
+                    BByteString.of("announce-list-item-1"),
+                    BByteString.of("announce-list-item-2"))));
             put(BByteString.of("creation date"), BInteger.of(OffsetDateTime.now().toEpochSecond()));
             put(BByteString.of("comment"), BByteString.of("Комментарий"));
             put(BByteString.of("created by"), BByteString.of("Пользователь"));
