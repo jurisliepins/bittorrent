@@ -11,7 +11,6 @@ public record File(
         @BProperty("path") List<String> path
 ) {
     public File {
-        Objects.requireNonNull(md5sum, "md5sum is null");
         Objects.requireNonNull(path, "path is null");
     }
 }

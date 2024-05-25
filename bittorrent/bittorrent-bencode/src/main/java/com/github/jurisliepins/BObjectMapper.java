@@ -1,9 +1,13 @@
 package com.github.jurisliepins;
 
+import com.github.jurisliepins.stream.BInputStream;
+import com.github.jurisliepins.stream.BOutputStream;
 import com.github.jurisliepins.value.*;
 
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -13,8 +17,40 @@ import java.util.stream.Collectors;
 
 public class BObjectMapper {
 
+    public <T> T readFromStream(BInputStream value, Class<T> clazz) throws IOException {
+        return switch (BDecoder.fromStream(value)) {
+            case BDictionary dictionary -> readFromBDictionary(dictionary, clazz);
+            default -> throw new BException("Unexpected type read from stream. BDictionary expected.");
+        };
+    }
+
+    public <T> T readFromBytes(byte[] value, Class<T> clazz) throws IOException {
+        try (var stream = new BInputStream(value)) {
+            return readFromStream(stream, clazz);
+        }
+    }
+
+    public <T> T readFromString(String value, Charset encoding, Class<T> clazz) throws IOException {
+        return readFromBytes(value.getBytes(encoding), clazz);
+    }
+
     public <T> T readFromBDictionary(BDictionary value, Class<T> clazz) {
         return (T) readBDictionary(value, clazz);
+    }
+
+    public <T> BOutputStream writeToStream(T value) throws IOException {
+        BValue dictionary = writeToBDictionary(value);
+        return BEncoder.toStream(dictionary);
+    }
+
+    public <T> byte[] writeToBytes(T value) throws IOException {
+        try (var stream = writeToStream(value)) {
+            return stream.toByteArray();
+        }
+    }
+
+    public <T> String writeToString(T value, Charset encoding) throws IOException {
+        return new String(writeToBytes(value), encoding);
     }
 
     public <T> BDictionary writeToBDictionary(T value) {
@@ -103,12 +139,14 @@ public class BObjectMapper {
                                          "java.util.ArrayList" -> {
                                         // Because collections can be generic, we need to figure out the genetic type
                                         // and pass it along to correctly parse entries in a collection.
-                                        Class<?> fieldType = field.getType();
-                                        Class<?> genericFieldType = Optional.of((ParameterizedType) field.getGenericType())
+                                        var fieldType = field.getType();
+                                        var genericFieldType = Optional.of((ParameterizedType) field.getGenericType())
                                                 .flatMap(type -> Arrays.stream(type.getActualTypeArguments()).findFirst())
                                                 .map(type -> switch (type) {
-                                                    case ParameterizedType t -> (Class<?>) t.getRawType(); // The generic type of the collection is itself generic.
-                                                    case Type t -> (Class<?>) t; // Generic type of the collection is not generic.
+                                                    // The generic type of the collection is itself generic.
+                                                    case ParameterizedType t -> (Class<?>) t.getRawType();
+                                                    // Generic type of the collection is not generic.
+                                                    case Type t -> (Class<?>) t;
                                                 })
                                                 .orElse(null);
                                         yield read(val, fieldType, genericFieldType);

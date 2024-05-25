@@ -198,7 +198,6 @@ public class BObjectMapperTests {
             @BProperty("path") List<String> path
     ) {
         public File {
-            Objects.requireNonNull(md5sum, "md5sum is null");
             Objects.requireNonNull(path, "path is null");
         }
     }
@@ -206,7 +205,7 @@ public class BObjectMapperTests {
     public record Info(
             @BProperty("piece length") int pieceLength,
             @BProperty("pieces") byte[] pieces,
-            @BProperty("private") boolean isPrivate,
+            @BProperty("private") Boolean isPrivate,
             @BProperty("name") String name,
             @BProperty("length") long length,
             @BProperty("md5sum") String md5sum,
@@ -215,8 +214,6 @@ public class BObjectMapperTests {
         public Info {
             Objects.requireNonNull(pieces, "pieces is null");
             Objects.requireNonNull(name, "name is null");
-            Objects.requireNonNull(md5sum, "md5sum is null");
-            Objects.requireNonNull(files, "files is null");
         }
     }
 
@@ -232,11 +229,6 @@ public class BObjectMapperTests {
         public MetaInfo {
             Objects.requireNonNull(info, "info is null");
             Objects.requireNonNull(announce, "announce is null");
-            Objects.requireNonNull(announceList, "announceList is null");
-            Objects.requireNonNull(creationDate, "creationDate is null");
-            Objects.requireNonNull(comment, "comment is null");
-            Objects.requireNonNull(createdBy, "createdBy is null");
-            Objects.requireNonNull(encoding, "encoding is null");
         }
     }
 
