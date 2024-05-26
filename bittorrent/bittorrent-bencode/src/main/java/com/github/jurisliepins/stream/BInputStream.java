@@ -5,12 +5,12 @@ import com.github.jurisliepins.BException;
 import java.io.ByteArrayInputStream;
 
 public class BInputStream extends ByteArrayInputStream {
-    public BInputStream(byte[] buf) {
+    public BInputStream(final byte[] buf) {
         super(buf);
     }
 
     public byte readByte() {
-        int value = read();
+        final int value = read();
         if (value == -1) {
             throw new BException("Reached the end of the stream.");
         }
@@ -19,7 +19,7 @@ public class BInputStream extends ByteArrayInputStream {
 
     public byte peekByte() {
         mark(1);
-        byte value = readByte();
+        final byte value = readByte();
         reset();
         return value;
     }

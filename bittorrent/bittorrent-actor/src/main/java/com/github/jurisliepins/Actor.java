@@ -45,33 +45,33 @@ public interface Actor {
         public static final BlankActor INSTANCE = new BlankActor();
 
         @Override
-        public ActorRef post(Object message, ActorRef sender) {
+        public ActorRef post(final Object message, final ActorRef sender) {
             return this;
         }
 
         @Override
-        public ActorRef post(Object message) {
+        public ActorRef post(final Object message) {
             return this;
         }
     }
 
     class RunnableActor implements ActorRef, Runnable {
         private final LinkedBlockingQueue<Envelope> mailbox = new LinkedBlockingQueue<>();
-        private final System system;
-        private final Receiver receiver;
+        private final System actorSystem;
+        private final Receiver actorReceiver;
 
-        public RunnableActor(System system, Receiver receiver) {
-            this.system = system;
-            this.receiver = receiver;
+        public RunnableActor(final System system, final Receiver receiver) {
+            this.actorSystem = system;
+            this.actorReceiver = receiver;
         }
 
-        public ActorRef post(Object message, ActorRef sender) {
-            mailbox.add(new Envelope.Success(message, system, this, sender));
+        public ActorRef post(final Object message, final ActorRef sender) {
+            mailbox.add(new Envelope.Success(message, actorSystem, this, sender));
             return this;
         }
 
-        public ActorRef post(Object message) {
-            mailbox.add(new Envelope.Success(message, system, this, BlankActor.INSTANCE));
+        public ActorRef post(final Object message) {
+            mailbox.add(new Envelope.Success(message, actorSystem, this, BlankActor.INSTANCE));
             return this;
         }
 
@@ -81,21 +81,25 @@ public interface Actor {
                     // This actor relies on the fact that blocking operations ran inside virtual threads will now be
                     // unmounted from platform thread when blocking is detected with the stack copied into heap memory.
                     // Once the operation unblocks, the stack is mounted back to the platform thread and execution is
-                    // resumed. All blocking operations have been refactored in Java21, including the LinkedBlockingQueue.
+                    // resumed. All blocking operations have been refactored in Java21,
+                    // including the LinkedBlockingQueue.
                     //
                     // Explanation https://www.youtube.com/watch?v=5E0LU85EnTI.
                     //
-                    // Actor setup inspired by https://www.javaadvent.com/2022/12/actors-and-virtual-threads-a-match-made-in-heaven.html.
-                    var envelope = mailbox.take();
-                    switch (receiver.receive(envelope)) {
+                    // Actor setup inspired by
+                    // https://www.javaadvent.com/2022/12/actors-and-virtual-threads-a-match-made-in-heaven.html.
+                    final Envelope envelope = mailbox.take();
+                    switch (actorReceiver.receive(envelope)) {
                         case Receive:
                             continue;
                         case Terminate:
                             return;
+                        default:
+                            return;
                     }
                 } catch (Throwable cause) {
                     try {
-                        var ignored = receiver.receive(new Envelope.Failure(cause, system));
+                        final NextState ignored = actorReceiver.receive(new Envelope.Failure(cause, actorSystem));
                     } catch (Throwable ignored) {
                         // Ignored.
                     }
@@ -106,10 +110,12 @@ public interface Actor {
     }
 
     class System {
+        private static final int SHUTDOWN_TIMEOUT_MS = 1000;
+
         private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
-        public ActorRef spawn(Receiver receiver) {
-            var actor = new RunnableActor(this, receiver);
+        public ActorRef spawn(final Receiver receiver) {
+            final RunnableActor actor = new RunnableActor(this, receiver);
             executorService.execute(actor);
             return actor;
         }
@@ -117,7 +123,7 @@ public interface Actor {
         public void shutdown() {
             executorService.shutdown();
             try {
-                if (!executorService.awaitTermination(1000, TimeUnit.MILLISECONDS)) {
+                if (!executorService.awaitTermination(SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
                     executorService.shutdownNow();
                 }
             } catch (InterruptedException e) {

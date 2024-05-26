@@ -27,8 +27,8 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
     default BInteger toBInteger() {
         return switch (this) {
             case BInteger val -> val;
-            default -> throw new BException(
-                    "Unexpected BValue type. %s expected.".formatted(BValueType.BIntegerType));
+            default -> throw new BException("Unexpected BValue type. %s expected."
+                    .formatted(BValueType.BIntegerType));
         };
     }
 
@@ -43,8 +43,8 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
     default BByteString toBByteString() {
         return switch (this) {
             case BByteString val -> val;
-            default -> throw new BException(
-                    "Unexpected BValue type. %s expected.".formatted(BValueType.BByteStringType));
+            default -> throw new BException("Unexpected BValue type. %s expected."
+                    .formatted(BValueType.BByteStringType));
         };
     }
 
@@ -55,8 +55,8 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
     default BList toBList() {
         return switch (this) {
             case BList val -> val;
-            default -> throw new BException(
-                    "Unexpected BValue type. %s expected.".formatted(BValueType.BListType));
+            default -> throw new BException("Unexpected BValue type. %s expected."
+                    .formatted(BValueType.BListType));
         };
     }
 
@@ -67,8 +67,8 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
     default BDictionary toBDictionary() {
         return switch (this) {
             case BDictionary val -> val;
-            default -> throw new BException(
-                    "Unexpected BValue type. %s expected".formatted(BValueType.BDictionaryType));
+            default -> throw new BException("Unexpected BValue type. %s expected"
+                    .formatted(BValueType.BDictionaryType));
         };
     }
 }

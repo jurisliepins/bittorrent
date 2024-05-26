@@ -20,6 +20,7 @@
         <junit.version>5.7.2</junit.version>
         <java.source.version>21</java.source.version>
         <java.target.version>21</java.target.version>
+        <maven.checkstyle.version>3.3.0</maven.checkstyle.version>
     </properties>
 
     <dependencyManagement>
@@ -42,6 +43,21 @@
                     <source>${java.source.version}</source>
                     <target>${java.target.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven.checkstyle.version}</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

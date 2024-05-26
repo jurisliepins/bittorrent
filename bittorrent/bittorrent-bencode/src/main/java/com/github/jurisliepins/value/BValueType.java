@@ -8,7 +8,7 @@ public enum BValueType {
     BListType,
     BDictionaryType;
 
-    public static BValueType fromByte(byte value) {
+    public static BValueType fromByte(final byte value) {
         return switch (value) {
             case 'i' -> BIntegerType;
             case '0',

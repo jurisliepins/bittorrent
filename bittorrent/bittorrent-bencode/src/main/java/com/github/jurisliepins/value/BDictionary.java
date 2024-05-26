@@ -17,7 +17,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> value.equals(val.toMap());
@@ -26,7 +26,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     }
 
     @Override
-    public int compareTo(BValue other) {
+    public int compareTo(final BValue other) {
         throw new BException("Comparable not supported for %s.".formatted(BValueType.BDictionaryType));
     }
 
@@ -34,58 +34,32 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
         return new BDictionary(new HashMap<>());
     }
 
-    public static BDictionary of(Map<BValue, BValue> values) {
+    public static BDictionary of(final Map<BValue, BValue> values) {
         Objects.requireNonNull(values, "values is null");
         return new BDictionary(values);
     }
 
-    public static BDictionary of(BValue k, BValue v) {
-        HashMap<BValue, BValue> map = new HashMap<>();
+    public static BDictionary of(final BValue k, final BValue v) {
+        final HashMap<BValue, BValue> map = new HashMap<>();
         map.put(k, v);
         return new BDictionary(map);
     }
 
-    public static BDictionary of(BValue k1, BValue v1,
-                                 BValue k2, BValue v2) {
-        HashMap<BValue, BValue> map = new HashMap<>();
+    public static BDictionary of(final BValue k1, final BValue v1,
+                                 final BValue k2, final BValue v2) {
+        final HashMap<BValue, BValue> map = new HashMap<>();
         map.put(k1, v1);
         map.put(k2, v2);
         return new BDictionary(map);
     }
 
-    public static BDictionary of(BValue k1, BValue v1,
-                                 BValue k2, BValue v2,
-                                 BValue k3, BValue v3) {
-        HashMap<BValue, BValue> map = new HashMap<>();
+    public static BDictionary of(final BValue k1, final BValue v1,
+                                 final BValue k2, final BValue v2,
+                                 final BValue k3, final BValue v3) {
+        final HashMap<BValue, BValue> map = new HashMap<>();
         map.put(k1, v1);
         map.put(k2, v2);
         map.put(k3, v3);
-        return new BDictionary(map);
-    }
-
-    public static BDictionary of(BValue k1, BValue v1,
-                                 BValue k2, BValue v2,
-                                 BValue k3, BValue v3,
-                                 BValue k4, BValue v4) {
-        HashMap<BValue, BValue> map = new HashMap<>();
-        map.put(k1, v1);
-        map.put(k2, v2);
-        map.put(k3, v3);
-        map.put(k4, v4);
-        return new BDictionary(map);
-    }
-
-    public static BDictionary of(BValue k1, BValue v1,
-                                 BValue k2, BValue v2,
-                                 BValue k3, BValue v3,
-                                 BValue k4, BValue v4,
-                                 BValue k5, BValue v5) {
-        HashMap<BValue, BValue> map = new HashMap<>();
-        map.put(k1, v1);
-        map.put(k2, v2);
-        map.put(k3, v3);
-        map.put(k4, v4);
-        map.put(k5, v5);
         return new BDictionary(map);
     }
 }

@@ -12,7 +12,7 @@ public record BByteString(byte[] value) implements BValue {
     }
 
     @Override
-    public int compareTo(BValue other) {
+    public int compareTo(final BValue other) {
         Objects.requireNonNull(other, "other is null");
         return Arrays.compare(value, other.toBytes());
     }
@@ -23,7 +23,7 @@ public record BByteString(byte[] value) implements BValue {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         Objects.requireNonNull(other, "other is null");
         return switch (other) {
             case BValue val -> Arrays.equals(value, val.toBytes());
@@ -31,12 +31,12 @@ public record BByteString(byte[] value) implements BValue {
         };
     }
 
-    public static BByteString of(byte[] value) {
+    public static BByteString of(final byte[] value) {
         Objects.requireNonNull(value, "value is null");
         return new BByteString(value);
     }
 
-    public static BByteString of(String value) {
+    public static BByteString of(final String value) {
         Objects.requireNonNull(value, "value is null");
         return of(value.getBytes(StandardCharsets.UTF_8));
     }

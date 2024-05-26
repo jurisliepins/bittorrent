@@ -1,15 +1,15 @@
 package com.github.jurisliepins;
 
 public class BException extends RuntimeException {
-    public BException(String message) {
+    public BException(final String message) {
         super(message);
     }
 
-    public BException(String message, Throwable cause) {
+    public BException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public BException(Throwable cause) {
+    public BException(final Throwable cause) {
         super(cause);
     }
 }
