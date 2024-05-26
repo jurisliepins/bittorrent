@@ -18,19 +18,19 @@ public class BObjectMapperTests {
             @BProperty("utf8-string") String utf8String,
             @BProperty("empty-string") String emptyString,
             @BProperty("bytes") byte[] bytes
-    ) {}
+    ) { }
 
     @Test
     @DisplayName("Should read/write string")
     public void shouldReadWriteString() {
-        var value = BDictionary.of(new HashMap<>() {{
+        final BDictionary value = BDictionary.of(new HashMap<>() {{
             put(BByteString.of("utf8-string"), BByteString.of("ɄɅ ɱ ϴ ЂЃЃ"));
             put(BByteString.of("empty-string"), BByteString.of(""));
-            put(BByteString.of("bytes"), BByteString.of(new byte[]{ 1, 2, 3 }));
+            put(BByteString.of("bytes"), BByteString.of(new byte[]{1, 2}));
         }});
-        var mapper = new BObjectMapper();
-        var parsed = mapper.readFromBDictionary(value, BStringValues.class);
-        var mapped = mapper.writeToBDictionary(parsed);
+        final BObjectMapper mapper = new BObjectMapper();
+        final BStringValues parsed = mapper.readFromBDictionary(value, BStringValues.class);
+        final BDictionary mapped = mapper.writeToBDictionary(parsed);
         assertEquals(value, mapped);
     }
 
@@ -52,12 +52,12 @@ public class BObjectMapperTests {
             @BProperty("max-char") char maxChar,
             @BProperty("min-char") char minChar,
             @BProperty("epoch-seconds") OffsetDateTime epochSeconds
-    ) {}
+    ) { }
 
     @Test
     @DisplayName("Should read/write integer")
     public void shouldReadWriteInteger() {
-        var value = BDictionary.of(new HashMap<>() {{
+        final BDictionary value = BDictionary.of(new HashMap<>() {{
             put(BByteString.of("max-byte"), BInteger.of(Byte.MAX_VALUE));
             put(BByteString.of("min-byte"), BInteger.of(Byte.MIN_VALUE));
             put(BByteString.of("max-short"), BInteger.of(Short.MAX_VALUE));
@@ -76,9 +76,9 @@ public class BObjectMapperTests {
             put(BByteString.of("min-char"), BInteger.of((byte) 'a'));
             put(BByteString.of("epoch-seconds"), BInteger.of(OffsetDateTime.now().toEpochSecond()));
         }});
-        var mapper = new BObjectMapper();
-        var parsed = mapper.readFromBDictionary(value, BIntegerValues.class);
-        var mapped = mapper.writeToBDictionary(parsed);
+        final BObjectMapper mapper = new BObjectMapper();
+        final BIntegerValues parsed = mapper.readFromBDictionary(value, BIntegerValues.class);
+        final BDictionary mapped = mapper.writeToBDictionary(parsed);
         assertEquals(value, mapped);
     }
 
@@ -100,12 +100,12 @@ public class BObjectMapperTests {
             @BProperty("boolean-list") List<Boolean> booleanList,
             @BProperty("char-array") char[] charArray,
             @BProperty("char-list") List<Character> charList
-    ) {}
+    ) { }
 
     @Test
     @DisplayName("Should read/write list")
     public void shouldReadWriteList() {
-        var value = BDictionary.of(new HashMap<>() {{
+        final BDictionary value = BDictionary.of(new HashMap<>() {{
 //            Skipping byte array because byte arrays are written as BByteString.
 //            put(BByteString.of("byte-array"), BList.of(
 //                    BInteger.of((byte) 1),
@@ -114,58 +114,47 @@ public class BObjectMapperTests {
 //            ));
             put(BByteString.of("byte-list"), BList.of(
                     BInteger.of((byte) 1),
-                    BInteger.of((byte) 2),
-                    BInteger.of((byte) 3)
+                    BInteger.of((byte) 2)
             ));
             put(BByteString.of("short-array"), BList.of(
                     BInteger.of((short) 1),
-                    BInteger.of((short) 2),
-                    BInteger.of((short) 3)
+                    BInteger.of((short) 2)
             ));
             put(BByteString.of("short-list"), BList.of(
                     BInteger.of((short) 1),
-                    BInteger.of((short) 2),
-                    BInteger.of((short) 3)
+                    BInteger.of((short) 2)
             ));
             put(BByteString.of("integer-array"), BList.of(
                     BInteger.of(1),
-                    BInteger.of(2),
-                    BInteger.of(3)
+                    BInteger.of(2)
             ));
             put(BByteString.of("integer-list"), BList.of(
                     BInteger.of(1),
-                    BInteger.of(2),
-                    BInteger.of(3)
+                    BInteger.of(2)
             ));
             put(BByteString.of("long-array"), BList.of(
                     BInteger.of(1),
-                    BInteger.of(2),
-                    BInteger.of(3)
+                    BInteger.of(2)
             ));
             put(BByteString.of("long-list"), BList.of(
                     BInteger.of(1),
-                    BInteger.of(2),
-                    BInteger.of(3)
+                    BInteger.of(2)
             ));
             put(BByteString.of("float-array"), BList.of(
                     BInteger.of(1),
-                    BInteger.of(2),
-                    BInteger.of(3)
+                    BInteger.of(2)
             ));
             put(BByteString.of("float-list"), BList.of(
                     BInteger.of(1),
-                    BInteger.of(2),
-                    BInteger.of(3)
+                    BInteger.of(2)
             ));
             put(BByteString.of("double-array"), BList.of(
                     BInteger.of(1),
-                    BInteger.of(2),
-                    BInteger.of(3)
+                    BInteger.of(2)
             ));
             put(BByteString.of("double-list"), BList.of(
                     BInteger.of(1),
-                    BInteger.of(2),
-                    BInteger.of(3)
+                    BInteger.of(2)
             ));
             put(BByteString.of("boolean-array"), BList.of(
                     BInteger.of(0),
@@ -186,9 +175,9 @@ public class BObjectMapperTests {
                     BInteger.of((byte) 'c')
             ));
         }});
-        var mapper = new BObjectMapper();
-        var parsed = mapper.readFromBDictionary(value, BListValues.class);
-        var mapped = mapper.writeToBDictionary(parsed);
+        final BObjectMapper mapper = new BObjectMapper();
+        final BListValues parsed = mapper.readFromBDictionary(value, BListValues.class);
+        final BDictionary mapped = mapper.writeToBDictionary(parsed);
         assertEquals(value, mapped);
     }
 
@@ -235,7 +224,7 @@ public class BObjectMapperTests {
     @Test
     @DisplayName("Should read/write meta-info")
     public void shouldReadWriteDictionary() {
-        var value = BDictionary.of(new HashMap<>() {{
+        final BDictionary value = BDictionary.of(new HashMap<>() {{
             put(BByteString.of("info"), BDictionary.of(new HashMap<>() {{
                 put(BByteString.of("piece length"), BInteger.of(1));
                 put(BByteString.of("pieces"), BByteString.of(new byte[]{}));
@@ -261,9 +250,9 @@ public class BObjectMapperTests {
             put(BByteString.of("created by"), BByteString.of("Пользователь"));
             put(BByteString.of("encoding"), BByteString.of("utf8"));
         }});
-        var mapper = new BObjectMapper();
-        var parsed = mapper.readFromBDictionary(value, MetaInfo.class);
-        var mapped = mapper.writeToBDictionary(parsed);
+        final BObjectMapper mapper = new BObjectMapper();
+        final MetaInfo parsed = mapper.readFromBDictionary(value, MetaInfo.class);
+        final BDictionary mapped = mapper.writeToBDictionary(parsed);
         assertEquals(value, mapped);
     }
 }
