@@ -23,7 +23,7 @@ public final class BDecoder {
     }
 
     public static BValue fromBytes(final byte[] value) throws IOException {
-        try (var stream = new BInputStream(value)) {
+        try (BInputStream stream = new BInputStream(value)) {
             return fromStream(stream);
         }
     }
