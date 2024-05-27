@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("BEncode/BDecode tests")
-public class BEncodeTests {
+public final class BEncodeTests {
 
     @Test
     @DisplayName("Should throw when decoding corrupt data")

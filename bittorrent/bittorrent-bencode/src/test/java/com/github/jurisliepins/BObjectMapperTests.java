@@ -12,7 +12,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("BObjectMapper tests")
-public class BObjectMapperTests {
+public final class BObjectMapperTests {
 
     public record BStringValues(
             @BProperty("utf8-string") String utf8String,
