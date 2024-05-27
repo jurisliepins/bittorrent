@@ -1,6 +1,6 @@
 package com.github.jurisliepins;
 
 @FunctionalInterface
-public interface Receiver {
+public interface ActorReceiver {
     NextState receive(Envelope envelope);
 }
