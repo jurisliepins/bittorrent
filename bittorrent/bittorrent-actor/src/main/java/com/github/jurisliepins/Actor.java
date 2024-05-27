@@ -53,7 +53,7 @@ public interface Actor {
             final Awaiter<T> awaiter = new Awaiter<>();
             final ActorRef awaiterRef = system.spawn(awaiter);
             post(message, awaiterRef);
-            return awaiter.result();
+            return awaiter.awaitResult();
         }
 
         @Override
@@ -61,7 +61,7 @@ public interface Actor {
             final Awaiter<T> awaiter = new Awaiter<>();
             final ActorRef awaiterRef = system.spawn(awaiter);
             post(message, awaiterRef);
-            return awaiter.result(timeout, unit);
+            return awaiter.awaitResult(timeout, unit);
         }
 
         public void run() {

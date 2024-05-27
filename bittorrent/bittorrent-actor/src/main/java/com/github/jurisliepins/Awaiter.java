@@ -25,7 +25,7 @@ public final class Awaiter<T> implements ActorReceiver {
         return NextState.Terminate;
     }
 
-    public T result() {
+    public T awaitResult() {
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -34,7 +34,7 @@ public final class Awaiter<T> implements ActorReceiver {
         return result;
     }
 
-    public T result(final long timeout, final TimeUnit unit) {
+    public T awaitResult(final long timeout, final TimeUnit unit) {
         try {
             if (!latch.await(timeout, unit)) {
                 throw new ActorException("Failed to await result of ask.");
