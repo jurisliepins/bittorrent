@@ -51,7 +51,8 @@ public final class ActorTests {
         });
         ref.post("Hello, World!");
 
-        assertTrue(latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS), "Timed out before receiving a message.");
+        final boolean r = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertTrue(r, "Should not have timed out before receiving a message.");
     }
 
     @Test
