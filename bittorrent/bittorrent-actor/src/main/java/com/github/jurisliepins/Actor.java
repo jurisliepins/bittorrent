@@ -23,8 +23,8 @@ public interface Actor {
         private final ActorReceiver actorReceiver;
 
         public RunnableActor(final ActorSystem system, final ActorReceiver receiver) {
-            this.actorSystem = system;
-            this.actorReceiver = receiver;
+            actorSystem = system;
+            actorReceiver = receiver;
         }
 
         public ActorRef post(final Object message, final ActorRef sender) {
