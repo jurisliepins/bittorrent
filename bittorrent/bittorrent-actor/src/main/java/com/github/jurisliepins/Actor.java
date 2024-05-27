@@ -1,19 +1,30 @@
 package com.github.jurisliepins;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public interface Actor {
     class BlankActor implements ActorRef {
         public static final BlankActor INSTANCE = new BlankActor();
 
         @Override
-        public ActorRef post(final Object message, final ActorRef sender) {
+        public <T> ActorRef post(final T message, final ActorRef sender) {
             return this;
         }
 
         @Override
-        public ActorRef post(final Object message) {
+        public <T> ActorRef post(final T message) {
             return this;
+        }
+
+        @Override
+        public <T, U> T ask(final U message) {
+            throw new ActorException("Cannot ask a blank actor.");
+        }
+
+        @Override
+        public <T, U> T ask(final U message, final long timeout, final TimeUnit unit) {
+            throw new ActorException("Cannot ask a blank actor.");
         }
     }
 
@@ -27,14 +38,30 @@ public interface Actor {
             actorReceiver = receiver;
         }
 
-        public ActorRef post(final Object message, final ActorRef sender) {
+        public <T> ActorRef post(final T message, final ActorRef sender) {
             mailbox.add(new Envelope.Success(message, actorSystem, this, sender));
             return this;
         }
 
-        public ActorRef post(final Object message) {
+        public <T> ActorRef post(final T message) {
             mailbox.add(new Envelope.Success(message, actorSystem, this, BlankActor.INSTANCE));
             return this;
+        }
+
+        @Override
+        public <T, U> T ask(final U message) {
+            final Awaiter<T> awaiter = new Awaiter<>();
+            final ActorRef awaiterRef = actorSystem.spawn(awaiter);
+            post(message, awaiterRef);
+            return awaiter.result();
+        }
+
+        @Override
+        public <T, U> T ask(final U message, final long timeout, final TimeUnit unit) {
+            final Awaiter<T> awaiter = new Awaiter<>();
+            final ActorRef awaiterRef = actorSystem.spawn(awaiter);
+            post(message, awaiterRef);
+            return awaiter.result(timeout, unit);
         }
 
         public void run() {

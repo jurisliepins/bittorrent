@@ -1,7 +1,13 @@
 package com.github.jurisliepins;
 
-public interface ActorRef {
-    ActorRef post(Object message, ActorRef sender);
+import java.util.concurrent.TimeUnit;
 
-    ActorRef post(Object message);
+public interface ActorRef {
+    <T> ActorRef post(T message, ActorRef sender);
+
+    <T> ActorRef post(T message);
+
+    <T, U> T ask(U message);
+
+    <T, U> T ask(U message, long timeout, TimeUnit unit);
 }

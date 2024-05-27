@@ -38,8 +38,8 @@ public final class ActorTests {
     }
 
     @Test
-    @DisplayName("Should receive message")
-    public void shouldReceiveMessage() throws InterruptedException {
+    @DisplayName("Should post message")
+    public void shouldPostMessage() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
         final ActorRef ref = system.spawn(envelope -> {
@@ -53,6 +53,42 @@ public final class ActorTests {
 
         final boolean r = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertTrue(r, "Should not have timed out before receiving a message.");
+    }
+
+    @Test
+    @DisplayName("Should ask message")
+    public void shouldAskMessage() {
+        final String response = "Response!";
+
+        final ActorRef ref = system.spawn(envelope -> {
+            switch (envelope) {
+                case Envelope.Success success -> success.sender().post(response);
+                case Envelope.Failure ignored -> { }
+            }
+            return NextState.Receive;
+        });
+
+        final String answer = ref.ask("Hello, World!");
+
+        assertEquals(response, answer, "Should have received %s as response.".formatted(response));
+    }
+
+    @Test
+    @DisplayName("Should ask message with timeout")
+    public void shouldAskMessageWithTimeout() {
+        final String response = "Response!";
+
+        final ActorRef ref = system.spawn(envelope -> {
+            switch (envelope) {
+                case Envelope.Success success -> success.sender().post(response);
+                case Envelope.Failure ignored -> { }
+            }
+            return NextState.Receive;
+        });
+
+        final String answer = ref.ask("Hello, World!", TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+        assertEquals(response, answer, "Should have received %s as response.".formatted(response));
     }
 
     @Test
