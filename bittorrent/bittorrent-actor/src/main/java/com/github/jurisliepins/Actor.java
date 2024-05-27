@@ -1,5 +1,6 @@
 package com.github.jurisliepins;
 
+import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -34,22 +35,25 @@ public interface Actor {
         private final ActorReceiver receiver;
 
         public RunnableActor(final ActorSystem system, final ActorReceiver receiver) {
-            this.system = system;
-            this.receiver = receiver;
+            this.system = Objects.requireNonNull(system, "system is null");
+            this.receiver = Objects.requireNonNull(receiver, "receiver is null");
         }
 
         public <T> ActorRef post(final T message, final ActorRef sender) {
+            Objects.requireNonNull(message, "message is null");
             mailbox.add(new Envelope.Success(message, system, this, sender));
             return this;
         }
 
         public <T> ActorRef post(final T message) {
+            Objects.requireNonNull(message, "message is null");
             mailbox.add(new Envelope.Success(message, system, this, BlankActor.INSTANCE));
             return this;
         }
 
         @Override
         public <T, U> T ask(final U message) {
+            Objects.requireNonNull(message, "message is null");
             final Awaiter<T> awaiter = new Awaiter<>();
             final ActorRef awaiterRef = system.spawn(awaiter);
             post(message, awaiterRef);
@@ -58,6 +62,7 @@ public interface Actor {
 
         @Override
         public <T, U> T ask(final U message, final long timeout, final TimeUnit unit) {
+            Objects.requireNonNull(message, "message is null");
             final Awaiter<T> awaiter = new Awaiter<>();
             final ActorRef awaiterRef = system.spawn(awaiter);
             post(message, awaiterRef);
