@@ -9,8 +9,8 @@ public class ActorSystem {
 
     private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
-    public ActorRef spawn(final ActorReceiver actorReceiver) {
-        final Actor.RunnableActor actor = new Actor.RunnableActor(this, actorReceiver);
+    public ActorRef spawn(final ActorReceiver receiver) {
+        final Actor.RunnableActor actor = new Actor.RunnableActor(this, receiver);
         executorService.execute(actor);
         return actor;
     }

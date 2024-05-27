@@ -30,28 +30,28 @@ public interface Actor {
 
     class RunnableActor implements ActorRef, Runnable {
         private final LinkedBlockingQueue<Envelope> mailbox = new LinkedBlockingQueue<>();
-        private final ActorSystem actorSystem;
-        private final ActorReceiver actorReceiver;
+        private final ActorSystem system;
+        private final ActorReceiver receiver;
 
         public RunnableActor(final ActorSystem system, final ActorReceiver receiver) {
-            actorSystem = system;
-            actorReceiver = receiver;
+            this.system = system;
+            this.receiver = receiver;
         }
 
         public <T> ActorRef post(final T message, final ActorRef sender) {
-            mailbox.add(new Envelope.Success(message, actorSystem, this, sender));
+            mailbox.add(new Envelope.Success(message, system, this, sender));
             return this;
         }
 
         public <T> ActorRef post(final T message) {
-            mailbox.add(new Envelope.Success(message, actorSystem, this, BlankActor.INSTANCE));
+            mailbox.add(new Envelope.Success(message, system, this, BlankActor.INSTANCE));
             return this;
         }
 
         @Override
         public <T, U> T ask(final U message) {
             final Awaiter<T> awaiter = new Awaiter<>();
-            final ActorRef awaiterRef = actorSystem.spawn(awaiter);
+            final ActorRef awaiterRef = system.spawn(awaiter);
             post(message, awaiterRef);
             return awaiter.result();
         }
@@ -59,7 +59,7 @@ public interface Actor {
         @Override
         public <T, U> T ask(final U message, final long timeout, final TimeUnit unit) {
             final Awaiter<T> awaiter = new Awaiter<>();
-            final ActorRef awaiterRef = actorSystem.spawn(awaiter);
+            final ActorRef awaiterRef = system.spawn(awaiter);
             post(message, awaiterRef);
             return awaiter.result(timeout, unit);
         }
@@ -80,10 +80,10 @@ public interface Actor {
             NextState nextState;
             do {
                 try {
-                    nextState = actorReceiver.receive(mailbox.take());
+                    nextState = receiver.receive(mailbox.take());
                 } catch (Throwable cause) {
                     try {
-                        final NextState ignored = actorReceiver.receive(new Envelope.Failure(cause, actorSystem));
+                        final NextState ignored = receiver.receive(new Envelope.Failure(cause, system));
                     } catch (Throwable ignored) {
                         // Ignored.
                     }
