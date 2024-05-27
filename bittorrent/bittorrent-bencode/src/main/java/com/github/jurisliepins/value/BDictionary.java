@@ -18,8 +18,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
 
     @Override
     public boolean equals(final Object other) {
-        Objects.requireNonNull(other, "other is null");
-        return switch (other) {
+        return switch (Objects.requireNonNull(other, "other is null")) {
             case BValue val -> value.equals(val.toMap());
             default -> throw new BException("Unexpected type.");
         };
@@ -35,8 +34,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     }
 
     public static BDictionary of(final Map<BValue, BValue> values) {
-        Objects.requireNonNull(values, "values is null");
-        return new BDictionary(values);
+        return new BDictionary(Objects.requireNonNull(values, "values is null"));
     }
 
     public static BDictionary of(final BValue k, final BValue v) {

@@ -18,8 +18,7 @@ public record BList(List<BValue> value) implements BValue {
 
     @Override
     public boolean equals(final Object other) {
-        Objects.requireNonNull(other, "other is null");
-        return switch (other) {
+        return switch (Objects.requireNonNull(other, "other is null")) {
             case BValue val -> value.equals(val.toList());
             default -> throw new BException("Unexpected type.");
         };
@@ -35,12 +34,10 @@ public record BList(List<BValue> value) implements BValue {
     }
 
     public static BList of(final BValue... values) {
-        Objects.requireNonNull(values, "values is null");
-        return new BList(List.of(values));
+        return new BList(List.of(Objects.requireNonNull(values, "values is null")));
     }
 
     public static BList of(final List<BValue> values) {
-        Objects.requireNonNull(values, "values is null");
-        return new BList(values);
+        return new BList(Objects.requireNonNull(values, "values is null"));
     }
 }

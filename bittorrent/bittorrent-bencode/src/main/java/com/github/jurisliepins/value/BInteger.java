@@ -12,8 +12,7 @@ public record BInteger(long value) implements BValue {
 
     @Override
     public boolean equals(final Object other) {
-        Objects.requireNonNull(other, "other is null");
-        return switch (other) {
+        return switch (Objects.requireNonNull(other, "other is null")) {
             case BValue val -> ((Long) value).equals(val.toLong());
             default -> throw new BException("Unexpected type.");
         };
@@ -21,27 +20,22 @@ public record BInteger(long value) implements BValue {
 
     @Override
     public int compareTo(final BValue other) {
-        Objects.requireNonNull(other, "other is null");
-        return ((Long) value).compareTo(other.toLong());
+        return ((Long) value).compareTo(Objects.requireNonNull(other, "other is null").toLong());
     }
 
     public static BInteger of(final Byte value) {
-        Objects.requireNonNull(value, "value is null");
-        return of(value.shortValue());
+        return of(Objects.requireNonNull(value, "value is null").shortValue());
     }
 
     public static BInteger of(final Short value) {
-        Objects.requireNonNull(value, "value is null");
-        return of(value.intValue());
+        return of(Objects.requireNonNull(value, "value is null").intValue());
     }
 
     public static BInteger of(final Integer value) {
-        Objects.requireNonNull(value, "value is null");
-        return of(value.longValue());
+        return of(Objects.requireNonNull(value, "value is null").longValue());
     }
 
     public static BInteger of(final Long value) {
-        Objects.requireNonNull(value, "value is null");
-        return new BInteger(value);
+        return new BInteger(Objects.requireNonNull(value, "value is null"));
     }
 }
