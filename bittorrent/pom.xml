@@ -12,7 +12,7 @@
     <modules>
         <module>bittorrent-actor</module>
         <module>bittorrent-bencode</module>
-        <module>bitttorrent-core</module>
+        <module>bittorrent-core</module>
     </modules>
 
     <properties>

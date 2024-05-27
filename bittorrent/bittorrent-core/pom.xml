@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bitttorrent-core</artifactId>
+    <artifactId>bittorrent-core</artifactId>
 
-    <name>bitttorrent-core</name>
+    <name>bittorrent-core</name>
 
     <dependencies>
         <dependency>
