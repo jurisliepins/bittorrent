@@ -1,7 +1,5 @@
 package com.github.jurisliepins.value;
 
-import com.github.jurisliepins.BException;
-
 import java.util.Objects;
 
 public record BInteger(long value) implements BValue {
@@ -12,9 +10,9 @@ public record BInteger(long value) implements BValue {
 
     @Override
     public boolean equals(final Object other) {
-        return switch (Objects.requireNonNull(other, "other is null")) {
+        return switch (other) {
             case BValue val -> ((Long) value).equals(val.toLong());
-            default -> throw new BException("Unexpected type %s.".formatted(other));
+            default -> false;
         };
     }
 

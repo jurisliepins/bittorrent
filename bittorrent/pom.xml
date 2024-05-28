@@ -13,6 +13,7 @@
         <module>bittorrent-actor</module>
         <module>bittorrent-bencode</module>
         <module>bittorrent-core</module>
+        <module>bittorrent-cli</module>
     </modules>
 
     <properties>

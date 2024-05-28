@@ -18,9 +18,9 @@ public record BList(List<BValue> value) implements BValue {
 
     @Override
     public boolean equals(final Object other) {
-        return switch (Objects.requireNonNull(other, "other is null")) {
+        return switch (other) {
             case BValue val -> value.equals(val.toList());
-            default -> throw new BException("Unexpected type %s.".formatted(other));
+            default -> false;
         };
     }
 

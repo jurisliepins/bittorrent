@@ -1,7 +1,5 @@
 package com.github.jurisliepins.value;
 
-import com.github.jurisliepins.BException;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
@@ -23,9 +21,9 @@ public record BByteString(byte[] value) implements BValue {
 
     @Override
     public boolean equals(final Object other) {
-        return switch (Objects.requireNonNull(other, "other is null")) {
+        return switch (other) {
             case BValue val -> Arrays.equals(value, val.toBytes());
-            default -> throw new BException("Unexpected type %s.".formatted(other));
+            default -> false;
         };
     }
 

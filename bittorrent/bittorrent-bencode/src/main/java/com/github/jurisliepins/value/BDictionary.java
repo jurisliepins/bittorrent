@@ -18,9 +18,9 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
 
     @Override
     public boolean equals(final Object other) {
-        return switch (Objects.requireNonNull(other, "other is null")) {
+        return switch (other) {
             case BValue val -> value.equals(val.toMap());
-            default -> throw new BException("Unexpected type %s.".formatted(other));
+            default -> false;
         };
     }
 

@@ -31,9 +31,9 @@ public final class InfoHash {
 
     @Override
     public boolean equals(final Object other) {
-        return switch (Objects.requireNonNull(other, "other is null")) {
+        return switch (other) {
             case InfoHash hash -> Arrays.equals(bytes, hash.bytes());
-            default -> throw new InfoException("Unexpected type %s.".formatted(other));
+            default -> false;
         };
     }
 }
