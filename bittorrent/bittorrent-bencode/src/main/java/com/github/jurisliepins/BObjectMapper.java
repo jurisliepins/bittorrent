@@ -91,7 +91,7 @@ public class BObjectMapper {
                 case 1 -> true;
                 case 0 -> false;
                 default -> throw new BException("Cannot read value %d to boolean. Only 0 and 1 supported."
-                        .formatted(value.toInteger()));
+                                                        .formatted(value.toInteger()));
             };
             case "char", "java.lang.Character" -> (char) value.value();
             case "java.time.OffsetDateTime" -> OffsetDateTime.ofInstant(
@@ -102,31 +102,64 @@ public class BObjectMapper {
 
     private static Object readBList(final BList value, final Class<?> type, final Class<?> genericType) {
         return switch (type.getName()) {
-            case "[B" -> mapToBytes(value.toList().stream()
-                    .map(BObjectMapper::readByte)
-                    .collect(Collectors.toList()));
-            case "[S" -> mapToShorts(value.toList().stream()
-                    .map(BObjectMapper::readShort)
-                    .collect(Collectors.toList()));
-            case "[I" -> mapToIntegers(value.toList().stream()
-                    .map(BObjectMapper::readInteger)
-                    .collect(Collectors.toList()));
-            case "[J" -> mapToLongs(value.toList().stream()
-                    .map(BObjectMapper::readLong)
-                    .collect(Collectors.toList()));
-            case "[F" -> mapToFloats(value.toList().stream()
-                    .map(BObjectMapper::readFloat)
-                    .collect(Collectors.toList()));
-            case "[D" -> mapToDoubles(value.toList().stream()
-                    .map(BObjectMapper::readDouble)
-                    .collect(Collectors.toList()));
-            case "[Z" -> mapToBooleans(value.toList().stream()
-                    .map(BObjectMapper::readBoolean)
-                    .collect(Collectors.toList()));
-            case "[C" -> mapToCharacters(value.toList().stream()
-                    .map(BObjectMapper::readCharacter)
-                    .collect(Collectors.toList()));
-            default -> value.toList().stream()
+            case "[B" -> {
+                final List<Byte> list = value.toList()
+                        .stream()
+                        .map(BObjectMapper::readByte)
+                        .collect(Collectors.toList());
+                yield mapToBytes(list);
+            }
+            case "[S" -> {
+                final List<Short> list = value.toList()
+                        .stream()
+                        .map(BObjectMapper::readShort)
+                        .collect(Collectors.toList());
+                yield mapToShorts(list);
+            }
+            case "[I" -> {
+                final List<Integer> list = value.toList()
+                        .stream()
+                        .map(BObjectMapper::readInteger)
+                        .collect(Collectors.toList());
+                yield mapToIntegers(list);
+            }
+            case "[J" -> {
+                final List<Long> list = value.toList()
+                        .stream()
+                        .map(BObjectMapper::readLong)
+                        .collect(Collectors.toList());
+                yield mapToLongs(list);
+            }
+            case "[F" -> {
+                final List<Float> list = value.toList()
+                        .stream()
+                        .map(BObjectMapper::readFloat)
+                        .collect(Collectors.toList());
+                yield mapToFloats(list);
+            }
+            case "[D" -> {
+                final List<Double> list = value.toList()
+                        .stream()
+                        .map(BObjectMapper::readDouble)
+                        .collect(Collectors.toList());
+                yield mapToDoubles(list);
+            }
+            case "[Z" -> {
+                final List<Boolean> list = value.toList()
+                        .stream()
+                        .map(BObjectMapper::readBoolean)
+                        .collect(Collectors.toList());
+                yield mapToBooleans(list);
+            }
+            case "[C" -> {
+                final List<Character> list = value.toList()
+                        .stream()
+                        .map(BObjectMapper::readCharacter)
+                        .collect(Collectors.toList());
+                yield mapToCharacters(list);
+            }
+            default -> value.toList()
+                    .stream()
                     .map(val -> read(val, genericType, genericType))
                     .collect(Collectors.toCollection(ArrayList::new));
         };
@@ -342,8 +375,8 @@ public class BObjectMapper {
 
     private static BList writeBList(final Collection<?> value) {
         return BList.of(value.stream()
-                .map(BObjectMapper::write)
-                .collect(Collectors.toCollection(ArrayList::new)));
+                                .map(BObjectMapper::write)
+                                .collect(Collectors.toCollection(ArrayList::new)));
     }
 
     private static BList writeBList(final short[] value) {

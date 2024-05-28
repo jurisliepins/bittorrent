@@ -28,7 +28,7 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
         return switch (this) {
             case BInteger val -> val;
             default -> throw new BException("Unexpected BValue type. %s expected."
-                    .formatted(BValueType.BIntegerType));
+                                                    .formatted(BValueType.BIntegerType));
         };
     }
 
@@ -44,7 +44,7 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
         return switch (this) {
             case BByteString val -> val;
             default -> throw new BException("Unexpected BValue type. %s expected."
-                    .formatted(BValueType.BByteStringType));
+                                                    .formatted(BValueType.BByteStringType));
         };
     }
 
@@ -56,7 +56,7 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
         return switch (this) {
             case BList val -> val;
             default -> throw new BException("Unexpected BValue type. %s expected."
-                    .formatted(BValueType.BListType));
+                                                    .formatted(BValueType.BListType));
         };
     }
 
@@ -68,7 +68,7 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
         return switch (this) {
             case BDictionary val -> val;
             default -> throw new BException("Unexpected BValue type. %s expected"
-                    .formatted(BValueType.BDictionaryType));
+                                                    .formatted(BValueType.BDictionaryType));
         };
     }
 }

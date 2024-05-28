@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-@DisplayName("Hash tests")
+@DisplayName("Info-hash tests")
 public final class InfoHashTests {
 
     private static final byte[] HASH_BYTES = new byte[]{

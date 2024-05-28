@@ -94,7 +94,7 @@ public final class BDecoder {
                     break;
                 default:
                     throw new BException("Unexpected char '%c' when reading %s."
-                            .formatted((char) value, BValueType.BIntegerType));
+                                                 .formatted((char) value, BValueType.BIntegerType));
             }
         }
 
@@ -122,14 +122,14 @@ public final class BDecoder {
                     break;
                 default:
                     throw new BException("Unexpected char '%c' when reading %s."
-                            .formatted((char) value, BValueType.BByteStringType));
+                                                 .formatted((char) value, BValueType.BByteStringType));
             }
         }
 
         final byte[] bytes = stream.readNBytes(length);
         if (bytes.length != length) {
             throw new BException("Unexpected byte count '%d' when expected length '%d."
-                    .formatted(length, bytes.length));
+                                         .formatted(length, bytes.length));
         }
 
         return new BByteString(bytes);

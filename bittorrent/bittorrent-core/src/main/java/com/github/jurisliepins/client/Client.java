@@ -78,7 +78,8 @@ public final class Client implements ActorReceiver {
 
     private NextState handle(final Envelope.Success envelope, final ClientRequest command) {
         switch (command) {
-            case ClientRequest.Get get -> { }
+            case ClientRequest.Get get -> {
+            }
         }
         return NextState.Receive;
     }

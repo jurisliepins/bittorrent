@@ -51,16 +51,16 @@ public final class BEncoder {
     private static void write(final BOutputStream stream, final BInteger value) throws IOException {
         stream.write(I_BYTE);
         stream.write(((Long) value.value())
-                .toString()
-                .getBytes(StandardCharsets.US_ASCII));
+                             .toString()
+                             .getBytes(StandardCharsets.US_ASCII));
         stream.write(E_BYTE);
         stream.flush();
     }
 
     private static void write(final BOutputStream stream, final BByteString value) throws IOException {
         stream.write(((Integer) value.value().length)
-                .toString()
-                .getBytes(StandardCharsets.US_ASCII));
+                             .toString()
+                             .getBytes(StandardCharsets.US_ASCII));
         stream.write(S_BYTE);
         stream.write(value.value());
         stream.flush();
@@ -77,7 +77,8 @@ public final class BEncoder {
 
     private static void write(final BOutputStream stream, final BDictionary value) throws IOException {
         stream.write(D_BYTE);
-        for (final Map.Entry<BValue, BValue> val : value.value().entrySet().stream()
+        for (final Map.Entry<BValue, BValue> val : value.value().entrySet()
+                .stream()
                 .sorted(Map.Entry.comparingByKey())
                 .toList()) {
             write(stream, val.getKey());

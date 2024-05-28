@@ -63,13 +63,13 @@ public final class ActorTests {
         final ActorRef ref = system.spawn(envelope -> {
             switch (envelope) {
                 case Envelope.Success success -> success.sender().post(response);
-                case Envelope.Failure ignored -> { }
+                case Envelope.Failure ignored -> {
+                }
             }
             return NextState.Receive;
         });
 
         final String answer = ref.ask("Hello, World!");
-
         assertEquals(response, answer, "Should have received %s as response.".formatted(response));
     }
 
@@ -81,13 +81,13 @@ public final class ActorTests {
         final ActorRef ref = system.spawn(envelope -> {
             switch (envelope) {
                 case Envelope.Success success -> success.sender().post(response);
-                case Envelope.Failure ignored -> { }
+                case Envelope.Failure ignored -> {
+                }
             }
             return NextState.Receive;
         });
 
         final String answer = ref.ask("Hello, World!", TIMEOUT_MS, TimeUnit.MILLISECONDS);
-
         assertEquals(response, answer, "Should have received %s as response.".formatted(response));
     }
 
@@ -102,22 +102,22 @@ public final class ActorTests {
         final ActorRef ref1 = system.spawn(envelope -> {
             switch (envelope) {
                 case Envelope.Success success -> {
-                    success.sender()
-                            .post(success.message(), success.self());
+                    success.sender().post(success.message(), success.self());
                     latch1.countDown();
                 }
-                case Envelope.Failure ignored -> { }
+                case Envelope.Failure ignored -> {
+                }
             }
             return NextState.Receive;
         });
         final ActorRef ref2 = system.spawn(envelope -> {
             switch (envelope) {
                 case Envelope.Success success -> {
-                    success.sender()
-                            .post(success.message(), success.self());
+                    success.sender().post(success.message(), success.self());
                     latch2.countDown();
                 }
-                case Envelope.Failure ignored -> { }
+                case Envelope.Failure ignored -> {
+                }
             }
             return NextState.Receive;
         });
@@ -169,7 +169,6 @@ public final class ActorTests {
         assertFalse(r, "Actor should have stopped processing messages.");
 
         final int c = (int) latch.getCount();
-        assertEquals(messageCount / 2, c,
-                "Actor should have processed only %d messages.".formatted(messageCount / 2));
+        assertEquals(messageCount / 2, c, "Actor should have processed only %d messages.".formatted(messageCount / 2));
     }
 }

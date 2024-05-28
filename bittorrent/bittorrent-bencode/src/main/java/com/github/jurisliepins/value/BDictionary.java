@@ -43,17 +43,19 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
         return new BDictionary(map);
     }
 
-    public static BDictionary of(final BValue k1, final BValue v1,
-                                 final BValue k2, final BValue v2) {
+    public static BDictionary of(
+            final BValue k1, final BValue v1,
+            final BValue k2, final BValue v2) {
         final HashMap<BValue, BValue> map = new HashMap<>();
         map.put(k1, v1);
         map.put(k2, v2);
         return new BDictionary(map);
     }
 
-    public static BDictionary of(final BValue k1, final BValue v1,
-                                 final BValue k2, final BValue v2,
-                                 final BValue k3, final BValue v3) {
+    public static BDictionary of(
+            final BValue k1, final BValue v1,
+            final BValue k2, final BValue v2,
+            final BValue k3, final BValue v3) {
         final HashMap<BValue, BValue> map = new HashMap<>();
         map.put(k1, v1);
         map.put(k2, v2);

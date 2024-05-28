@@ -83,8 +83,8 @@ public final class BObjectMapperTests {
     }
 
     public record BListValues(
-//            Skipping byte array because byte arrays are written as BByteString.
-//            @BProperty("byte-array") byte[] byteArray,
+            //            Skipping byte array because byte arrays are written as BByteString.
+            //            @BProperty("byte-array") byte[] byteArray,
             @BProperty("byte-list") List<Byte> byteList,
             @BProperty("short-array") short[] shortArray,
             @BProperty("short-list") List<Short> shortList,
@@ -106,12 +106,12 @@ public final class BObjectMapperTests {
     @DisplayName("Should read/write list")
     public void shouldReadWriteList() {
         final BDictionary value = BDictionary.of(new HashMap<>() {{
-//            Skipping byte array because byte arrays are written as BByteString.
-//            put(BByteString.of("byte-array"), BList.of(
-//                    BInteger.of((byte) 1),
-//                    BInteger.of((byte) 2),
-//                    BInteger.of((byte) 3)
-//            ));
+            //            Skipping byte array because byte arrays are written as BByteString.
+            //            put(BByteString.of("byte-array"), BList.of(
+            //                    BInteger.of((byte) 1),
+            //                    BInteger.of((byte) 2),
+            //                    BInteger.of((byte) 3)
+            //            ));
             put(BByteString.of("byte-list"), BList.of(
                     BInteger.of((byte) 1),
                     BInteger.of((byte) 2)
