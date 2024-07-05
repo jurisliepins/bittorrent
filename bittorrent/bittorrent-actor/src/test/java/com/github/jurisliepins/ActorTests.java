@@ -69,7 +69,7 @@ public final class ActorTests {
             return NextState.Receive;
         });
 
-        final String answer = ref.ask("Hello, World!");
+        final String answer = ref.postWithReply("Hello, World!");
         assertEquals(response, answer, "Should have received %s as response.".formatted(response));
     }
 
@@ -87,7 +87,7 @@ public final class ActorTests {
             return NextState.Receive;
         });
 
-        final String answer = ref.ask("Hello, World!", TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        final String answer = ref.postWithReply("Hello, World!", TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertEquals(response, answer, "Should have received %s as response.".formatted(response));
     }
 

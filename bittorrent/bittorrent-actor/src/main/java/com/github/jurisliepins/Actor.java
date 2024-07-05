@@ -19,12 +19,12 @@ public interface Actor {
         }
 
         @Override
-        public <T, U> T ask(final U message) {
+        public <T, U> T postWithReply(final U message) {
             throw new ActorException("Cannot ask a blank actor.");
         }
 
         @Override
-        public <T, U> T ask(final U message, final long timeout, final TimeUnit unit) {
+        public <T, U> T postWithReply(final U message, final long timeout, final TimeUnit unit) {
             throw new ActorException("Cannot ask a blank actor.");
         }
     }
@@ -52,7 +52,7 @@ public interface Actor {
         }
 
         @Override
-        public <T, U> T ask(final U message) {
+        public <T, U> T postWithReply(final U message) {
             Objects.requireNonNull(message, "message is null");
             final Awaiter<T> awaiter = new Awaiter<>();
             final ActorRef awaiterRef = system.spawn(awaiter);
@@ -61,7 +61,7 @@ public interface Actor {
         }
 
         @Override
-        public <T, U> T ask(final U message, final long timeout, final TimeUnit unit) {
+        public <T, U> T postWithReply(final U message, final long timeout, final TimeUnit unit) {
             Objects.requireNonNull(message, "message is null");
             final Awaiter<T> awaiter = new Awaiter<>();
             final ActorRef awaiterRef = system.spawn(awaiter);
