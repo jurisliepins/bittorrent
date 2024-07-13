@@ -20,12 +20,12 @@ public interface Actor {
 
         @Override
         public <T, U> T postWithReply(final U message) {
-            throw new ActorException("Cannot ask a blank actor.");
+            throw new ActorException("Cannot post to a blank actor.");
         }
 
         @Override
         public <T, U> T postWithReply(final U message, final long timeout, final TimeUnit unit) {
-            throw new ActorException("Cannot ask a blank actor.");
+            throw new ActorException("Cannot post to a blank actor.");
         }
     }
 

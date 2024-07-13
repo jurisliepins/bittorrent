@@ -1,39 +1,42 @@
 package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.ActorReceiver;
+import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.Envelope;
 import com.github.jurisliepins.NextState;
+
+import java.util.Objects;
 
 public final class Client implements ActorReceiver {
 
     private final ClientState state;
 
     public Client(final ClientState state) {
-        this.state = state;
+        this.state = Objects.requireNonNull(state, "state is null");
     }
 
     @Override
     public NextState receive(final Envelope envelope) {
         return switch (envelope) {
-            case Envelope.Success success -> handle(success);
-            case Envelope.Failure failure -> handle(failure);
+            case Envelope.Success success -> handleSuccess(success);
+            case Envelope.Failure failure -> handleFailure(failure);
         };
     }
 
-    private NextState handle(final Envelope.Success envelope) {
+    private NextState handleSuccess(final Envelope.Success envelope) {
         return switch (envelope.message()) {
-            case ClientCommand command -> handle(envelope, command);
-            case ClientRequest request -> handle(envelope, request);
+            case ClientCommand command -> handleCommand(envelope, command);
+            case ClientRequest request -> handleRequest(envelope, request);
             default -> unhandled(envelope.message());
         };
     }
 
-    private NextState handle(final Envelope.Success envelope, final ClientCommand command) {
+    private NextState handleCommand(final Envelope.Success envelope, final ClientCommand command) {
         switch (command) {
             case ClientCommand.Add add -> {
                 switch (state.torrents().get(add.torrent())) {
                     case null -> {
-                        envelope.system()
+                        final ActorRef torrentRef = envelope.system()
                                 .spawn(ignored -> NextState.Terminate);
                         envelope.sender()
                                 .post(new ClientCommandResult.Success(add.torrent(), "Torrent added"));
@@ -76,7 +79,7 @@ public final class Client implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handle(final Envelope.Success envelope, final ClientRequest command) {
+    private NextState handleRequest(final Envelope.Success envelope, final ClientRequest command) {
         switch (command) {
             case ClientRequest.Get get -> {
             }
@@ -84,7 +87,7 @@ public final class Client implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handle(final Envelope.Failure envelope) {
+    private NextState handleFailure(final Envelope.Failure envelope) {
         return NextState.Terminate;
     }
 

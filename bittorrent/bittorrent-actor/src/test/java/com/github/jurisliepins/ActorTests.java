@@ -51,44 +51,50 @@ public final class ActorTests {
         });
         ref.post("Hello, World!");
 
-        final boolean r = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        assertTrue(r, "Should not have timed out before receiving a message.");
+        final boolean result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertTrue(result, "Should not have timed out before receiving a message.");
     }
 
     @Test
-    @DisplayName("Should ask message")
-    public void shouldAskMessage() {
+    @DisplayName("Should post message with reply")
+    public void shouldPostMessageWithReply() {
         final String response = "Response!";
 
         final ActorRef ref = system.spawn(envelope -> {
             switch (envelope) {
-                case Envelope.Success success -> success.sender().post(response);
+                case Envelope.Success success -> {
+                    success.sender().post(response);
+                    return NextState.Receive;
+                }
                 case Envelope.Failure ignored -> {
+                    return NextState.Receive;
                 }
             }
-            return NextState.Receive;
         });
 
-        final String answer = ref.postWithReply("Hello, World!");
-        assertEquals(response, answer, "Should have received %s as response.".formatted(response));
+        final String result = ref.postWithReply("Hello, World!");
+        assertEquals(response, result, "Should have received %s as response.".formatted(response));
     }
 
     @Test
-    @DisplayName("Should ask message with timeout")
-    public void shouldAskMessageWithTimeout() {
+    @DisplayName("Should post message with reply with timeout")
+    public void shouldPostMessageWithReplyWithTimeout() {
         final String response = "Response!";
 
         final ActorRef ref = system.spawn(envelope -> {
             switch (envelope) {
-                case Envelope.Success success -> success.sender().post(response);
+                case Envelope.Success success -> {
+                    success.sender().post(response);
+                    return NextState.Receive;
+                }
                 case Envelope.Failure ignored -> {
+                    return NextState.Receive;
                 }
             }
-            return NextState.Receive;
         });
 
-        final String answer = ref.postWithReply("Hello, World!", TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        assertEquals(response, answer, "Should have received %s as response.".formatted(response));
+        final String result = ref.postWithReply("Hello, World!", TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertEquals(response, result, "Should have received %s as response.".formatted(response));
     }
 
     @Test
@@ -104,29 +110,31 @@ public final class ActorTests {
                 case Envelope.Success success -> {
                     success.sender().post(success.message(), success.self());
                     latch1.countDown();
+                    return NextState.Receive;
                 }
                 case Envelope.Failure ignored -> {
+                    return NextState.Receive;
                 }
             }
-            return NextState.Receive;
         });
         final ActorRef ref2 = system.spawn(envelope -> {
             switch (envelope) {
                 case Envelope.Success success -> {
                     success.sender().post(success.message(), success.self());
                     latch2.countDown();
+                    return NextState.Receive;
                 }
                 case Envelope.Failure ignored -> {
+                    return NextState.Receive;
                 }
             }
-            return NextState.Receive;
         });
         ref1.post("Hello, World!", ref2);
 
-        final boolean r1 = latch1.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        final boolean r2 = latch2.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        assertTrue(r1, "Actor 1 should have received %d messages.".formatted(messageCount));
-        assertTrue(r2, "Actor 2 should have received %d messages.".formatted(messageCount));
+        final boolean result1 = latch1.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        final boolean result2 = latch2.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertTrue(result1, "Actor 1 should have received %d messages.".formatted(messageCount));
+        assertTrue(result2, "Actor 2 should have received %d messages.".formatted(messageCount));
     }
 
     @Test
@@ -146,11 +154,11 @@ public final class ActorTests {
                     if ("terminate".equals(command)) {
                         yield NextState.Terminate;
                     }
-                    throw new RuntimeException();
+                    throw new RuntimeException("Should not have reached this code");
                 }
-                default -> throw new RuntimeException();
+                default -> throw new RuntimeException("Should not have reached this code");
             };
-            case Envelope.Failure ignored -> throw new RuntimeException();
+            case Envelope.Failure ignored -> throw new RuntimeException("Should not have reached this code");
         });
 
         ref.post("receive");
@@ -165,10 +173,11 @@ public final class ActorTests {
         ref.post("receive");
         ref.post("receive");
 
-        final boolean r = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        assertFalse(r, "Actor should have stopped processing messages.");
+        final boolean result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertFalse(result, "Actor should have stopped processing messages.");
 
-        final int c = (int) latch.getCount();
-        assertEquals(messageCount / 2, c, "Actor should have processed only %d messages.".formatted(messageCount / 2));
+        final int count = (int) latch.getCount();
+        assertEquals(messageCount / 2, count,
+                     "Actor should have processed only %d messages.".formatted(messageCount / 2));
     }
 }

@@ -29,7 +29,7 @@ public final class Awaiter<T> implements ActorReceiver {
         try {
             latch.await();
         } catch (InterruptedException e) {
-            throw new ActorException("Failed to await result of ask.", e);
+            throw new ActorException("Failed to await result.", e);
         }
         return result;
     }
@@ -37,10 +37,10 @@ public final class Awaiter<T> implements ActorReceiver {
     public T awaitResult(final long timeout, final TimeUnit unit) {
         try {
             if (!latch.await(timeout, unit)) {
-                throw new ActorException("Failed to await result of ask.");
+                throw new ActorException("Failed to await result.");
             }
         } catch (InterruptedException e) {
-            throw new ActorException("Failed to await result of ask.", e);
+            throw new ActorException("Failed to await result.", e);
         }
         return result;
     }
