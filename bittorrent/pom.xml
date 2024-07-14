@@ -6,18 +6,18 @@
     <artifactId>bittorrent</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <name>bittorrent</name>
 
     <modules>
         <module>bittorrent-actor</module>
         <module>bittorrent-bencode</module>
         <module>bittorrent-core</module>
-        <module>bittorrent-cli</module>
+        <module>bittorrent-api</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <junit.version>5.7.2</junit.version>
         <java.source.version>21</java.source.version>
         <java.target.version>21</java.target.version>

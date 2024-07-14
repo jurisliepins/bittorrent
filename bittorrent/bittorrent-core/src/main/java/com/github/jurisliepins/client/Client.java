@@ -82,6 +82,12 @@ public final class Client implements ActorReceiver {
     private NextState handleRequest(final Envelope.Success envelope, final ClientRequest command) {
         switch (command) {
             case ClientRequest.Get get -> {
+                switch (state.torrents().get(get.infoHash())) {
+                    case Object torrent -> envelope.sender()
+                            .post(new ClientResponse.Get(get.infoHash()));
+                    case null -> envelope.sender()
+                            .post(new ClientResponse.Failure(get.infoHash(), "Torrent not found"));
+                }
             }
         }
         return NextState.Receive;

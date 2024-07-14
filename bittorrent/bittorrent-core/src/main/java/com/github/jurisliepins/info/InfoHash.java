@@ -6,13 +6,16 @@ import java.util.Objects;
 
 public final class InfoHash {
     private final byte[] bytes;
+    private final String string;
 
     public InfoHash(final byte[] bytes) {
         this.bytes = Objects.requireNonNull(bytes, "bytes are null");
+        this.string = HexFormat.of().formatHex(bytes);
     }
 
     public InfoHash(final String string) {
-        this.bytes = HexFormat.of().parseHex(Objects.requireNonNull(string, "string is null"));
+        this.string = Objects.requireNonNull(string, "string is null");
+        this.bytes = HexFormat.of().parseHex(string);
     }
 
     public byte[] bytes() {
@@ -21,7 +24,7 @@ public final class InfoHash {
 
     @Override
     public String toString() {
-        return HexFormat.of().formatHex(bytes);
+        return string;
     }
 
     @Override
