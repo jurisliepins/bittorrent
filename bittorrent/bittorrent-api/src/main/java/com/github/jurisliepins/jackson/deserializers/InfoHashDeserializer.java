@@ -15,8 +15,7 @@ public class InfoHashDeserializer extends StdDeserializer<InfoHash> {
     @Override
     public InfoHash deserialize(
             final JsonParser jsonParser,
-            final DeserializationContext deserializationContext) throws
-            IOException {
+            final DeserializationContext deserializationContext) throws IOException {
         return new InfoHash(jsonParser.readValueAs(String.class));
     }
 }

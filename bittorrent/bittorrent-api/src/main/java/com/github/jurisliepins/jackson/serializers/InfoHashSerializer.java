@@ -16,8 +16,7 @@ public class InfoHashSerializer extends StdSerializer<InfoHash> {
     public void serialize(
             final InfoHash infoHash,
             final JsonGenerator jsonGenerator,
-            final SerializerProvider serializerProvider) throws
-            IOException {
+            final SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeString(infoHash.toString());
     }
 }
