@@ -10,14 +10,14 @@ public sealed interface ClientResponse permits
 
     record Get(InfoHash infoHash) implements ClientResponse {
         public Get {
-            Objects.requireNonNull(infoHash, "infoHash is null");
+            Objects.requireNonNull(infoHash, "hash is null");
         }
     }
 
     record Failure(InfoHash infoHash, String resultMessage) implements ClientResponse {
         public Failure {
-            Objects.requireNonNull(infoHash, "infoHash is null");
-            Objects.requireNonNull(resultMessage, "resultMessage is null");
+            Objects.requireNonNull(infoHash, "hash is null");
+            Objects.requireNonNull(resultMessage, "message is null");
         }
     }
 
