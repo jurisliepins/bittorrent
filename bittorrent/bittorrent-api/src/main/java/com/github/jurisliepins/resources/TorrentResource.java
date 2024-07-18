@@ -3,9 +3,6 @@ package com.github.jurisliepins.resources;
 import com.github.jurisliepins.BitTorrentClient;
 import com.github.jurisliepins.client.ClientCommandResult;
 import com.github.jurisliepins.client.ClientResponse;
-import com.github.jurisliepins.definitions.request.TorrentRemoveRequest;
-import com.github.jurisliepins.definitions.request.TorrentStartRequest;
-import com.github.jurisliepins.definitions.request.TorrentStopRequest;
 import com.github.jurisliepins.definitions.response.Result;
 import com.github.jurisliepins.info.InfoHash;
 import io.quarkus.logging.Log;
@@ -48,6 +45,7 @@ public class TorrentResource {
                     try {
                         return bitTorrentClient.add(part.getBody().readAllBytes());
                     } catch (Exception e) {
+                        Log.error("Failed to add torrent '%s'".formatted(part.getFileName()), e);
                         return new ClientCommandResult.Failure(
                                 null,
                                 "Failed to add torrent '%s' with '%s'".formatted(part.getFileName(), e.getMessage()));
@@ -58,47 +56,27 @@ public class TorrentResource {
     }
 
     @POST
-    @Path("/remove")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/remove/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<List<ClientCommandResult>> remove(final TorrentRemoveRequest request) {
-        final List<ClientCommandResult> results = request.infoHashes()
-                .stream()
-                .map(infoHash -> {
-                    Log.info("Removing torrent '%s'".formatted(infoHash));
-                    return bitTorrentClient.remove(infoHash);
-                })
-                .collect(Collectors.toList());
-        return Result.success(results);
+    public Result<ClientCommandResult> remove(final InfoHash infoHash) {
+        Log.info("Removing torrent '%s'".formatted(infoHash));
+        return Result.success(bitTorrentClient.remove(infoHash));
     }
 
     @POST
-    @Path("/start")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/start/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<List<ClientCommandResult>> start(final TorrentStartRequest request) {
-        final List<ClientCommandResult> results = request.infoHashes()
-                .stream()
-                .map(infoHash -> {
-                    Log.info("Starting torrent '%s'".formatted(infoHash));
-                    return bitTorrentClient.start(infoHash);
-                })
-                .collect(Collectors.toList());
-        return Result.success(results);
+    public Result<ClientCommandResult> start(final InfoHash infoHash) {
+        Log.info("Starting torrent '%s'".formatted(infoHash));
+        return Result.success(bitTorrentClient.start(infoHash));
     }
 
     @POST
-    @Path("/stop")
+    @Path("/stop/{infoHash}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<List<ClientCommandResult>> stop(final TorrentStopRequest request) {
-        final List<ClientCommandResult> results = request.infoHashes()
-                .stream()
-                .map(infoHash -> {
-                    Log.info("Stopping torrent '%s'".formatted(infoHash));
-                    return bitTorrentClient.stop(infoHash);
-                })
-                .collect(Collectors.toList());
-        return Result.success(results);
+    public Result<ClientCommandResult> stop(final InfoHash infoHash) {
+        Log.info("Stopping torrent '%s'".formatted(infoHash));
+        return Result.success(bitTorrentClient.stop(infoHash));
     }
 }
