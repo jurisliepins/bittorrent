@@ -73,7 +73,6 @@ public class TorrentResource {
 
     @POST
     @Path("/stop/{infoHash}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Result<ClientCommandResult> stop(final InfoHash infoHash) {
         Log.info("Stopping torrent '%s'".formatted(infoHash));
