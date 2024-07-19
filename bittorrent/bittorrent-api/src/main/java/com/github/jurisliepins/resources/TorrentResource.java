@@ -16,8 +16,7 @@ import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.IOException;
 
 @Path("/torrent")
 public class TorrentResource {
@@ -37,22 +36,16 @@ public class TorrentResource {
     @Path("/add")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<List<ClientCommandResult>> add(final @MultipartForm MultipartInput input) {
-        final List<ClientCommandResult> results = input.getParts()
-                .stream()
-                .map(part -> {
-                    Log.info("Adding torrent from meta-info file '%s'".formatted(part.getFileName()));
-                    try {
-                        return bitTorrentClient.add(part.getBody().readAllBytes());
-                    } catch (Exception e) {
-                        Log.error("Failed to add torrent '%s'".formatted(part.getFileName()), e);
-                        return new ClientCommandResult.Failure(
-                                null,
-                                "Failed to add torrent '%s' with '%s'".formatted(part.getFileName(), e.getMessage()));
-                    }
-                })
-                .collect(Collectors.toList());
-        return Result.success(results);
+    public Result<ClientCommandResult> add(final @MultipartForm MultipartInput input) throws IOException {
+        Log.info("Adding torrent from meta-info file '%s'"
+                         .formatted(input.getParts()
+                                            .getFirst()
+                                            .getFileName()));
+        final byte[] bytes = input.getParts()
+                .getFirst()
+                .getBody()
+                .readAllBytes();
+        return Result.success(bitTorrentClient.add(bytes));
     }
 
     @POST

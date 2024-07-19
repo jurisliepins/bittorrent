@@ -62,12 +62,13 @@ public final class Client implements ActorReceiver {
                                         .post(new ClientCommandResult.Failure(hash, "Torrent already exists"));
                             }
                         }
-                        default -> throw new ClientException("");
+                        default -> throw new ClientException("Failed to read meta-info");
                     }
                 } catch (Exception e) {
                     envelope.sender()
-                            .post(new ClientCommandResult.Failure(null, "Failed to add torrent with '%s'"
-                                    .formatted(e.getMessage())));
+                            .post(new ClientCommandResult.Failure(
+                                    InfoHash.BLANK,
+                                    "Failed to add torrent with '%s'".formatted(e.getMessage())));
                 }
             }
             case ClientCommand.Remove removeCommand -> {
