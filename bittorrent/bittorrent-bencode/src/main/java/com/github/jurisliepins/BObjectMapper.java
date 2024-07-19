@@ -444,7 +444,10 @@ public class BObjectMapper {
                         if (property != null) {
                             try {
                                 field.setAccessible(true);
-                                dictionary.value().put(BByteString.of(property.value()), write(field.get(value)));
+                                final Object fieldValue = field.get(value);
+                                if (fieldValue != null) {
+                                    dictionary.value().put(BByteString.of(property.value()), write(fieldValue));
+                                }
                             } catch (IllegalAccessException e) {
                                 throw new BException(e);
                             }

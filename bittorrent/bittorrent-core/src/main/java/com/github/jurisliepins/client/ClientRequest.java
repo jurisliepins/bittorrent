@@ -9,7 +9,7 @@ public sealed interface ClientRequest permits
 
     record Get(InfoHash infoHash) implements ClientRequest {
         public Get {
-            Objects.requireNonNull(infoHash, "infoHash is null");
+            Objects.requireNonNull(infoHash, "hash is null");
         }
     }
 

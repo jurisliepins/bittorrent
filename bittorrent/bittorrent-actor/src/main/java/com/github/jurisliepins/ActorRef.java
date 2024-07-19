@@ -7,7 +7,7 @@ public interface ActorRef {
 
     <T> ActorRef post(T message);
 
-    <T, U> T postWithReply(U message);
+    <T, U> U postWithReply(T message);
 
-    <T, U> T postWithReply(U message, long timeout, TimeUnit unit);
+    <T, U> U postWithReply(T message, long timeout, TimeUnit unit);
 }

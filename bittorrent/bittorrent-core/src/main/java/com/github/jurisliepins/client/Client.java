@@ -1,10 +1,15 @@
 package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.ActorReceiver;
-import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.Envelope;
 import com.github.jurisliepins.NextState;
+import com.github.jurisliepins.info.File;
+import com.github.jurisliepins.info.Info;
+import com.github.jurisliepins.info.InfoHash;
+import com.github.jurisliepins.info.MetaInfo;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Objects;
 
 public final class Client implements ActorReceiver {
@@ -33,55 +38,86 @@ public final class Client implements ActorReceiver {
 
     private NextState handleCommand(final Envelope.Success envelope, final ClientCommand command) {
         switch (command) {
-            case ClientCommand.Add add -> {
-                switch (state.torrents().get(add.torrent())) {
-                    case null -> {
-                        final ActorRef torrentRef = envelope.system()
-                                .spawn(ignored -> NextState.Terminate);
-                        envelope.sender()
-                                .post(new ClientCommandResult.Success(add.torrent(), "Torrent added"));
+            case ClientCommand.Add addCommand -> {
+                try {
+                    switch (MetaInfo.fromBytes(addCommand.metaInfo())) {
+                        case MetaInfo(
+                                Info(
+                                        int pieceLength,
+                                        byte[] pieces,
+                                        Boolean isPrivate,
+                                        String name,
+                                        Long length,
+                                        String md5sum,
+                                        List<File> files,
+                                        InfoHash hash
+                                ),
+                                String announce,
+                                List<List<String>> announceList,
+                                OffsetDateTime creationDate,
+                                String comment,
+                                String createdBy,
+                                String encoding
+                        ) -> {
+                            switch (state.torrents().get(hash)) {
+                                case null -> envelope.sender()
+                                        .post(new ClientCommandResult.Success(hash, "Torrent added"));
+                                case Object torrent -> envelope.sender()
+                                        .post(new ClientCommandResult.Failure(hash, "Torrent already exists"));
+                            }
+                        }
+                        default -> throw new ClientException("Failed to read meta-info");
                     }
-                    case Object torrent -> envelope.sender()
-                            .post(new ClientCommandResult.Failure(add.torrent(), "Torrent already exists"));
+                } catch (Exception e) {
+                    envelope.sender()
+                            .post(new ClientCommandResult.Failure(
+                                    InfoHash.BLANK,
+                                    "Failed to add torrent with '%s'".formatted(e.getMessage())));
                 }
             }
-            case ClientCommand.Remove remove -> {
-                switch (state.torrents().get(remove.infoHash())) {
+            case ClientCommand.Remove removeCommand -> {
+                switch (state.torrents().get(removeCommand.infoHash())) {
                     case Object torrent -> {
                         envelope.sender()
-                                .post(new ClientCommandResult.Success(remove.infoHash(), "Torrent removed"));
+                                .post(new ClientCommandResult.Success(removeCommand.infoHash(), "Torrent removed"));
                     }
                     case null -> envelope.sender()
-                            .post(new ClientCommandResult.Failure(remove.infoHash(), "Torrent not found"));
+                            .post(new ClientCommandResult.Failure(removeCommand.infoHash(), "Torrent not found"));
                 }
             }
-            case ClientCommand.Start start -> {
-                switch (state.torrents().get(start.infoHash())) {
+            case ClientCommand.Start startCommand -> {
+                switch (state.torrents().get(startCommand.infoHash())) {
                     case Object torrent -> {
                         envelope.sender()
-                                .post(new ClientCommandResult.Success(start.infoHash(), "Torrent started"));
+                                .post(new ClientCommandResult.Success(startCommand.infoHash(), "Torrent started"));
                     }
                     case null -> envelope.sender()
-                            .post(new ClientCommandResult.Failure(start.infoHash(), "Torrent not found"));
+                            .post(new ClientCommandResult.Failure(startCommand.infoHash(), "Torrent not found"));
                 }
             }
-            case ClientCommand.Stop stop -> {
-                switch (state.torrents().get(stop.infoHash())) {
+            case ClientCommand.Stop stopCommand -> {
+                switch (state.torrents().get(stopCommand.infoHash())) {
                     case Object torrent -> {
                         envelope.sender()
-                                .post(new ClientCommandResult.Success(stop.infoHash(), "Torrent stopped"));
+                                .post(new ClientCommandResult.Success(stopCommand.infoHash(), "Torrent stopped"));
                     }
                     case null -> envelope.sender()
-                            .post(new ClientCommandResult.Failure(stop.infoHash(), "Torrent not found"));
+                            .post(new ClientCommandResult.Failure(stopCommand.infoHash(), "Torrent not found"));
                 }
             }
         }
         return NextState.Receive;
     }
 
-    private NextState handleRequest(final Envelope.Success envelope, final ClientRequest command) {
-        switch (command) {
-            case ClientRequest.Get get -> {
+    private NextState handleRequest(final Envelope.Success envelope, final ClientRequest request) {
+        switch (request) {
+            case ClientRequest.Get getRequest -> {
+                switch (state.torrents().get(getRequest.infoHash())) {
+                    case Object torrent -> envelope.sender()
+                            .post(new ClientResponse.Get(getRequest.infoHash()));
+                    case null -> envelope.sender()
+                            .post(new ClientResponse.Failure(getRequest.infoHash(), "Torrent not found"));
+                }
             }
         }
         return NextState.Receive;
