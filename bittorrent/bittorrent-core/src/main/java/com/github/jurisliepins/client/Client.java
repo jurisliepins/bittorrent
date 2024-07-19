@@ -41,20 +41,24 @@ public final class Client implements ActorReceiver {
             case ClientCommand.Add addCommand -> {
                 try {
                     switch (MetaInfo.fromBytes(addCommand.metaInfo())) {
-                        case MetaInfo(Info(int pieceLength,
-                                           byte[] pieces,
-                                           Boolean isPrivate,
-                                           String name,
-                                           Long length,
-                                           String md5sum,
-                                           List<File> files,
-                                           InfoHash hash),
-                                      String announce,
-                                      List<List<String>> announceList,
-                                      OffsetDateTime creationDate,
-                                      String comment,
-                                      String createdBy,
-                                      String encoding) -> {
+                        case MetaInfo(
+                                Info(
+                                        int pieceLength,
+                                        byte[] pieces,
+                                        Boolean isPrivate,
+                                        String name,
+                                        Long length,
+                                        String md5sum,
+                                        List<File> files,
+                                        InfoHash hash
+                                ),
+                                String announce,
+                                List<List<String>> announceList,
+                                OffsetDateTime creationDate,
+                                String comment,
+                                String createdBy,
+                                String encoding
+                        ) -> {
                             switch (state.torrents().get(hash)) {
                                 case null -> envelope.sender()
                                         .post(new ClientCommandResult.Success(hash, "Torrent added"));
