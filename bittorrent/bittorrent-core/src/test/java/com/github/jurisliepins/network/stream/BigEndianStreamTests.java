@@ -3,7 +3,7 @@ package com.github.jurisliepins.network.stream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-public class BigEndianReaderWriterTests {
+public class BigEndianStreamTests {
 
     public void a() {
         final BigEndianWriter w = new BigEndianWriter(new ByteArrayOutputStream());
