@@ -19,7 +19,7 @@ public final class BitTorrentClient {
     private final ActorRef clientRef;
 
     public BitTorrentClient() {
-        this.clientRef = actorSystem.spawn(new Client(new ClientState()));
+        clientRef = actorSystem.spawn(new Client(new ClientState()));
     }
 
     public ClientResponse get(final InfoHash infoHash) {

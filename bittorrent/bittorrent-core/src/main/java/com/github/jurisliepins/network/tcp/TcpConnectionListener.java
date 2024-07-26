@@ -1,4 +1,4 @@
-package com.github.jurisliepins.network;
+package com.github.jurisliepins.network.tcp;
 
 import java.io.Closeable;
 import java.io.IOException;

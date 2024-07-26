@@ -1,4 +1,4 @@
-package com.github.jurisliepins.network;
+package com.github.jurisliepins.network.tcp;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 
 public final class TcpConnection implements Closeable {
 
