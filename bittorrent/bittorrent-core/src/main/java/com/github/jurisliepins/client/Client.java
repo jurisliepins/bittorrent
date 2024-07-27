@@ -34,44 +34,65 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleCommand(final Envelope.Success envelope, final ClientCommand command) {
-        return switch (command) {
-            case ClientCommand.Add addCommand -> handleAddCommand(envelope, addCommand);
-            case ClientCommand.Remove removeCommand -> handleRemoveCommand(envelope, removeCommand);
-            case ClientCommand.Start startCommand -> handleStartCommand(envelope, startCommand);
-            case ClientCommand.Stop stopCommand -> handleStopCommand(envelope, stopCommand);
-        };
+        try {
+            return switch (command) {
+                case ClientCommand.Add addCommand -> handleAddCommand(envelope, addCommand);
+                case ClientCommand.Remove removeCommand -> handleRemoveCommand(envelope, removeCommand);
+                case ClientCommand.Start startCommand -> handleStartCommand(envelope, startCommand);
+                case ClientCommand.Stop stopCommand -> handleStopCommand(envelope, stopCommand);
+            };
+        } catch (Exception e) {
+            Log.error(Client.class, "Failed to handle command", e);
+            envelope.sender()
+                    .post(new ClientCommandResult.Failure(InfoHash.BLANK,
+                                                          "Failed with '%s'".formatted(e.getMessage())));
+        }
+        return NextState.Receive;
     }
 
     private NextState handleAddCommand(final Envelope.Success envelope, final ClientCommand.Add command) {
         Log.debug(Client.class, "Handling add command {}", command);
-        try {
-            switch (MetaInfo.fromBytes(command.metaInfo())) {
-                case MetaInfo metaInfo -> {
-                    switch (state.torrents().get(metaInfo.info().hash())) {
-                        case Object torrent -> {
-                            Log.info(Client.class, "Torrent '{}' already exists", metaInfo.info().hash());
-                            envelope.sender()
-                                    .post(new ClientCommandResult.Failure(metaInfo.info().hash(), "Torrent already exists"));
-                        }
-                        case null -> {
-                            Log.info(Client.class, "Torrent '{}' added", metaInfo.info().hash());
-                            envelope.sender()
-                                    .post(new ClientCommandResult.Success(metaInfo.info().hash(), "Torrent added"));
-                        }
+
+        switch (MetaInfo.fromBytes(command.metaInfo())) {
+            case MetaInfo metaInfo -> {
+                switch (state.get(metaInfo.info().hash())) {
+                    case Torrent ignored -> {
+                        Log.info(Client.class, "Torrent '{}' already exists", metaInfo.info().hash());
+                        envelope.sender()
+                                .post(new ClientCommandResult.Failure(
+                                        metaInfo.info().hash(), "Torrent already exists"));
+                    }
+
+                    case null -> {
+                        state.add(new Torrent(metaInfo.info().hash()));
+                        Log.info(Client.class, "Torrent '{}' added", metaInfo.info().hash());
+                        envelope.sender()
+                                .post(new ClientCommandResult.Success(
+                                        metaInfo.info().hash(), "Torrent added"));
                     }
                 }
             }
-        } catch (Exception e) {
-            Log.error(Client.class, "Failed to handle add command", e);
-            envelope.sender()
-                    .post(new ClientCommandResult.Failure(
-                            InfoHash.BLANK,
-                            "Failed to add torrent with '%s'".formatted(e.getMessage())));
         }
         return NextState.Receive;
     }
 
     private NextState handleRemoveCommand(final Envelope.Success envelope, final ClientCommand.Remove command) {
+        Log.debug(Client.class, "Handling remove command {}", command);
+
+        switch (state.get(command.infoHash())) {
+            case Torrent ignored -> {
+                state.remove(command.infoHash());
+                Log.info(Client.class, "Removed torrent '{}'", command.infoHash());
+                envelope.sender()
+                        .post(new ClientCommandResult.Success(command.infoHash(), "Torrent removed"));
+            }
+
+            case null -> {
+                Log.info(Client.class, "Torrent '{}' doesn't exist", command.infoHash());
+                envelope.sender()
+                        .post(new ClientCommandResult.Failure(command.infoHash(), "Torrent doesn't exist"));
+            }
+        }
         return NextState.Receive;
     }
 
@@ -84,12 +105,34 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleRequest(final Envelope.Success envelope, final ClientRequest request) {
-        return switch (request) {
-            case ClientRequest.Get getRequest -> handleGetRequest(envelope, getRequest);
-        };
+        try {
+            return switch (request) {
+                case ClientRequest.Get getRequest -> handleGetRequest(envelope, getRequest);
+            };
+        } catch (Exception e) {
+            Log.error(Client.class, "Failed to handle request", e);
+            envelope.sender()
+                    .post(new ClientResponse.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
+        }
+        return NextState.Receive;
     }
 
     private NextState handleGetRequest(final Envelope.Success envelope, final ClientRequest.Get request) {
+        Log.debug(Client.class, "Handling get request {}", request);
+
+        switch (state.get(request.infoHash())) {
+            case Torrent torrent -> {
+                Log.info(Client.class, "Found torrent '{}'", request.infoHash());
+                envelope.sender()
+                        .post(new ClientResponse.Get(torrent));
+            }
+
+            case null -> {
+                Log.info(Client.class, "Torrent '{}' doesn't exist", request.infoHash());
+                envelope.sender()
+                        .post(new ClientResponse.Failure(request.infoHash(), "Torrent doesn't exist"));
+            }
+        }
         return NextState.Receive;
     }
 

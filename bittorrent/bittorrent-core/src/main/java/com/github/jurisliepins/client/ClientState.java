@@ -2,21 +2,12 @@ package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.info.InfoHash;
 
-import java.util.HashMap;
-import java.util.Map;
+public interface ClientState {
 
-public final class ClientState {
-    private final Map<InfoHash, Object> torrents;
+    Torrent get(InfoHash infoHash);
 
-    public ClientState() {
-        this.torrents = new HashMap<>();
-    }
+    void add(Torrent torrent);
 
-    public ClientState(final Map<InfoHash, Object> torrents) {
-        this.torrents = torrents;
-    }
+    void remove(InfoHash infoHash);
 
-    public Map<InfoHash, Object> torrents() {
-        return torrents;
-    }
 }

@@ -11,6 +11,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
@@ -27,7 +28,7 @@ public class TorrentResource {
     @GET
     @Path("/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<ClientResponse> get(final InfoHash infoHash) {
+    public Result<ClientResponse> get(final @PathParam("infoHash") InfoHash infoHash) {
         Log.info("Getting torrent '%s'".formatted(infoHash));
         return Result.success(bitTorrentClient.get(infoHash));
     }
@@ -51,7 +52,7 @@ public class TorrentResource {
     @POST
     @Path("/remove/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<ClientCommandResult> remove(final InfoHash infoHash) {
+    public Result<ClientCommandResult> remove(final @PathParam("infoHash") InfoHash infoHash) {
         Log.info("Removing torrent '%s'".formatted(infoHash));
         return Result.success(bitTorrentClient.remove(infoHash));
     }
@@ -59,7 +60,7 @@ public class TorrentResource {
     @POST
     @Path("/start/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<ClientCommandResult> start(final InfoHash infoHash) {
+    public Result<ClientCommandResult> start(final @PathParam("infoHash") InfoHash infoHash) {
         Log.info("Starting torrent '%s'".formatted(infoHash));
         return Result.success(bitTorrentClient.start(infoHash));
     }
@@ -67,7 +68,7 @@ public class TorrentResource {
     @POST
     @Path("/stop/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<ClientCommandResult> stop(final InfoHash infoHash) {
+    public Result<ClientCommandResult> stop(final @PathParam("infoHash") InfoHash infoHash) {
         Log.info("Stopping torrent '%s'".formatted(infoHash));
         return Result.success(bitTorrentClient.stop(infoHash));
     }

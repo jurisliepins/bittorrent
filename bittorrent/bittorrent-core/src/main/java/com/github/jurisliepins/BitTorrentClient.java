@@ -5,7 +5,7 @@ import com.github.jurisliepins.client.ClientCommand;
 import com.github.jurisliepins.client.ClientCommandResult;
 import com.github.jurisliepins.client.ClientRequest;
 import com.github.jurisliepins.client.ClientResponse;
-import com.github.jurisliepins.client.ClientState;
+import com.github.jurisliepins.client.InMemoryClientState;
 import com.github.jurisliepins.info.InfoHash;
 
 import java.util.concurrent.TimeUnit;
@@ -19,7 +19,7 @@ public final class BitTorrentClient {
     private final ActorRef clientRef;
 
     public BitTorrentClient() {
-        clientRef = actorSystem.spawn(new Client(new ClientState()));
+        clientRef = actorSystem.spawn(new Client(new InMemoryClientState()));
     }
 
     public ClientResponse get(final InfoHash infoHash) {

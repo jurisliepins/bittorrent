@@ -1,4 +1,6 @@
 package com.github.jurisliepins.client;
 
-public record Torrent() {
+import com.github.jurisliepins.info.InfoHash;
+
+public record Torrent(InfoHash infoHash) {
 }

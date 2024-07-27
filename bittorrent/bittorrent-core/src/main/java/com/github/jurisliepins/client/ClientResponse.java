@@ -8,9 +8,9 @@ public sealed interface ClientResponse permits
         ClientResponse.Get,
         ClientResponse.Failure {
 
-    record Get(InfoHash infoHash) implements ClientResponse {
+    record Get(Torrent torrent) implements ClientResponse {
         public Get {
-            Objects.requireNonNull(infoHash, "hash is null");
+            Objects.requireNonNull(torrent, "torrent is null");
         }
     }
 
