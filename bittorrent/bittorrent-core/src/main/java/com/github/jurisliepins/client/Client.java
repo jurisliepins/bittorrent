@@ -44,8 +44,9 @@ public final class Client implements ActorReceiver {
         } catch (Exception e) {
             Log.error(Client.class, "Failed to handle command", e);
             envelope.sender()
-                    .post(new ClientCommandResult.Failure(InfoHash.BLANK,
-                                                          "Failed with '%s'".formatted(e.getMessage())));
+                    .post(new ClientCommandResult.Failure(
+                            InfoHash.BLANK,
+                            "Failed with '%s'".formatted(e.getMessage())));
         }
         return NextState.Receive;
     }
