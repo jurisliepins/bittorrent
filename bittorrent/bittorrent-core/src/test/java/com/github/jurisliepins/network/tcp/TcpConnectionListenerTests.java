@@ -1,6 +1,5 @@
 package com.github.jurisliepins.network.tcp;
 
-import com.github.jurisliepins.network.NetworkException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -30,6 +29,7 @@ public class TcpConnectionListenerTests {
     public void shouldTcpConnectionListenerHaveAccessToEndpoints() throws IOException {
         try (TcpConnectionListener listener = new TcpConnectionListener(LISTEN_PORT)) {
             logOut("Started listening %s".formatted(listener));
+
             final InetSocketAddress localEndpoint = listener.localEndpoint();
             logOut("Local endpoint %s".formatted(localEndpoint));
         }
@@ -42,25 +42,21 @@ public class TcpConnectionListenerTests {
     public void shouldTcpConnectionListenerAcceptConnection() throws IOException {
         try (TcpConnectionListener listener = new TcpConnectionListener(LISTEN_PORT)) {
             logOut("Started listening %s".formatted(listener));
+
             try (TcpConnection connection = new TcpConnection(LISTEN_HOST, LISTEN_PORT)) {
                 logOut("Connected %s".formatted(connection));
+
                 try (TcpConnection acceptedConnection = listener.accept()) {
                     logOut("Accepted connection %s".formatted(acceptedConnection));
-                } catch (Exception e) {
-                    logError("Failed to accept connection %s".formatted(e.toString()));
-                    throw new NetworkException("Failed to accept connection", e);
                 }
                 logOut("Disconnected");
             }
+            logOut("Disconnected");
         }
         logOut("Stopped listening");
     }
 
     private static void logOut(final String message) {
         System.out.println(message);
-    }
-
-    private static void logError(final String message) {
-        System.err.println(message);
     }
 }

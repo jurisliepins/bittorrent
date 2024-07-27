@@ -25,6 +25,7 @@ public final class TcpConnectionTests {
     public void shouldTcpConnectionConnectAndDisconnect() throws IOException {
         try (TcpConnectionListener listener = new TcpConnectionListener(LISTEN_PORT)) {
             logOut("Started listening %s".formatted(listener));
+
             try (TcpConnection connection = new TcpConnection(LISTEN_HOST, LISTEN_PORT)) {
                 logOut("Connected %s".formatted(connection));
             }
@@ -39,10 +40,13 @@ public final class TcpConnectionTests {
     public void shouldTcpConnectionHaveAccessToEndpoints() throws IOException {
         try (TcpConnectionListener listener = new TcpConnectionListener(LISTEN_PORT)) {
             logOut("Started listening %s".formatted(listener));
+
             try (TcpConnection connection = new TcpConnection(LISTEN_HOST, LISTEN_PORT)) {
                 logOut("Connected %s".formatted(connection));
+
                 final InetSocketAddress localEndpoint = connection.localEndpoint();
                 logOut("Local endpoint %s".formatted(localEndpoint));
+
                 final InetSocketAddress remoteEndpoint = connection.remoteEndpoint();
                 logOut("Remote endpoint %s".formatted(remoteEndpoint));
             }
@@ -57,6 +61,7 @@ public final class TcpConnectionTests {
     public void shouldTcpConnectionReadAndWrite() throws IOException {
         try (TcpConnectionListener listener = new TcpConnectionListener(LISTEN_PORT)) {
             logOut("Started listening %s".formatted(listener));
+
             Thread.ofVirtual()
                     .start(() -> {
                         try (TcpConnection acceptedConnection = listener.accept()) {
@@ -72,14 +77,17 @@ public final class TcpConnectionTests {
                         }
                         logOut("Disconnected");
                     });
+
             try (TcpConnection connection = new TcpConnection(LISTEN_HOST, LISTEN_PORT)) {
                 logOut("Connected %s".formatted(connection));
                 connection.outputStream().write(B1);
                 connection.outputStream().write(B2);
                 connection.outputStream().flush();
+
                 final int b1 = connection.inputStream().read();
                 logOut("Read value %d".formatted(b1));
                 assertEquals(B1, b1);
+
                 final int b2 = connection.inputStream().read();
                 logOut("Read value %d".formatted(b2));
                 assertEquals(B2, b2);
