@@ -3,13 +3,10 @@ package com.github.jurisliepins.client;
 import com.github.jurisliepins.ActorReceiver;
 import com.github.jurisliepins.Envelope;
 import com.github.jurisliepins.NextState;
-import com.github.jurisliepins.info.File;
-import com.github.jurisliepins.info.Info;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.info.MetaInfo;
+import com.github.jurisliepins.log.Log;
 
-import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Objects;
 
 public final class Client implements ActorReceiver {
@@ -37,97 +34,72 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleCommand(final Envelope.Success envelope, final ClientCommand command) {
-        switch (command) {
-            case ClientCommand.Add addCommand -> {
-                try {
-                    switch (MetaInfo.fromBytes(addCommand.metaInfo())) {
-                        case MetaInfo(
-                                Info(
-                                        int pieceLength,
-                                        byte[] pieces,
-                                        Boolean isPrivate,
-                                        String name,
-                                        Long length,
-                                        String md5sum,
-                                        List<File> files,
-                                        InfoHash hash
-                                ),
-                                String announce,
-                                List<List<String>> announceList,
-                                OffsetDateTime creationDate,
-                                String comment,
-                                String createdBy,
-                                String encoding
-                        ) -> {
-                            switch (state.torrents().get(hash)) {
-                                case null -> envelope.sender()
-                                        .post(new ClientCommandResult.Success(hash, "Torrent added"));
-                                case Object torrent -> envelope.sender()
-                                        .post(new ClientCommandResult.Failure(hash, "Torrent already exists"));
-                            }
+        return switch (command) {
+            case ClientCommand.Add addCommand -> handleAddCommand(envelope, addCommand);
+            case ClientCommand.Remove removeCommand -> handleRemoveCommand(envelope, removeCommand);
+            case ClientCommand.Start startCommand -> handleStartCommand(envelope, startCommand);
+            case ClientCommand.Stop stopCommand -> handleStopCommand(envelope, stopCommand);
+        };
+    }
+
+    private NextState handleAddCommand(final Envelope.Success envelope, final ClientCommand.Add command) {
+        Log.debug(Client.class, "Handling add command {}", command);
+        try {
+            switch (MetaInfo.fromBytes(command.metaInfo())) {
+                case MetaInfo metaInfo -> {
+                    switch (state.torrents().get(metaInfo.info().hash())) {
+                        case Object torrent -> {
+                            Log.info(Client.class, "Torrent '{}' already exists", metaInfo.info().hash());
+                            envelope.sender()
+                                    .post(new ClientCommandResult.Failure(metaInfo.info().hash(), "Torrent already exists"));
                         }
-                        default -> throw new ClientException("Failed to read meta-info");
+                        case null -> {
+                            Log.info(Client.class, "Torrent '{}' added", metaInfo.info().hash());
+                            envelope.sender()
+                                    .post(new ClientCommandResult.Success(metaInfo.info().hash(), "Torrent added"));
+                        }
                     }
-                } catch (Exception e) {
-                    envelope.sender()
-                            .post(new ClientCommandResult.Failure(
-                                    InfoHash.BLANK,
-                                    "Failed to add torrent with '%s'".formatted(e.getMessage())));
                 }
             }
-            case ClientCommand.Remove removeCommand -> {
-                switch (state.torrents().get(removeCommand.infoHash())) {
-                    case Object torrent -> {
-                        envelope.sender()
-                                .post(new ClientCommandResult.Success(removeCommand.infoHash(), "Torrent removed"));
-                    }
-                    case null -> envelope.sender()
-                            .post(new ClientCommandResult.Failure(removeCommand.infoHash(), "Torrent not found"));
-                }
-            }
-            case ClientCommand.Start startCommand -> {
-                switch (state.torrents().get(startCommand.infoHash())) {
-                    case Object torrent -> {
-                        envelope.sender()
-                                .post(new ClientCommandResult.Success(startCommand.infoHash(), "Torrent started"));
-                    }
-                    case null -> envelope.sender()
-                            .post(new ClientCommandResult.Failure(startCommand.infoHash(), "Torrent not found"));
-                }
-            }
-            case ClientCommand.Stop stopCommand -> {
-                switch (state.torrents().get(stopCommand.infoHash())) {
-                    case Object torrent -> {
-                        envelope.sender()
-                                .post(new ClientCommandResult.Success(stopCommand.infoHash(), "Torrent stopped"));
-                    }
-                    case null -> envelope.sender()
-                            .post(new ClientCommandResult.Failure(stopCommand.infoHash(), "Torrent not found"));
-                }
-            }
+        } catch (Exception e) {
+            Log.error(Client.class, "Failed to handle add command", e);
+            envelope.sender()
+                    .post(new ClientCommandResult.Failure(
+                            InfoHash.BLANK,
+                            "Failed to add torrent with '%s'".formatted(e.getMessage())));
         }
+        return NextState.Receive;
+    }
+
+    private NextState handleRemoveCommand(final Envelope.Success envelope, final ClientCommand.Remove command) {
+        return NextState.Receive;
+    }
+
+    private NextState handleStartCommand(final Envelope.Success envelope, final ClientCommand.Start command) {
+        return NextState.Receive;
+    }
+
+    private NextState handleStopCommand(final Envelope.Success envelope, final ClientCommand.Stop command) {
         return NextState.Receive;
     }
 
     private NextState handleRequest(final Envelope.Success envelope, final ClientRequest request) {
-        switch (request) {
-            case ClientRequest.Get getRequest -> {
-                switch (state.torrents().get(getRequest.infoHash())) {
-                    case Object torrent -> envelope.sender()
-                            .post(new ClientResponse.Get(getRequest.infoHash()));
-                    case null -> envelope.sender()
-                            .post(new ClientResponse.Failure(getRequest.infoHash(), "Torrent not found"));
-                }
-            }
-        }
+        return switch (request) {
+            case ClientRequest.Get getRequest -> handleGetRequest(envelope, getRequest);
+        };
+    }
+
+    private NextState handleGetRequest(final Envelope.Success envelope, final ClientRequest.Get request) {
         return NextState.Receive;
     }
 
     private NextState handleFailure(final Envelope.Failure envelope) {
+        Log.error(Client.class, "Terminating with failure", envelope.cause());
         return NextState.Terminate;
     }
 
     private NextState unhandled(final Object message) {
+        Log.info(Client.class, "Unhandled message {}", message);
         return NextState.Receive;
     }
 }

@@ -48,11 +48,11 @@ public final class TcpConnection implements Closeable {
     public String toString() {
         try {
             if (isConnected()) {
-                return "TcpConnection(%s, %s)".formatted(localEndpoint(), remoteEndpoint());
+                return "TcpConnection[%s, %s]".formatted(localEndpoint(), remoteEndpoint());
             }
         } catch (Exception e) {
             // Ignored.
         }
-        return "TcpConnection(Disconnected)";
+        return "TcpConnection[Disconnected]";
     }
 }

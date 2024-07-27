@@ -38,11 +38,11 @@ public final class TcpConnectionListener implements Closeable {
     public String toString() {
         try {
             if (isBound()) {
-                return "TcpConnectionListener(%s)".formatted(localEndpoint());
+                return "TcpConnectionListener[%s]".formatted(localEndpoint());
             }
         } catch (Exception e) {
             // Ignored.
         }
-        return "TcpConnectionListener(Unbound)";
+        return "TcpConnectionListener[Unbound]";
     }
 }
