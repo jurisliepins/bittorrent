@@ -65,7 +65,9 @@ public final class Client implements ActorReceiver {
                     }
 
                     case null -> {
-                        state.add(new Torrent(metaInfo.info().hash()));
+                        state.add(new Torrent(
+                                Torrent.Status.STOPPED,
+                                metaInfo.info().hash()));
                         Log.info(Client.class, "Torrent '{}' added", metaInfo.info().hash());
                         envelope.sender()
                                 .post(new ClientCommandResult.Success(
