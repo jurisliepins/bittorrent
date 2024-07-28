@@ -15,9 +15,8 @@ public final class Bitfield {
 
     public Bitfield(final byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        this.bytes = new byte[array.length];
+        this.bytes = Arrays.copyOf(array, array.length);
         this.capacity = Byte.SIZE * array.length;
-        setBytes(array);
     }
 
     public int capacity() {
