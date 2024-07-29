@@ -219,7 +219,7 @@ public final class BitfieldTests {
     @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     @DisplayName("Should bitfield get byte array")
-    public void shouldBitfieldGetArray() {
+    public void shouldBitfieldGetByteArray() {
         final byte[] bytes = new byte[]{
                 Byte.parseByte("00000001", 2),
                 Byte.parseByte("00000010", 2),
@@ -239,7 +239,7 @@ public final class BitfieldTests {
                 Byte.parseByte("01010101", 2),
         };
         final Bitfield bitfield1 = new Bitfield(bytes);
-        final Bitfield bitfield2 = new Bitfield(bytes);
+        final Bitfield bitfield2 = new Bitfield(Byte.SIZE * bytes.length);
         bitfield2.setBit(1, true);
         bitfield2.setBit(3, true);
         bitfield2.setBit(5, true);
@@ -263,7 +263,7 @@ public final class BitfieldTests {
                 Byte.parseByte("01010101", 2),
         };
         final Bitfield bitfield1 = new Bitfield(bytes);
-        final Bitfield bitfield2 = new Bitfield(bytes);
+        final Bitfield bitfield2 = new Bitfield(Byte.SIZE * bytes.length);
         bitfield2.setBit(1, true);
         bitfield2.setBit(3, true);
         bitfield2.setBit(5, true);
