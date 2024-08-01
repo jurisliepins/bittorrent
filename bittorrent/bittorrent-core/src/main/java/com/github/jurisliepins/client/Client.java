@@ -3,6 +3,8 @@ package com.github.jurisliepins.client;
 import com.github.jurisliepins.ActorReceiver;
 import com.github.jurisliepins.Envelope;
 import com.github.jurisliepins.NextState;
+import com.github.jurisliepins.client.state.ClientState;
+import com.github.jurisliepins.client.state.ClientStateTorrent;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.info.MetaInfo;
 import com.github.jurisliepins.log.Log;

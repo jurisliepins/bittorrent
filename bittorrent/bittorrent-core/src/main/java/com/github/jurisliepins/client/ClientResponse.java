@@ -1,5 +1,6 @@
 package com.github.jurisliepins.client;
 
+import com.github.jurisliepins.client.state.ClientStateTorrent;
 import com.github.jurisliepins.info.InfoHash;
 
 import java.util.Objects;

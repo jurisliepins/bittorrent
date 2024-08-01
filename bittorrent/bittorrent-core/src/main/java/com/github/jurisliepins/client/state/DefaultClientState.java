@@ -1,11 +1,11 @@
-package com.github.jurisliepins.client;
+package com.github.jurisliepins.client.state;
 
 import com.github.jurisliepins.info.InfoHash;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public final class InMemoryClientState implements ClientState {
+public final class DefaultClientState implements ClientState {
 
     private final Map<InfoHash, ClientStateTorrent> torrents = new HashMap<>();
 
