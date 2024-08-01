@@ -4,9 +4,9 @@ import com.github.jurisliepins.info.InfoHash;
 
 public interface ClientState {
 
-    Torrent get(InfoHash infoHash);
+    ClientStateTorrent get(InfoHash infoHash);
 
-    void add(Torrent torrent);
+    void add(ClientStateTorrent torrent);
 
     void remove(InfoHash infoHash);
 

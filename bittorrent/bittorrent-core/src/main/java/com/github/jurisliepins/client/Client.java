@@ -57,7 +57,7 @@ public final class Client implements ActorReceiver {
         switch (MetaInfo.fromBytes(command.metaInfo())) {
             case MetaInfo metaInfo -> {
                 switch (state.get(metaInfo.info().hash())) {
-                    case Torrent ignored -> {
+                    case ClientStateTorrent ignored -> {
                         Log.info(Client.class, "Torrent '{}' already exists", metaInfo.info().hash());
                         envelope.sender()
                                 .post(new ClientCommandResult.Failure(
@@ -65,9 +65,7 @@ public final class Client implements ActorReceiver {
                     }
 
                     case null -> {
-                        state.add(new Torrent(
-                                Torrent.Status.STOPPED,
-                                metaInfo.info().hash()));
+                        state.add(new ClientStateTorrent());
                         Log.info(Client.class, "Torrent '{}' added", metaInfo.info().hash());
                         envelope.sender()
                                 .post(new ClientCommandResult.Success(
@@ -83,7 +81,7 @@ public final class Client implements ActorReceiver {
         Log.debug(Client.class, "Handling remove command {}", command);
 
         switch (state.get(command.infoHash())) {
-            case Torrent ignored -> {
+            case ClientStateTorrent ignored -> {
                 state.remove(command.infoHash());
                 Log.info(Client.class, "Removed torrent '{}'", command.infoHash());
                 envelope.sender()
@@ -124,7 +122,7 @@ public final class Client implements ActorReceiver {
         Log.debug(Client.class, "Handling get request {}", request);
 
         switch (state.get(request.infoHash())) {
-            case Torrent torrent -> {
+            case ClientStateTorrent torrent -> {
                 Log.info(Client.class, "Found torrent '{}'", request.infoHash());
                 envelope.sender()
                         .post(new ClientResponse.Get(torrent));

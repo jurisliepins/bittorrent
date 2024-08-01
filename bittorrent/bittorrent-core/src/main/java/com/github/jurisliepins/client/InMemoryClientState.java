@@ -7,16 +7,16 @@ import java.util.Map;
 
 public final class InMemoryClientState implements ClientState {
 
-    private final Map<InfoHash, Torrent> torrents = new HashMap<>();
+    private final Map<InfoHash, ClientStateTorrent> torrents = new HashMap<>();
 
     @Override
-    public Torrent get(final InfoHash infoHash) {
+    public ClientStateTorrent get(final InfoHash infoHash) {
         return torrents.get(infoHash);
     }
 
     @Override
-    public void add(final Torrent torrent) {
-        torrents.put(torrent.infoHash(), torrent);
+    public void add(final ClientStateTorrent torrent) {
+        torrents.put(torrent.getInfoHash(), torrent);
     }
 
     @Override

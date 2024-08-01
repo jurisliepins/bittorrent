@@ -17,22 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public final class BigEndianStreamTests {
 
     @Test
-    @DisplayName("Should write/read byte[]")
-    public void shouldWriteReadByteArray() throws IOException {
-        final byte[] buffer = new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
-
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final BigEndianWriter writer = new BigEndianWriter(out);
-        writer.write(buffer);
-        writer.flush();
-
-        final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-        final BigEndianReader reader = new BigEndianReader(in);
-
-        assertArrayEquals(buffer, reader.readBytes(buffer.length));
-    }
-
-    @Test
     @DisplayName("Should write/read byte buffer")
     public void shouldWriteReadByteBuffer() throws IOException {
         final byte[] bytes = new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
@@ -42,12 +26,26 @@ public final class BigEndianStreamTests {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final BigEndianWriter writer = new BigEndianWriter(out);
         writer.write(buffer);
-        writer.flush();
 
         final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         final BigEndianReader reader = new BigEndianReader(in);
 
-        assertEquals(buffer, reader.readByteBuffer(buffer.capacity()));
+        assertEquals(buffer.rewind(), reader.readByteBuffer(buffer.capacity()).rewind());
+    }
+
+    @Test
+    @DisplayName("Should write/read byte[]")
+    public void shouldWriteReadByteArray() throws IOException {
+        final byte[] buffer = new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
+
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final BigEndianWriter writer = new BigEndianWriter(out);
+        writer.write(buffer);
+
+        final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        final BigEndianReader reader = new BigEndianReader(in);
+
+        assertArrayEquals(buffer, reader.readBytes(buffer.length));
     }
 
     @ParameterizedTest
@@ -57,7 +55,6 @@ public final class BigEndianStreamTests {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final BigEndianWriter writer = new BigEndianWriter(out);
         writer.write(value);
-        writer.flush();
 
         final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         final BigEndianReader reader = new BigEndianReader(in);
@@ -72,7 +69,6 @@ public final class BigEndianStreamTests {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final BigEndianWriter writer = new BigEndianWriter(out);
         writer.write(value);
-        writer.flush();
 
         final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         final BigEndianReader reader = new BigEndianReader(in);
@@ -87,7 +83,6 @@ public final class BigEndianStreamTests {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final BigEndianWriter writer = new BigEndianWriter(out);
         writer.write(value);
-        writer.flush();
 
         final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         final BigEndianReader reader = new BigEndianReader(in);
@@ -102,7 +97,6 @@ public final class BigEndianStreamTests {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final BigEndianWriter writer = new BigEndianWriter(out);
         writer.write(value);
-        writer.flush();
 
         final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         final BigEndianReader reader = new BigEndianReader(in);

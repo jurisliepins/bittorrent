@@ -8,7 +8,7 @@ public sealed interface ClientResponse permits
         ClientResponse.Get,
         ClientResponse.Failure {
 
-    record Get(Torrent torrent) implements ClientResponse {
+    record Get(ClientStateTorrent torrent) implements ClientResponse {
         public Get {
             Objects.requireNonNull(torrent, "torrent is null");
         }

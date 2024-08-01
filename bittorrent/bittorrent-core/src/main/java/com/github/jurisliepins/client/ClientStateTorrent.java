@@ -2,11 +2,10 @@ package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.info.MetaInfo;
 
 import java.util.Objects;
 
-public final class Torrent {
+public final class ClientStateTorrent {
     private ActorRef ref;
     private Status status;
     private InfoHash infoHash;
@@ -115,19 +114,6 @@ public final class Torrent {
     public void setUploadRate(final double uploadRate) {
         this.uploadRate = uploadRate;
     }
-
-//    public static Torrent fromMetaInfo(final ActorRef ref, final MetaInfo metaInfo) {
-//        final Torrent torrent = new Torrent();
-//        torrent.setRef(ref);
-//        torrent.setStatus(Status.STOPPED);
-//        torrent.setInfoHash(metaInfo.info().hash());
-//        torrent.setPeerId(new Object());
-//        torrent.setBitfield(new Object());
-//        torrent.setName(metaInfo.info().name());
-//        torrent.setLength(metaInfo.info().length());
-//        torrent.
-//        return torrent;
-//    }
 
     public enum Status {
         STARTED,
