@@ -26,92 +26,71 @@ public class MetaInfoTests {
     private static final InfoHash MULTI_FILE_INFO_HASH = new InfoHash("6e540ebbc92131138746231ff3e44f165fd3b373");
 
     @Test
-    @DisplayName("Should decode single file meta-info")
+    @DisplayName("Should decode one file meta-info")
     @SuppressWarnings("checkstyle:MagicNumber")
-    public void shouldDecodeSingleFileMetaInfo() throws IOException {
+    public void shouldDecodeOneFileMetaInfo() throws IOException {
         switch (MetaInfo.fromBytes(readFileAsBytes(SINGLE_FILE_TORRENT))) {
-            case MetaInfo(
-                    Info(int pieceLength,
-                         byte[] pieces,
-                         Boolean isPrivate,
-                         String name,
-                         Long length,
-                         String md5sum,
-                         List<File> files,
-                         InfoHash hash),
-                    String announce,
-                    List<List<String>> announceList,
-                    OffsetDateTime creationDate,
-                    String comment,
-                    String createdBy,
-                    String encoding) -> {
-                assertEquals(32768, pieceLength);
-                assertNotNull(pieces);
-                assertFalse(isPrivate);
-                assertEquals("war_and_peace.txt", name);
-                assertEquals(3266164, length);
-                assertNull(md5sum);
-                assertNull(files);
-                assertEquals(SINGLE_FILE_INFO_HASH, hash);
-                assertEquals("udp://tracker.openbittorrent.com:6969", announce);
-                assertNull(announceList);
-                assertEquals(OffsetDateTime.parse("2022-02-20T14:46:49Z"), creationDate);
-                assertEquals("Single file torrent", comment);
-                assertEquals("Juris Liepins", createdBy);
-                assertEquals("UTF-8", encoding);
+            case MetaInfo metaInfo -> {
+                assertNotNull(metaInfo.info());
+                assertEquals("udp://tracker.openbittorrent.com:6969", metaInfo.announce());
+                assertNull(metaInfo.announceList());
+                assertEquals(OffsetDateTime.parse("2022-02-20T14:46:49Z"), metaInfo.creationDate());
+                assertEquals("Single file torrent", metaInfo.comment());
+                assertEquals("Juris Liepins", metaInfo.createdBy());
+                assertEquals("UTF-8", metaInfo.encoding());
+                switch (metaInfo.info()) {
+                    case Info.OneFileInfo info -> {
+                        assertEquals(32768, info.pieceLength());
+                        assertNotNull(info.pieces());
+                        assertFalse(info.isPrivate());
+                        assertEquals("war_and_peace.txt", info.name());
+                        assertEquals(3266164, info.length());
+                        assertNull(info.md5sum());
+                        assertEquals(SINGLE_FILE_INFO_HASH, info.hash());
+                    }
+                    default -> throw new RuntimeException("Should not have reached this code");
+                }
             }
-            default -> throw new RuntimeException("Should not have reached this code");
         }
     }
 
     @Test
-    @DisplayName("Should decode multi file meta-info")
+    @DisplayName("Should decode many file meta-info")
     @SuppressWarnings("checkstyle:MagicNumber")
-    public void shouldDecodeMultiFileMetaInfo() throws IOException {
+    public void shouldDecodeManyFileMetaInfo() throws IOException {
         switch (MetaInfo.fromBytes(readFileAsBytes(MULTI_FILE_TORRENT))) {
-            case MetaInfo(
-                    Info(int pieceLength,
-                         byte[] pieces,
-                         Boolean isPrivate,
-                         String name,
-                         Long length,
-                         String md5sum,
-                         List<File> files,
-                         InfoHash hash),
-                    String announce,
-                    List<List<String>> announceList,
-                    OffsetDateTime creationDate,
-                    String comment,
-                    String createdBy,
-                    String encoding) -> {
-                assertEquals(32768, pieceLength);
-                assertNotNull(pieces);
-                assertFalse(isPrivate);
-                assertEquals("war_and_peace", name);
-                assertNull(length);
-                assertNull(md5sum);
-                assertEquals(4, files.size());
-                assertEquals(11682, files.get(0).length());
-                assertNull(files.get(0).md5sum());
-                assertEquals(List.of("file_1.txt"), files.get(0).path());
-                assertEquals(7923, files.get(1).length());
-                assertNull(files.get(1).md5sum());
-                assertEquals(List.of("file_2.txt"), files.get(1).path());
-                assertEquals(8751, files.get(2).length());
-                assertNull(files.get(2).md5sum());
-                assertEquals(List.of("file_3.txt"), files.get(2).path());
-                assertEquals(8180, files.get(3).length());
-                assertNull(files.get(3).md5sum());
-                assertEquals(List.of("file_4.txt"), files.get(3).path());
-                assertEquals(MULTI_FILE_INFO_HASH, hash);
-                assertEquals("udp://tracker.openbittorrent.com:6969", announce);
-                assertNull(announceList);
-                assertEquals(OffsetDateTime.parse("2022-02-20T16:04:09Z"), creationDate);
-                assertEquals("Multi file torrent", comment);
-                assertEquals("Juris Liepins", createdBy);
-                assertEquals("UTF-8", encoding);
+            case MetaInfo metaInfo -> {
+                assertNotNull(metaInfo.info());
+                assertEquals("udp://tracker.openbittorrent.com:6969", metaInfo.announce());
+                assertNull(metaInfo.announceList());
+                assertEquals(OffsetDateTime.parse("2022-02-20T16:04:09Z"), metaInfo.creationDate());
+                assertEquals("Multi file torrent", metaInfo.comment());
+                assertEquals("Juris Liepins", metaInfo.createdBy());
+                assertEquals("UTF-8", metaInfo.encoding());
+                switch (metaInfo.info()) {
+                    case Info.ManyFileInfo info -> {
+                        assertEquals(32768, info.pieceLength());
+                        assertNotNull(info.pieces());
+                        assertFalse(info.isPrivate());
+                        assertEquals("war_and_peace", info.name());
+                        assertEquals(4, info.files().size());
+                        assertEquals(11682, info.files().get(0).length());
+                        assertNull(info.files().get(0).md5sum());
+                        assertEquals(List.of("file_1.txt"), info.files().get(0).path());
+                        assertEquals(7923, info.files().get(1).length());
+                        assertNull(info.files().get(1).md5sum());
+                        assertEquals(List.of("file_2.txt"), info.files().get(1).path());
+                        assertEquals(8751, info.files().get(2).length());
+                        assertNull(info.files().get(2).md5sum());
+                        assertEquals(List.of("file_3.txt"), info.files().get(2).path());
+                        assertEquals(8180, info.files().get(3).length());
+                        assertNull(info.files().get(3).md5sum());
+                        assertEquals(List.of("file_4.txt"), info.files().get(3).path());
+                        assertEquals(MULTI_FILE_INFO_HASH, info.hash());
+                    }
+                    default -> throw new RuntimeException("Should not have reached this code");
+                }
             }
-            default -> throw new RuntimeException("Should not have reached this code");
         }
     }
 
@@ -119,13 +98,12 @@ public class MetaInfoTests {
     @DisplayName("Should encode/decode UTF-8 strings")
     @SuppressWarnings("checkstyle:MagicNumber")
     public void shouldEncodeDecodeUtf8Strings() {
-        final MetaInfo metaInfo = new MetaInfo(
-                new Info(0,
-                         new byte[] {},
+        final MetaInfoEntity utf8MetaInfo = new MetaInfoEntity(
+                new InfoEntity(0,
+                         new byte[]{},
                          false,
                          "Название",
                          0L,
-                         null,
                          null,
                          null),
                 "",
@@ -134,38 +112,27 @@ public class MetaInfoTests {
                 "Комментарий",
                 "Пользователь",
                 null);
-        switch (MetaInfo.fromBytes(metaInfo.toBytes())) {
-            case MetaInfo(
-                    Info(int pieceLength,
-                         byte[] pieces,
-                         Boolean isPrivate,
-                         String name,
-                         Long length,
-                         String md5sum,
-                         List<File> files,
-                         InfoHash hash),
-                    String announce,
-                    List<List<String>> announceList,
-                    OffsetDateTime creationDate,
-                    String comment,
-                    String createdBy,
-                    String encoding) -> {
-                assertEquals(0, pieceLength);
-                assertNotNull(pieces);
-                assertFalse(isPrivate);
-                assertEquals("Название", name);
-                assertEquals(0L, length);
-                assertNull(md5sum);
-                assertNull(files);
-                assertEquals(new InfoHash("779e8f96663028f7654364721377d283bc80ea61"), hash);
-                assertEquals("", announce);
-                assertNull(announceList);
-                assertEquals(OffsetDateTime.parse("2000-01-01T00:00:00Z"), creationDate);
-                assertEquals("Комментарий", comment);
-                assertEquals("Пользователь", createdBy);
-                assertNull(encoding);
+        switch (MetaInfo.fromBytes(utf8MetaInfo.toBytes())) {
+            case MetaInfo metaInfo -> {
+                assertEquals("", metaInfo.announce());
+                assertNull(metaInfo.announceList());
+                assertEquals(OffsetDateTime.parse("2000-01-01T00:00:00Z"), metaInfo.creationDate());
+                assertEquals("Комментарий", metaInfo.comment());
+                assertEquals("Пользователь", metaInfo.createdBy());
+                assertNull(metaInfo.encoding());
+                switch (metaInfo.info()) {
+                    case Info.OneFileInfo info -> {
+                                        assertEquals(0, info.pieceLength());
+                                        assertNotNull(info.pieces());
+                                        assertFalse(info.isPrivate());
+                                        assertEquals("Название", info.name());
+                                        assertEquals(0L, info.length());
+                                        assertNull(info.md5sum());
+                                        assertEquals(new InfoHash("779e8f96663028f7654364721377d283bc80ea61"), info.hash());
+                    }
+                    default -> throw new RuntimeException("Should not have reached this code");
+                }
             }
-            default -> throw new RuntimeException("Should not have reached this code");
         }
     }
 

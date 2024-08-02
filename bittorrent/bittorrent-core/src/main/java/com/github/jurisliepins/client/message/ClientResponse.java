@@ -1,4 +1,4 @@
-package com.github.jurisliepins.client;
+package com.github.jurisliepins.client.message;
 
 import com.github.jurisliepins.client.state.ClientStateTorrent;
 import com.github.jurisliepins.info.InfoHash;

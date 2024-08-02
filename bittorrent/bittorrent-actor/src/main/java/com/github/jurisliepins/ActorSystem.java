@@ -7,7 +7,10 @@ import java.util.concurrent.TimeUnit;
 public class ActorSystem {
     private static final int SHUTDOWN_TIMEOUT_MS = 1000;
 
-    private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+    private final ExecutorService executorService = Executors.newThreadPerTaskExecutor(
+            Thread.ofVirtual()
+                    .name("actor-", 0)
+                    .factory());
 
     public ActorRef spawn(final ActorReceiver receiver) {
         final Actor.RunnableActor actor = new Actor.RunnableActor(this, receiver);

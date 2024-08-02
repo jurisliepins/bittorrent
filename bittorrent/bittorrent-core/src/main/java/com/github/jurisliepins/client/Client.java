@@ -3,6 +3,11 @@ package com.github.jurisliepins.client;
 import com.github.jurisliepins.ActorReceiver;
 import com.github.jurisliepins.Envelope;
 import com.github.jurisliepins.NextState;
+import com.github.jurisliepins.bitfield.Bitfield;
+import com.github.jurisliepins.client.message.ClientCommand;
+import com.github.jurisliepins.client.message.ClientCommandResult;
+import com.github.jurisliepins.client.message.ClientRequest;
+import com.github.jurisliepins.client.message.ClientResponse;
 import com.github.jurisliepins.client.state.ClientState;
 import com.github.jurisliepins.client.state.ClientStateTorrent;
 import com.github.jurisliepins.info.InfoHash;
@@ -45,6 +50,7 @@ public final class Client implements ActorReceiver {
             };
         } catch (Exception e) {
             Log.error(Client.class, "Failed to handle command", e);
+
             envelope.sender()
                     .post(new ClientCommandResult.Failure(
                             InfoHash.BLANK,
@@ -61,14 +67,30 @@ public final class Client implements ActorReceiver {
                 switch (state.get(metaInfo.info().hash())) {
                     case ClientStateTorrent ignored -> {
                         Log.info(Client.class, "Torrent '{}' already exists", metaInfo.info().hash());
+
                         envelope.sender()
                                 .post(new ClientCommandResult.Failure(
                                         metaInfo.info().hash(), "Torrent already exists"));
                     }
 
                     case null -> {
-                        state.add(new ClientStateTorrent());
+                        final ClientStateTorrent torrent = new ClientStateTorrent();
+                        torrent.setRef(envelope.system().spawn(ignored -> NextState.Receive));
+                        torrent.setStatus(ClientStateTorrent.Status.STOPPED);
+                        torrent.setInfoHash(metaInfo.info().hash());
+                        torrent.setPeerId(new Object());
+                        torrent.setBitfield(new Bitfield(metaInfo.info().pieces().length));
+                        torrent.setName(metaInfo.info().name());
+                        torrent.setLength(metaInfo.info().length());
+                        torrent.setDownloaded(0L);
+                        torrent.setUploaded(0L);
+                        torrent.setLeft(metaInfo.info().length());
+                        torrent.setDownloadRate(0.0);
+                        torrent.setUploadRate(0.0);
+                        state.add(torrent);
+
                         Log.info(Client.class, "Torrent '{}' added", metaInfo.info().hash());
+
                         envelope.sender()
                                 .post(new ClientCommandResult.Success(
                                         metaInfo.info().hash(), "Torrent added"));
@@ -85,13 +107,16 @@ public final class Client implements ActorReceiver {
         switch (state.get(command.infoHash())) {
             case ClientStateTorrent ignored -> {
                 state.remove(command.infoHash());
+
                 Log.info(Client.class, "Removed torrent '{}'", command.infoHash());
+
                 envelope.sender()
                         .post(new ClientCommandResult.Success(command.infoHash(), "Torrent removed"));
             }
 
             case null -> {
                 Log.info(Client.class, "Torrent '{}' doesn't exist", command.infoHash());
+
                 envelope.sender()
                         .post(new ClientCommandResult.Failure(command.infoHash(), "Torrent doesn't exist"));
             }
@@ -114,6 +139,7 @@ public final class Client implements ActorReceiver {
             };
         } catch (Exception e) {
             Log.error(Client.class, "Failed to handle request", e);
+
             envelope.sender()
                     .post(new ClientResponse.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
         }
@@ -126,12 +152,14 @@ public final class Client implements ActorReceiver {
         switch (state.get(request.infoHash())) {
             case ClientStateTorrent torrent -> {
                 Log.info(Client.class, "Found torrent '{}'", request.infoHash());
+
                 envelope.sender()
                         .post(new ClientResponse.Get(torrent));
             }
 
             case null -> {
                 Log.info(Client.class, "Torrent '{}' doesn't exist", request.infoHash());
+
                 envelope.sender()
                         .post(new ClientResponse.Failure(request.infoHash(), "Torrent doesn't exist"));
             }
@@ -141,11 +169,13 @@ public final class Client implements ActorReceiver {
 
     private NextState handleFailure(final Envelope.Failure envelope) {
         Log.error(Client.class, "Terminating with failure", envelope.cause());
+
         return NextState.Terminate;
     }
 
     private NextState unhandled(final Object message) {
         Log.info(Client.class, "Unhandled message {}", message);
+
         return NextState.Receive;
     }
 }

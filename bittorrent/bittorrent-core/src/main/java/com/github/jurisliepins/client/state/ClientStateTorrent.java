@@ -1,6 +1,7 @@
 package com.github.jurisliepins.client.state;
 
 import com.github.jurisliepins.ActorRef;
+import com.github.jurisliepins.bitfield.Bitfield;
 import com.github.jurisliepins.info.InfoHash;
 
 import java.util.Objects;
@@ -10,7 +11,7 @@ public final class ClientStateTorrent {
     private Status status;
     private InfoHash infoHash;
     private Object peerId;
-    private Object bitfield;
+    private Bitfield bitfield;
     private String name;
     private long length;
     private long downloaded;
@@ -51,11 +52,11 @@ public final class ClientStateTorrent {
         this.peerId = Objects.requireNonNull(peerId, "peerId is null");
     }
 
-    public Object getBitfield() {
+    public Bitfield getBitfield() {
         return bitfield;
     }
 
-    public void setBitfield(final Object bitfield) {
+    public void setBitfield(final Bitfield bitfield) {
         this.bitfield = Objects.requireNonNull(bitfield, "bitfield is null");
     }
 

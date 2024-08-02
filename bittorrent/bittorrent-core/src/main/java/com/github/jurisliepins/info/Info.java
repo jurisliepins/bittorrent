@@ -1,50 +1,80 @@
 package com.github.jurisliepins.info;
 
-import com.github.jurisliepins.BConstants;
-import com.github.jurisliepins.BObjectMapper;
-import com.github.jurisliepins.BProperty;
-import com.github.jurisliepins.stream.BOutputStream;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-public record Info(
-        @BProperty("piece length") int pieceLength,
-        @BProperty("pieces") byte[] pieces,
-        @BProperty("private") Boolean isPrivate,
-        @BProperty("name") String name,
-        @BProperty("length") Long length,
-        @BProperty("md5sum") String md5sum,
-        @BProperty("files") List<File> files,
-        InfoHash hash
-) {
-    public Info {
-        Objects.requireNonNull(pieces, "pieces is null");
-        Objects.requireNonNull(name, "name is null");
-    }
+public sealed interface Info permits Info.OneFileInfo, Info.ManyFileInfo {
 
-    public BOutputStream toStream() {
-        try {
-            return new BObjectMapper().writeToStream(this);
-        } catch (IOException e) {
-            throw new InfoException("Failed to write info to stream", e);
+    record OneFileInfo(
+            int pieceLength,
+            byte[] pieces,
+            Boolean isPrivate,
+            String name,
+            Long length,
+            String md5sum,
+            InfoHash hash
+    ) implements Info {
+        public OneFileInfo {
+            Objects.requireNonNull(pieces, "pieces is null");
+            Objects.requireNonNull(name, "name is null");
         }
     }
 
-    public byte[] toBytes() {
-        try {
-            return new BObjectMapper().writeToBytes(this);
-        } catch (IOException e) {
-            throw new InfoException("Failed to write info to bytes", e);
+    record ManyFileInfo(
+            int pieceLength,
+            byte[] pieces,
+            Boolean isPrivate,
+            String name,
+            List<File> files,
+            InfoHash hash
+    ) implements Info {
+        public ManyFileInfo {
+            Objects.requireNonNull(pieces, "pieces is null");
+            Objects.requireNonNull(name, "name is null");
         }
     }
 
-    public String toString() {
-        try {
-            return new BObjectMapper().writeToString(this, BConstants.DEFAULT_ENCODING);
-        } catch (IOException e) {
-            throw new InfoException("Failed to write info to string", e);
-        }
+    default int pieceLength() {
+        return switch (this) {
+            case Info.OneFileInfo info -> info.pieceLength();
+            case Info.ManyFileInfo info -> info.pieceLength();
+        };
+    }
+
+    default byte[] pieces() {
+        return switch (this) {
+            case Info.OneFileInfo info -> info.pieces();
+            case Info.ManyFileInfo info -> info.pieces();
+        };
+    }
+
+    default Boolean isPrivate() {
+        return switch (this) {
+            case Info.OneFileInfo info -> info.isPrivate();
+            case Info.ManyFileInfo info -> info.isPrivate();
+        };
+    }
+
+    default String name() {
+        return switch (this) {
+            case Info.OneFileInfo info -> info.name();
+            case Info.ManyFileInfo info -> info.name();
+        };
+    }
+
+    default Long length() {
+        return switch (this) {
+            case Info.OneFileInfo info -> info.length();
+            case Info.ManyFileInfo info -> info.files().stream()
+                    .mapToLong(File::length)
+                    .sum();
+        };
+    }
+
+    default InfoHash hash() {
+        return switch (this) {
+            case Info.OneFileInfo info -> info.hash();
+            case Info.ManyFileInfo info -> info.hash();
+        };
     }
 }

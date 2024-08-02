@@ -1,4 +1,4 @@
-package com.github.jurisliepins.client;
+package com.github.jurisliepins.client.message;
 
 public final class ClientException extends RuntimeException {
     public ClientException(final String message) {

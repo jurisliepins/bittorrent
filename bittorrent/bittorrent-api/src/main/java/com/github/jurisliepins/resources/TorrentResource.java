@@ -1,8 +1,8 @@
 package com.github.jurisliepins.resources;
 
 import com.github.jurisliepins.BitTorrentClient;
-import com.github.jurisliepins.client.ClientCommandResult;
-import com.github.jurisliepins.client.ClientResponse;
+import com.github.jurisliepins.client.message.ClientCommandResult;
+import com.github.jurisliepins.client.message.ClientResponse;
 import com.github.jurisliepins.definitions.response.Result;
 import com.github.jurisliepins.info.InfoHash;
 import io.quarkus.logging.Log;
