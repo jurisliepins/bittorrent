@@ -2,6 +2,8 @@ package com.github.jurisliepins.info;
 
 import com.github.jurisliepins.BConstants;
 import com.github.jurisliepins.BObjectMapper;
+import com.github.jurisliepins.info.entity.InfoEntity;
+import com.github.jurisliepins.info.entity.MetaInfoEntity;
 import com.github.jurisliepins.stream.BInputStream;
 
 import java.security.MessageDigest;

@@ -1,4 +1,4 @@
-package com.github.jurisliepins.info;
+package com.github.jurisliepins.info.entity;
 
 import com.github.jurisliepins.BProperty;
 

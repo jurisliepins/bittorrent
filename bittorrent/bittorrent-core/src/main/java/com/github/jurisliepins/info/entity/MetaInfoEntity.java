@@ -1,26 +1,28 @@
-package com.github.jurisliepins.info;
+package com.github.jurisliepins.info.entity;
 
 import com.github.jurisliepins.BConstants;
 import com.github.jurisliepins.BObjectMapper;
 import com.github.jurisliepins.BProperty;
+import com.github.jurisliepins.info.InfoException;
 import com.github.jurisliepins.stream.BOutputStream;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
-public record InfoEntity(
-        @BProperty("piece length") int pieceLength,
-        @BProperty("pieces") byte[] pieces,
-        @BProperty("private") Boolean isPrivate,
-        @BProperty("name") String name,
-        @BProperty("length") Long length,
-        @BProperty("md5sum") String md5sum,
-        @BProperty("files") List<FileEntity> files
+public record MetaInfoEntity(
+        @BProperty("info") InfoEntity info,
+        @BProperty("announce") String announce,
+        @BProperty("announce-list") List<List<String>> announceList,
+        @BProperty("creation date") OffsetDateTime creationDate,
+        @BProperty("comment") String comment,
+        @BProperty("created by") String createdBy,
+        @BProperty("encoding") String encoding
 ) {
-    public InfoEntity {
-        Objects.requireNonNull(pieces, "pieces is null");
-        Objects.requireNonNull(name, "name is null");
+    public MetaInfoEntity {
+        Objects.requireNonNull(info, "info is null");
+        Objects.requireNonNull(announce, "announce is null");
     }
 
     public BOutputStream toStream() {

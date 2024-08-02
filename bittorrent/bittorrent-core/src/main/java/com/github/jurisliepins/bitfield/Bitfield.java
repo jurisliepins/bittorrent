@@ -3,7 +3,7 @@ package com.github.jurisliepins.bitfield;
 import java.util.Arrays;
 import java.util.Objects;
 
-public final class Bitfield {
+public final class Bitfield implements ImmutableBitfield {
 
     private final byte[] bytes;
     private final int capacity;
@@ -19,26 +19,31 @@ public final class Bitfield {
         this.capacity = Byte.SIZE * array.length;
     }
 
+    @Override
     public int capacity() {
         return capacity;
     }
 
+    @Override
     public int count() {
         int ret = 0;
-        for (int idx = 0; idx < bytes.length; idx++) {
-            ret += bitCount(bytes[idx]);
+        for (byte b : bytes) {
+            ret += bitCount(b);
         }
         return ret;
     }
 
+    @Override
     public boolean isFull() {
         return count() == capacity();
     }
 
+    @Override
     public boolean isEmpty() {
         return count() == 0;
     }
 
+    @Override
     public boolean getBit(final int index) {
         if (index < 0 || index >= capacity()) {
             return false;
@@ -90,6 +95,7 @@ public final class Bitfield {
         return (byte) (i & 0x3f);
     }
 
+    @Override
     public byte[] toByteArray() {
         return Arrays.copyOf(bytes, bytes.length);
     }

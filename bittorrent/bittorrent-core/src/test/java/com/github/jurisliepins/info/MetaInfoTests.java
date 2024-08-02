@@ -2,6 +2,8 @@ package com.github.jurisliepins.info;
 
 import java.io.IOException;
 
+import com.github.jurisliepins.info.entity.InfoEntity;
+import com.github.jurisliepins.info.entity.MetaInfoEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -99,13 +101,14 @@ public class MetaInfoTests {
     @SuppressWarnings("checkstyle:MagicNumber")
     public void shouldEncodeDecodeUtf8Strings() {
         final MetaInfoEntity utf8MetaInfo = new MetaInfoEntity(
-                new InfoEntity(0,
-                         new byte[]{},
-                         false,
-                         "Название",
-                         0L,
-                         null,
-                         null),
+                new InfoEntity(
+                        0,
+                        new byte[]{},
+                        false,
+                        "Название",
+                        0L,
+                        null,
+                        null),
                 "",
                 null,
                 OffsetDateTime.parse("2000-01-01T00:00:00Z"),
@@ -122,13 +125,13 @@ public class MetaInfoTests {
                 assertNull(metaInfo.encoding());
                 switch (metaInfo.info()) {
                     case Info.OneFileInfo info -> {
-                                        assertEquals(0, info.pieceLength());
-                                        assertNotNull(info.pieces());
-                                        assertFalse(info.isPrivate());
-                                        assertEquals("Название", info.name());
-                                        assertEquals(0L, info.length());
-                                        assertNull(info.md5sum());
-                                        assertEquals(new InfoHash("779e8f96663028f7654364721377d283bc80ea61"), info.hash());
+                        assertEquals(0, info.pieceLength());
+                        assertNotNull(info.pieces());
+                        assertFalse(info.isPrivate());
+                        assertEquals("Название", info.name());
+                        assertEquals(0L, info.length());
+                        assertNull(info.md5sum());
+                        assertEquals(new InfoHash("779e8f96663028f7654364721377d283bc80ea61"), info.hash());
                     }
                     default -> throw new RuntimeException("Should not have reached this code");
                 }

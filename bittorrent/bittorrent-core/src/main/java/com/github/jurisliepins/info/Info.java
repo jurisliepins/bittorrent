@@ -71,6 +71,20 @@ public sealed interface Info permits Info.OneFileInfo, Info.ManyFileInfo {
         };
     }
 
+    default String md5sum() {
+        return switch (this) {
+            case Info.OneFileInfo info -> info.md5sum();
+            case Info.ManyFileInfo ignored -> throw new InfoException("Info doesn't have single md5 sum");
+        };
+    }
+
+    default List<File> files() {
+        return switch (this) {
+            case Info.OneFileInfo ignored -> throw new InfoException("Info doesn't have files");
+            case Info.ManyFileInfo info -> info.files();
+        };
+    }
+
     default InfoHash hash() {
         return switch (this) {
             case Info.OneFileInfo info -> info.hash();

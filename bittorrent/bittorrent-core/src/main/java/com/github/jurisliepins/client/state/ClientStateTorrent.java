@@ -6,7 +6,7 @@ import com.github.jurisliepins.info.InfoHash;
 
 import java.util.Objects;
 
-public final class ClientStateTorrent {
+public final class ClientStateTorrent implements ImmutableClientStateTorrent {
     private ActorRef ref;
     private Status status;
     private InfoHash infoHash;
@@ -20,6 +20,7 @@ public final class ClientStateTorrent {
     private double downloadRate;
     private double uploadRate;
 
+    @Override
     public ActorRef getRef() {
         return ref;
     }
@@ -28,6 +29,7 @@ public final class ClientStateTorrent {
         this.ref = Objects.requireNonNull(ref, "ref is null");
     }
 
+    @Override
     public Status getStatus() {
         return status;
     }
@@ -36,6 +38,7 @@ public final class ClientStateTorrent {
         this.status = Objects.requireNonNull(status, "status is null");
     }
 
+    @Override
     public InfoHash getInfoHash() {
         return infoHash;
     }
@@ -44,6 +47,7 @@ public final class ClientStateTorrent {
         this.infoHash = Objects.requireNonNull(infoHash, "infoHash is null");
     }
 
+    @Override
     public Object getPeerId() {
         return peerId;
     }
@@ -52,6 +56,7 @@ public final class ClientStateTorrent {
         this.peerId = Objects.requireNonNull(peerId, "peerId is null");
     }
 
+    @Override
     public Bitfield getBitfield() {
         return bitfield;
     }
@@ -60,6 +65,7 @@ public final class ClientStateTorrent {
         this.bitfield = Objects.requireNonNull(bitfield, "bitfield is null");
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -68,6 +74,7 @@ public final class ClientStateTorrent {
         this.name = Objects.requireNonNull(name, "name is null");
     }
 
+    @Override
     public long getLength() {
         return length;
     }
@@ -76,6 +83,7 @@ public final class ClientStateTorrent {
         this.length = length;
     }
 
+    @Override
     public long getDownloaded() {
         return downloaded;
     }
@@ -84,6 +92,7 @@ public final class ClientStateTorrent {
         this.downloaded = downloaded;
     }
 
+    @Override
     public long getUploaded() {
         return uploaded;
     }
@@ -92,6 +101,7 @@ public final class ClientStateTorrent {
         this.uploaded = uploaded;
     }
 
+    @Override
     public long getLeft() {
         return left;
     }
@@ -100,6 +110,7 @@ public final class ClientStateTorrent {
         this.left = left;
     }
 
+    @Override
     public double getDownloadRate() {
         return downloadRate;
     }
@@ -108,6 +119,7 @@ public final class ClientStateTorrent {
         this.downloadRate = downloadRate;
     }
 
+    @Override
     public double getUploadRate() {
         return uploadRate;
     }
