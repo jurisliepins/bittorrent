@@ -12,7 +12,7 @@ public class BInputStream extends ByteArrayInputStream {
     public byte readByte() {
         final int value = read();
         if (value == -1) {
-            throw new BException("Reached the end of the stream.");
+            throw new BException("Reached the end of the stream");
         }
         return (byte) value;
     }

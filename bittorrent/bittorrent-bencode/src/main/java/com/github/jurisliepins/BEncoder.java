@@ -20,7 +20,7 @@ public final class BEncoder {
     private static final byte[] E_BYTE = new byte[]{'e'};
 
     private BEncoder() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated.");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     public static BOutputStream toStream(final BValue value) throws IOException {

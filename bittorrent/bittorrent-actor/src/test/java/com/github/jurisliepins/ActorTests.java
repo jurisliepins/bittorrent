@@ -34,7 +34,7 @@ public final class ActorTests {
     @DisplayName("Should spawn actor")
     public void shouldSpawnActor() {
         final ActorRef ref = system.spawn(envelope -> NextState.Terminate);
-        assertNotNull(ref, "Spawned actor should not be null.");
+        assertNotNull(ref, "Spawned actor should not be null");
     }
 
     @Test
@@ -52,7 +52,7 @@ public final class ActorTests {
         ref.post("Hello, World!");
 
         final boolean result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        assertTrue(result, "Should not have timed out before receiving a message.");
+        assertTrue(result, "Should not have timed out before receiving a message");
     }
 
     @Test
@@ -73,7 +73,7 @@ public final class ActorTests {
         });
 
         final String result = ref.postWithReply("Hello, World!");
-        assertEquals(response, result, "Should have received %s as response.".formatted(response));
+        assertEquals(response, result, "Should have received %s as response".formatted(response));
     }
 
     @Test
@@ -94,7 +94,7 @@ public final class ActorTests {
         });
 
         final String result = ref.postWithReply("Hello, World!", TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        assertEquals(response, result, "Should have received %s as response.".formatted(response));
+        assertEquals(response, result, "Should have received %s as response".formatted(response));
     }
 
     @Test
@@ -133,8 +133,8 @@ public final class ActorTests {
 
         final boolean result1 = latch1.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         final boolean result2 = latch2.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        assertTrue(result1, "Actor 1 should have received %d messages.".formatted(messageCount));
-        assertTrue(result2, "Actor 2 should have received %d messages.".formatted(messageCount));
+        assertTrue(result1, "Actor 1 should have received %d messages".formatted(messageCount));
+        assertTrue(result2, "Actor 2 should have received %d messages".formatted(messageCount));
     }
 
     @Test
@@ -174,10 +174,10 @@ public final class ActorTests {
         ref.post("receive");
 
         final boolean result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        assertFalse(result, "Actor should have stopped processing messages.");
+        assertFalse(result, "Actor should have stopped processing messages");
 
         final int count = (int) latch.getCount();
         assertEquals(messageCount / 2, count,
-                     "Actor should have processed only %d messages.".formatted(messageCount / 2));
+                     "Actor should have processed only %d messages".formatted(messageCount / 2));
     }
 }

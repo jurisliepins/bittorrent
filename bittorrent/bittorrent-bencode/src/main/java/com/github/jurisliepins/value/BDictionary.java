@@ -26,7 +26,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
 
     @Override
     public int compareTo(final BValue other) {
-        throw new BException("Comparable not supported for %s.".formatted(BValueType.BDictionaryType));
+        throw new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
     }
 
     public static BDictionary of() {

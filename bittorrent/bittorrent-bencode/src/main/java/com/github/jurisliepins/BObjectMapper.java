@@ -27,7 +27,7 @@ public class BObjectMapper {
     public <T> T readFromStream(final BInputStream value, final Class<T> clazz) throws IOException {
         return switch (BDecoder.fromStream(value)) {
             case BDictionary dictionary -> readFromBDictionary(dictionary, clazz);
-            default -> throw new BException("Unexpected type read from stream. BDictionary expected.");
+            default -> throw new BException("Unexpected type read from stream - BDictionary expected");
         };
     }
 
@@ -90,7 +90,7 @@ public class BObjectMapper {
             case "boolean", "java.lang.Boolean" -> switch (value.toInteger()) {
                 case 1 -> true;
                 case 0 -> false;
-                default -> throw new BException("Cannot read value %d to boolean. Only 0 and 1 supported."
+                default -> throw new BException("Cannot read value %d to boolean - only 0 and 1 supported"
                                                         .formatted(value.toInteger()));
             };
             case "char", "java.lang.Character" -> (char) value.value();
@@ -202,7 +202,7 @@ public class BObjectMapper {
                     .toArray();
             return clazz.getDeclaredConstructors()[0].newInstance(values);
         } catch (Exception e) {
-            throw new BException("Failed to read BDictionary.", e);
+            throw new BException("Failed to read BDictionary", e);
         }
     }
 
@@ -454,7 +454,7 @@ public class BObjectMapper {
                         }
                     });
         } catch (Exception e) {
-            throw new BException("Failed to write BDictionary.", e);
+            throw new BException("Failed to write BDictionary", e);
         }
         return dictionary;
     }

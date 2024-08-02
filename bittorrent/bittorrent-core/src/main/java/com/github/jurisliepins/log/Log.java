@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory;
 
 public final class Log {
     private Log() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated.");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     public static void debug(final Class<?> clazz, final String var1) {

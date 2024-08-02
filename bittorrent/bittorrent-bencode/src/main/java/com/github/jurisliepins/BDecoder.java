@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 public final class BDecoder {
     private BDecoder() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated.");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     public static BValue fromStream(final BInputStream value) throws IOException {
@@ -44,28 +44,28 @@ public final class BDecoder {
     private static BValue readInteger(final BInputStream stream) {
         return switch (BValueType.fromByte(stream.readByte())) {
             case BIntegerType -> decodeInteger(stream);
-            default -> throw new BException("Expected %s.".formatted(BValueType.BIntegerType));
+            default -> throw new BException("Expected %s".formatted(BValueType.BIntegerType));
         };
     }
 
     private static BValue readByteString(final BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.peekByte())) {
             case BByteStringType -> decodeByteString(stream);
-            default -> throw new BException("Expected %s.".formatted(BValueType.BByteStringType));
+            default -> throw new BException("Expected %s".formatted(BValueType.BByteStringType));
         };
     }
 
     private static BValue readList(final BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.readByte())) {
             case BListType -> decodeList(stream);
-            default -> throw new BException("Expected %s.".formatted(BValueType.BListType));
+            default -> throw new BException("Expected %s".formatted(BValueType.BListType));
         };
     }
 
     private static BValue readDictionary(final BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.readByte())) {
             case BDictionaryType -> decodeDictionary(stream);
-            default -> throw new BException("Expected %s.".formatted(BValueType.BDictionaryType));
+            default -> throw new BException("Expected %s".formatted(BValueType.BDictionaryType));
         };
     }
 
@@ -93,7 +93,7 @@ public final class BDecoder {
                     result = (result * multiplier) + ((long) (value - (byte) '0'));
                     break;
                 default:
-                    throw new BException("Unexpected char '%c' when reading %s."
+                    throw new BException("Unexpected char '%c' when reading %s"
                                                  .formatted((char) value, BValueType.BIntegerType));
             }
         }
@@ -121,14 +121,14 @@ public final class BDecoder {
                     length = (length * multiplier) + (value - (byte) '0');
                     break;
                 default:
-                    throw new BException("Unexpected char '%c' when reading %s."
+                    throw new BException("Unexpected char '%c' when reading %s"
                                                  .formatted((char) value, BValueType.BByteStringType));
             }
         }
 
         final byte[] bytes = stream.readNBytes(length);
         if (bytes.length != length) {
-            throw new BException("Unexpected byte count '%d' when expected length '%d."
+            throw new BException("Unexpected byte count '%d' when expected length '%d"
                                          .formatted(length, bytes.length));
         }
 
@@ -144,7 +144,7 @@ public final class BDecoder {
         }
 
         if (stream.readByte() != (byte) 'e') {
-            throw new BException("Missing char '%c' when reading %s.".formatted('e', BValueType.BListType));
+            throw new BException("Missing char '%c' when reading %s".formatted('e', BValueType.BListType));
         }
 
         return new BList(result);
@@ -160,7 +160,7 @@ public final class BDecoder {
         }
 
         if (stream.readByte() != (byte) 'e') {
-            throw new BException("Missing char '%c' when reading %s.".formatted('e', BValueType.BDictionaryType));
+            throw new BException("Missing char '%c' when reading %s".formatted('e', BValueType.BDictionaryType));
         }
 
         return new BDictionary(result);
