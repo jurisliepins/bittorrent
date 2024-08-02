@@ -9,7 +9,7 @@ public class ActorSystem {
 
     private final ExecutorService executorService = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual()
-                    .name("actor-", 0)
+                    .name("actor-thread-", 0)
                     .factory());
 
     public ActorRef spawn(final ActorReceiver receiver) {
