@@ -1,17 +1,14 @@
 package com.github.jurisliepins.client.state;
 
-import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.bitfield.ImmutableBitfield;
 import com.github.jurisliepins.info.InfoHash;
 
 public interface ImmutableClientStateTorrent {
-    ActorRef getRef();
-
     ClientStateTorrent.Status getStatus();
 
     InfoHash getInfoHash();
 
-    Object getPeerId();
+//    Object getPeerId();
 
     ImmutableBitfield getBitfield();
 

@@ -38,7 +38,7 @@ public class TorrentResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Result<ClientCommandResult> add(final @MultipartForm MultipartInput input) throws IOException {
-        Log.info("Adding torrent from meta-info file '%s'"
+        Log.info("Adding torrent from torrent file '%s'"
                          .formatted(input.getParts()
                                             .getFirst()
                                             .getFileName()));

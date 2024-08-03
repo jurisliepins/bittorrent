@@ -10,6 +10,14 @@ public sealed interface Envelope permits Envelope.Success, Envelope.Failure {
             Objects.requireNonNull(self, "self must not be null");
             Objects.requireNonNull(sender, "sender must not be null");
         }
+
+        public <T> void reply(final T replyMessage) {
+            sender().post(replyMessage);
+        }
+
+        public <T> void reply(final T replyMessage, final ActorRef replySender) {
+            sender().post(replyMessage, replySender);
+        }
     }
 
     record Failure(Throwable cause, ActorSystem system) implements Envelope {

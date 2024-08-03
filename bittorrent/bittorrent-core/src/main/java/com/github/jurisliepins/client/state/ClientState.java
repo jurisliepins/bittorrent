@@ -17,7 +17,7 @@ public final class ClientState {
         torrents.put(torrent.getInfoHash(), torrent);
     }
 
-    public void remove(final InfoHash infoHash) {
-        torrents.remove(infoHash);
+    public ClientStateTorrent remove(final InfoHash infoHash) {
+        return torrents.remove(infoHash);
     }
 }
