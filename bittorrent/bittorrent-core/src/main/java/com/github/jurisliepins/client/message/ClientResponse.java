@@ -21,5 +21,4 @@ public sealed interface ClientResponse permits
             Objects.requireNonNull(resultMessage, "message is null");
         }
     }
-
 }

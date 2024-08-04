@@ -6,6 +6,7 @@ import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.client.Client;
 import com.github.jurisliepins.log.Log;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
+import com.github.jurisliepins.torrent.message.TorrentCommandResult;
 import com.github.jurisliepins.torrent.state.TorrentState;
 
 import java.util.Objects;
@@ -42,6 +43,8 @@ public final class Torrent implements ActorReceiver {
             };
         } catch (Exception e) {
             Log.error(Client.class, "Failed to handle command", e);
+            envelope.reply(new TorrentCommandResult.Failure(
+                    state.getInfoHash(), "Failed with '%s'".formatted(e.getMessage())));
         }
         return NextState.Receive;
     }
@@ -63,13 +66,11 @@ public final class Torrent implements ActorReceiver {
 
     private NextState handleFailure(final Envelope.Failure envelope) {
         Log.error(Client.class, "Terminating with failure", envelope.cause());
-
         return NextState.Terminate;
     }
 
     private NextState unhandled(final Object message) {
         Log.error(Client.class, "Unhandled message {}", message);
-
         return NextState.Receive;
     }
 }
