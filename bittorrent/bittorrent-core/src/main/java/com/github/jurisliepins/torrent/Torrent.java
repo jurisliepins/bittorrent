@@ -3,7 +3,6 @@ package com.github.jurisliepins.torrent;
 import com.github.jurisliepins.ActorReceiver;
 import com.github.jurisliepins.Envelope;
 import com.github.jurisliepins.NextState;
-import com.github.jurisliepins.client.Client;
 import com.github.jurisliepins.log.Log;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
 import com.github.jurisliepins.torrent.message.TorrentCommandResult;
