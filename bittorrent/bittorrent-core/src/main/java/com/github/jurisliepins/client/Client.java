@@ -14,6 +14,7 @@ import com.github.jurisliepins.info.MetaInfo;
 import com.github.jurisliepins.log.Log;
 import com.github.jurisliepins.torrent.Torrent;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
+import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.torrent.state.TorrentState;
 
 import java.util.Objects;
@@ -38,6 +39,7 @@ public final class Client implements ActorReceiver {
         return switch (envelope.message()) {
             case ClientCommand command -> handleCommand(envelope, command);
             case ClientRequest request -> handleRequest(envelope, request);
+            case TorrentNotification notification -> handleTorrentNotification(envelope, notification);
             default -> unhandled(envelope.message());
         };
     }
@@ -45,15 +47,14 @@ public final class Client implements ActorReceiver {
     private NextState handleCommand(final Envelope.Success envelope, final ClientCommand command) {
         try {
             return switch (command) {
-                case ClientCommand.Add addCommand -> handleAddCommand(envelope, addCommand);
-                case ClientCommand.Remove removeCommand -> handleRemoveCommand(envelope, removeCommand);
-                case ClientCommand.Start startCommand -> handleStartCommand(envelope, startCommand);
-                case ClientCommand.Stop stopCommand -> handleStopCommand(envelope, stopCommand);
+                case ClientCommand.Add add -> handleAddCommand(envelope, add);
+                case ClientCommand.Remove remove -> handleRemoveCommand(envelope, remove);
+                case ClientCommand.Start start -> handleStartCommand(envelope, start);
+                case ClientCommand.Stop stop -> handleStopCommand(envelope, stop);
             };
         } catch (Exception e) {
             Log.error(Client.class, "Failed to handle command", e);
-            envelope.reply(new ClientCommandResult.Failure(
-                    InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
+            envelope.reply(new ClientCommandResult.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
         }
         return NextState.Receive;
     }
@@ -66,13 +67,12 @@ public final class Client implements ActorReceiver {
                 switch (state.get(metaInfo.info().hash())) {
                     case ClientStateTorrent ignored -> {
                         Log.info(Client.class, "Torrent '{}' already exists", metaInfo.info().hash());
-                        envelope.reply(new ClientCommandResult.Failure(
-                                metaInfo.info().hash(), "Torrent already exists"));
+                        envelope.reply(new ClientCommandResult.Failure(metaInfo.info().hash(), "Torrent already exists"));
                     }
 
                     case null -> {
                         final ClientStateTorrent torrent = new ClientStateTorrent(
-                                envelope.system().spawn(new Torrent(new TorrentState(metaInfo))),
+                                envelope.system().spawn(new Torrent(envelope.self(), new TorrentState(metaInfo))),
                                 metaInfo);
                         state.add(torrent);
 
@@ -90,7 +90,7 @@ public final class Client implements ActorReceiver {
 
         switch (state.remove(command.infoHash())) {
             case ClientStateTorrent torrent -> {
-                torrent.getRef().post(new TorrentCommand.Terminate());
+                torrent.getRef().post(new TorrentCommand.Terminate(), envelope.self());
 
                 Log.info(Client.class, "Removed torrent '{}'", command.infoHash());
                 envelope.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent removed"));
@@ -109,7 +109,7 @@ public final class Client implements ActorReceiver {
 
         switch (state.get(command.infoHash())) {
             case ClientStateTorrent torrent -> {
-                torrent.getRef().post(new TorrentCommand.Start());
+                torrent.getRef().post(new TorrentCommand.Start(), envelope.self());
 
                 Log.info(Client.class, "Started torrent '{}'", command.infoHash());
                 envelope.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent started"));
@@ -128,7 +128,7 @@ public final class Client implements ActorReceiver {
 
         switch (state.get(command.infoHash())) {
             case ClientStateTorrent torrent -> {
-                torrent.getRef().post(new TorrentCommand.Stop());
+                torrent.getRef().post(new TorrentCommand.Stop(), envelope.self());
 
                 Log.info(Client.class, "Stopped torrent '{}'", command.infoHash());
                 envelope.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
@@ -145,12 +145,11 @@ public final class Client implements ActorReceiver {
     private NextState handleRequest(final Envelope.Success envelope, final ClientRequest request) {
         try {
             return switch (request) {
-                case ClientRequest.Get getRequest -> handleGetRequest(envelope, getRequest);
+                case ClientRequest.Get get -> handleGetRequest(envelope, get);
             };
         } catch (Exception e) {
             Log.error(Client.class, "Failed to handle request", e);
-            envelope.reply(new ClientCommandResult.Failure(
-                    InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
+            envelope.reply(new ClientCommandResult.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
         }
         return NextState.Receive;
     }
@@ -170,6 +169,28 @@ public final class Client implements ActorReceiver {
                         request.infoHash(), "Torrent doesn't exist"));
             }
         }
+        return NextState.Receive;
+    }
+
+    private NextState handleTorrentNotification(final Envelope.Success envelope, final TorrentNotification notification) {
+        try {
+            return switch (notification) {
+                case TorrentNotification.StatusChanged statusChanged -> handleStatusChangedTorrentNotification(envelope, statusChanged);
+                case TorrentNotification.Terminated terminated -> handleTerminatedNotification(envelope, terminated);
+            };
+        } catch (Exception e) {
+            Log.error(Client.class, "Failed to handle torrent notification", e);
+        }
+        return NextState.Receive;
+    }
+
+    private NextState handleStatusChangedTorrentNotification(final Envelope.Success envelope, final TorrentNotification.StatusChanged notification) {
+        Log.debug(Client.class, "Handling torrent status changed notification {}", notification);
+        return NextState.Receive;
+    }
+
+    private NextState handleTerminatedNotification(final Envelope.Success envelope, final TorrentNotification.Terminated notification) {
+        Log.debug(Client.class, "Handling torrent terminated notification {}", notification);
         return NextState.Receive;
     }
 

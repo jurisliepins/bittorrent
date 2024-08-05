@@ -163,6 +163,7 @@ public final class TorrentState {
 
     public enum Status {
         STARTED,
+        RUNNING,
         STOPPED,
         ERRORED
     }
