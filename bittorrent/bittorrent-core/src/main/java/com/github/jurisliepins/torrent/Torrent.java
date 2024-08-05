@@ -42,7 +42,7 @@ public final class Torrent implements ActorReceiver {
                 case TorrentCommand.Terminate terminateCommand -> handleTerminateCommand(envelope, terminateCommand);
             };
         } catch (Exception e) {
-            Log.error(Client.class, "Failed to handle command", e);
+            Log.error(Torrent.class, "Failed to handle command", e);
             envelope.reply(new TorrentCommandResult.Failure(
                     state.getInfoHash(), "Failed with '%s'".formatted(e.getMessage())));
         }
@@ -65,12 +65,12 @@ public final class Torrent implements ActorReceiver {
     }
 
     private NextState handleFailure(final Envelope.Failure envelope) {
-        Log.error(Client.class, "Terminating with failure", envelope.cause());
+        Log.error(Torrent.class, "Terminating with failure", envelope.cause());
         return NextState.Terminate;
     }
 
     private NextState unhandled(final Object message) {
-        Log.error(Client.class, "Unhandled message {}", message);
+        Log.error(Torrent.class, "Unhandled message {}", message);
         return NextState.Receive;
     }
 }
