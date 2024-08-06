@@ -23,10 +23,10 @@ public sealed interface TorrentNotification permits
         }
     }
 
-    record Failure(InfoHash infoHash, String message) implements TorrentNotification {
+    record Failure(InfoHash infoHash, Throwable cause) implements TorrentNotification {
         public Failure {
             Objects.requireNonNull(infoHash, "hash is null");
-            Objects.requireNonNull(message, "message is null");
+            Objects.requireNonNull(cause, "cause is null");
         }
     }
 }

@@ -149,7 +149,7 @@ public final class Client implements ActorReceiver {
             };
         } catch (Exception e) {
             Log.error(Client.class, "Failed to handle request", e);
-            envelope.reply(new ClientCommandResult.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
+            envelope.reply(new ClientResponse.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
         }
         return NextState.Receive;
     }
@@ -176,7 +176,8 @@ public final class Client implements ActorReceiver {
         try {
             return switch (notification) {
                 case TorrentNotification.StatusChanged statusChanged -> handleStatusChangedTorrentNotification(envelope, statusChanged);
-                case TorrentNotification.Terminated terminated -> handleTerminatedNotification(envelope, terminated);
+                case TorrentNotification.Terminated terminated -> handleTerminatedTorrentNotification(envelope, terminated);
+                case TorrentNotification.Failure failure -> handleFailureTorrentNotification(envelope, failure);
             };
         } catch (Exception e) {
             Log.error(Client.class, "Failed to handle torrent notification", e);
@@ -189,8 +190,13 @@ public final class Client implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleTerminatedNotification(final Envelope.Success envelope, final TorrentNotification.Terminated notification) {
+    private NextState handleTerminatedTorrentNotification(final Envelope.Success envelope, final TorrentNotification.Terminated notification) {
         Log.debug(Client.class, "Handling torrent terminated notification {}", notification);
+        return NextState.Receive;
+    }
+
+    private NextState handleFailureTorrentNotification(final Envelope.Success envelope, final TorrentNotification.Failure failure) {
+        Log.debug(Client.class, "Handling torrent failure notification {}", failure);
         return NextState.Receive;
     }
 
