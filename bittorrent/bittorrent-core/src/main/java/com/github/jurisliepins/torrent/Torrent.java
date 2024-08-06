@@ -6,7 +6,6 @@ import com.github.jurisliepins.Envelope;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.log.Log;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
-import com.github.jurisliepins.torrent.message.TorrentCommandResult;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.torrent.state.TorrentState;
 
@@ -47,7 +46,7 @@ public final class Torrent implements ActorReceiver {
             };
         } catch (Exception e) {
             Log.error(Torrent.class, "[{}] Failed to handle command", state.getInfoHash(), e);
-            envelope.reply(new TorrentCommandResult.Failure(state.getInfoHash(), "Failed with '%s'".formatted(e.getMessage())));
+            notifiedRef.post(new TorrentNotification.Failure(state.getInfoHash(), "Failed with '%s'".formatted(e.getMessage())));
         }
         return NextState.Receive;
     }

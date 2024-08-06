@@ -7,7 +7,8 @@ import java.util.Objects;
 
 public sealed interface TorrentNotification permits
         TorrentNotification.StatusChanged,
-        TorrentNotification.Terminated {
+        TorrentNotification.Terminated,
+        TorrentNotification.Failure {
 
     record StatusChanged(InfoHash infoHash, TorrentState.Status status) implements TorrentNotification {
         public StatusChanged {
@@ -22,4 +23,10 @@ public sealed interface TorrentNotification permits
         }
     }
 
+    record Failure(InfoHash infoHash, String message) implements TorrentNotification {
+        public Failure {
+            Objects.requireNonNull(infoHash, "hash is null");
+            Objects.requireNonNull(message, "message is null");
+        }
+    }
 }
