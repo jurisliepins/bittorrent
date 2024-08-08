@@ -75,7 +75,6 @@ public final class Client implements ActorReceiver {
                                 envelope.system().spawn(new Torrent(envelope.self(), new TorrentState(metaInfo))),
                                 metaInfo);
                         state.add(torrent);
-
                         Log.info(Client.class, "Torrent '{}' added", metaInfo.info().hash());
                         envelope.reply(new ClientCommandResult.Success(metaInfo.info().hash(), "Torrent added"));
                     }
@@ -91,7 +90,6 @@ public final class Client implements ActorReceiver {
         switch (state.remove(command.infoHash())) {
             case ClientStateTorrent torrent -> {
                 torrent.getRef().post(new TorrentCommand.Terminate(), envelope.self());
-
                 Log.info(Client.class, "Removed torrent '{}'", command.infoHash());
                 envelope.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent removed"));
             }
@@ -110,7 +108,6 @@ public final class Client implements ActorReceiver {
         switch (state.get(command.infoHash())) {
             case ClientStateTorrent torrent -> {
                 torrent.getRef().post(new TorrentCommand.Start(), envelope.self());
-
                 Log.info(Client.class, "Started torrent '{}'", command.infoHash());
                 envelope.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent started"));
             }
@@ -129,7 +126,6 @@ public final class Client implements ActorReceiver {
         switch (state.get(command.infoHash())) {
             case ClientStateTorrent torrent -> {
                 torrent.getRef().post(new TorrentCommand.Stop(), envelope.self());
-
                 Log.info(Client.class, "Stopped torrent '{}'", command.infoHash());
                 envelope.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
             }
@@ -165,8 +161,7 @@ public final class Client implements ActorReceiver {
 
             case null -> {
                 Log.info(Client.class, "Torrent '{}' doesn't exist", request.infoHash());
-                envelope.reply(new ClientResponse.Failure(
-                        request.infoHash(), "Torrent doesn't exist"));
+                envelope.reply(new ClientResponse.Failure(request.infoHash(), "Torrent doesn't exist"));
             }
         }
         return NextState.Receive;

@@ -1,5 +1,7 @@
 package com.github.jurisliepins.info;
 
+import com.github.jurisliepins.CoreException;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -74,13 +76,13 @@ public sealed interface Info permits Info.OneFileInfo, Info.ManyFileInfo {
     default String md5sum() {
         return switch (this) {
             case Info.OneFileInfo info -> info.md5sum();
-            case Info.ManyFileInfo ignored -> throw new InfoException("Info doesn't have single md5 sum");
+            case Info.ManyFileInfo ignored -> throw new CoreException("Info doesn't have single md5 sum");
         };
     }
 
     default List<File> files() {
         return switch (this) {
-            case Info.OneFileInfo ignored -> throw new InfoException("Info doesn't have files");
+            case Info.OneFileInfo ignored -> throw new CoreException("Info doesn't have files");
             case Info.ManyFileInfo info -> info.files();
         };
     }

@@ -88,11 +88,11 @@ public interface Actor {
                     nextState = receiver.receive(mailbox.take());
                 } catch (Throwable cause) {
                     try {
-                        final NextState ignored = receiver.receive(new Envelope.Failure(cause, system));
+                        nextState = receiver.receive(new Envelope.Failure(cause, system));
                     } catch (Throwable ignored) {
-                        // Ignored.
+                        // If actor throws while handling an exception then we can fall into an infinite loop so we simply return.
+                        return;
                     }
-                    return;
                 }
             } while (nextState == NextState.Receive);
         }

@@ -3,7 +3,7 @@ package com.github.jurisliepins.info.entity;
 import com.github.jurisliepins.BConstants;
 import com.github.jurisliepins.BObjectMapper;
 import com.github.jurisliepins.BProperty;
-import com.github.jurisliepins.info.InfoException;
+import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.stream.BOutputStream;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ public record MetaInfoEntity(
         try {
             return new BObjectMapper().writeToStream(this);
         } catch (IOException e) {
-            throw new InfoException("Failed to write info to stream", e);
+            throw new CoreException("Failed to write info to stream", e);
         }
     }
 
@@ -37,7 +37,7 @@ public record MetaInfoEntity(
         try {
             return new BObjectMapper().writeToBytes(this);
         } catch (IOException e) {
-            throw new InfoException("Failed to write info to bytes", e);
+            throw new CoreException("Failed to write info to bytes", e);
         }
     }
 
@@ -45,7 +45,7 @@ public record MetaInfoEntity(
         try {
             return new BObjectMapper().writeToString(this, BConstants.DEFAULT_ENCODING);
         } catch (IOException e) {
-            throw new InfoException("Failed to write info to string", e);
+            throw new CoreException("Failed to write info to string", e);
         }
     }
 }

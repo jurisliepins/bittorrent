@@ -22,13 +22,13 @@ public final class InfoHashTests {
     @Test
     @DisplayName("Should create hash from bytes")
     public void shouldCreateHashFromBytes() {
-        assertArrayEquals(HASH_BYTES, new InfoHash(HASH_BYTES).bytes());
+        assertArrayEquals(HASH_BYTES, new InfoHash(HASH_BYTES).toByteArray());
     }
 
     @Test
     @DisplayName("Should create hash from string")
     public void shouldCreateHashFromString() {
-        assertArrayEquals(HASH_BYTES, new InfoHash(HASH_STRING).bytes());
+        assertArrayEquals(HASH_BYTES, new InfoHash(HASH_STRING).toByteArray());
     }
 
     @Test

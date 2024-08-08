@@ -34,8 +34,8 @@ public final class InfoHash {
         this.string = "";
     }
 
-    public byte[] bytes() {
-        return bytes;
+    public byte[] toByteArray() {
+        return Arrays.copyOf(bytes, bytes.length);
     }
 
     @Override
@@ -51,7 +51,7 @@ public final class InfoHash {
     @Override
     public boolean equals(final Object other) {
         return switch (other) {
-            case InfoHash hash -> Arrays.equals(bytes, hash.bytes());
+            case InfoHash hash -> Arrays.equals(bytes, hash.bytes);
             default -> false;
         };
     }

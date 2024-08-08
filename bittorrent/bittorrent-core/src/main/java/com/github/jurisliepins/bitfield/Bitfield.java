@@ -9,7 +9,11 @@ public final class Bitfield implements ImmutableBitfield {
     private final int capacity;
 
     public Bitfield(final int capacity) {
-        this.bytes = bytesFromCapacity(capacity);
+        // Capacity represents the number of bits this bitfield can hold. If capacity doesn't evenly divide
+        // by 8 then we need an extra byte to hold these bits.
+        this.bytes = (capacity % Byte.SIZE != 0)
+                ? new byte[(capacity / Byte.SIZE) + 1]
+                : new byte[capacity / Byte.SIZE];
         this.capacity = capacity;
     }
 
@@ -75,15 +79,6 @@ public final class Bitfield implements ImmutableBitfield {
                 bytes[idx] = (byte) 0;
             }
         }
-    }
-
-    private static byte[] bytesFromCapacity(final int capacity) {
-        // Capacity represents the number of bits this bitfield can hold. If capacity doesn't evenly divide
-        // by 8 then we need an extra byte to hold these bits.
-        if (capacity % Byte.SIZE != 0) {
-            return new byte[(capacity / Byte.SIZE) + 1];
-        }
-        return new byte[capacity / Byte.SIZE];
     }
 
     private static int bitCount(final byte value) {
