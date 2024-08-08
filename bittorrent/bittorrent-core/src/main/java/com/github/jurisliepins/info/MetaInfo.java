@@ -2,6 +2,7 @@ package com.github.jurisliepins.info;
 
 import com.github.jurisliepins.BConstants;
 import com.github.jurisliepins.BObjectMapper;
+import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.info.entity.InfoEntity;
 import com.github.jurisliepins.info.entity.MetaInfoEntity;
 import com.github.jurisliepins.stream.BInputStream;
@@ -23,31 +24,25 @@ public record MetaInfo(
 ) {
     public static MetaInfo fromStream(final BInputStream stream) {
         try {
-            final MetaInfoEntity metaInfo = new BObjectMapper()
-                    .readFromStream(stream, MetaInfoEntity.class);
-            return convert(metaInfo);
+            return convert(new BObjectMapper().readFromStream(stream, MetaInfoEntity.class));
         } catch (Exception e) {
-            throw new InfoException("Failed to read meta-info from stream", e);
+            throw new CoreException("Failed to read meta-info from stream", e);
         }
     }
 
     public static MetaInfo fromBytes(final byte[] bytes) {
         try {
-            final MetaInfoEntity metaInfo = new BObjectMapper()
-                    .readFromBytes(bytes, MetaInfoEntity.class);
-            return convert(metaInfo);
+            return convert(new BObjectMapper().readFromBytes(bytes, MetaInfoEntity.class));
         } catch (Exception e) {
-            throw new InfoException("Failed to read meta-info from bytes", e);
+            throw new CoreException("Failed to read meta-info from bytes", e);
         }
     }
 
     public static MetaInfo fromString(final String string) {
         try {
-            final MetaInfoEntity metaInfo =  new BObjectMapper()
-                    .readFromString(string, BConstants.DEFAULT_ENCODING, MetaInfoEntity.class);
-            return convert(metaInfo);
+            return convert(new BObjectMapper().readFromString(string, BConstants.DEFAULT_ENCODING, MetaInfoEntity.class));
         } catch (Exception e) {
-            throw new InfoException("Failed to read meta-info from string", e);
+            throw new CoreException("Failed to read meta-info from string", e);
         }
     }
 
@@ -91,7 +86,7 @@ public record MetaInfo(
         try {
             return new InfoHash(MessageDigest.getInstance("SHA-1").digest(info.toBytes()));
         } catch (NoSuchAlgorithmException e) {
-            throw new InfoException("Failed to generate hash", e);
+            throw new CoreException("Failed to generate hash", e);
         }
     }
 }
