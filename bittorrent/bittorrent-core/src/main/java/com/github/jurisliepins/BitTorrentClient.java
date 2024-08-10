@@ -11,6 +11,8 @@ import com.github.jurisliepins.info.InfoHash;
 import java.util.concurrent.TimeUnit;
 
 public final class BitTorrentClient {
+    public static final String NAME = "BitTorrent";
+    public static final String VERSION = "0.01";
 
     private static final long TIMEOUT_MS = 5_000;
 

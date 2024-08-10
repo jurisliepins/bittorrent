@@ -88,7 +88,7 @@ public sealed interface TrackerResponse permits TrackerResponse.Success, Tracker
 
         final byte[] b = value.toBytes();
         for (int i = 0; i <= b.length - 6; i += 6) {
-            final byte[] addr = Arrays.copyOfRange(b, i, i + 6);
+            final byte[] addr = Arrays.copyOfRange(b, i, i + 4);
             final byte[] port = Arrays.copyOfRange(b, i + 4, i + 6);
             try {
                 parsed.add(new InetSocketAddress(InetAddress.getByAddress(addr), ByteBuffer.wrap(port).getShort()));

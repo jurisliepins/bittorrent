@@ -24,7 +24,7 @@ public final class TorrentState {
     private double uploadRate;
 
     public TorrentState(final MetaInfo metaInfo) {
-        this.status = Status.STOPPED;
+        this.status = Status.Stopped;
         this.infoHash = metaInfo.info().hash();
         this.peerId = new Object();
         this.bitfield = new Bitfield(metaInfo.info().pieces().length);
@@ -162,9 +162,9 @@ public final class TorrentState {
     }
 
     public enum Status {
-        STARTED,
-        RUNNING,
-        STOPPED,
-        ERRORED
+        Started,
+        Running,
+        Stopped,
+        Errored
     }
 }

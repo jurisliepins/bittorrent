@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum StatusType {
     @JsonProperty("Success")
-    SUCCESS,
+    Success,
 
     @JsonProperty("Failure")
-    FAILURE
+    Failure
 }

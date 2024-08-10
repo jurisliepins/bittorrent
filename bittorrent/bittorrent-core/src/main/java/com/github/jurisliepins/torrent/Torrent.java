@@ -55,10 +55,10 @@ public final class Torrent implements ActorReceiver {
         Log.debug(Torrent.class, "[{}] Handling start command {}", state.getInfoHash(), command);
 
         switch (state.getStatus()) {
-            case STOPPED -> {
-                state.setStatus(TorrentState.Status.STARTED);
+            case Stopped -> {
+                state.setStatus(TorrentState.Status.Started);
                 Log.info(Torrent.class, "[{}] Torrent started", state.getInfoHash());
-                notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), TorrentState.Status.STARTED));
+                notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), TorrentState.Status.Started));
             }
             default -> Log.debug(Torrent.class, "[{}] Torrent already started", state.getInfoHash());
         }
@@ -69,12 +69,12 @@ public final class Torrent implements ActorReceiver {
         Log.debug(Torrent.class, "[{}] Handling stop command {}", state.getInfoHash(), command);
 
         switch (state.getStatus()) {
-            case STARTED,
-                 RUNNING,
-                 ERRORED -> {
-                state.setStatus(TorrentState.Status.STOPPED);
+            case Started,
+                 Running,
+                 Errored -> {
+                state.setStatus(TorrentState.Status.Stopped);
                 Log.info(Torrent.class, "[{}] Torrent stopped", state.getInfoHash());
-                notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), TorrentState.Status.STOPPED));
+                notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), TorrentState.Status.Stopped));
             }
             default -> Log.debug(Torrent.class, "[{}] Torrent already stopped", state.getInfoHash());
         }

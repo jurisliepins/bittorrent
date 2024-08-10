@@ -23,7 +23,7 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
 
     public ClientStateTorrent(final ActorRef ref, final MetaInfo metaInfo) {
         this.ref = Objects.requireNonNull(ref, "ref is null");
-        this.status = Status.STOPPED;
+        this.status = Status.Stopped;
         this.infoHash = metaInfo.info().hash();
 //        this.peerId = new Object();
         this.bitfield = new Bitfield(metaInfo.info().pieces().length);
@@ -144,8 +144,8 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
     }
 
     public enum Status {
-        STARTED,
-        STOPPED,
-        ERRORED
+        Started,
+        Stopped,
+        Errored
     }
 }

@@ -1,5 +1,6 @@
 package com.github.jurisliepins.tracker;
 
+import com.github.jurisliepins.BitTorrentClient;
 import com.github.jurisliepins.CoreException;
 
 import java.io.Closeable;
@@ -10,6 +11,12 @@ import java.net.http.HttpResponse;
 
 public final class TrackerClient implements Closeable {
 
+    private static final String USER_AGENT_KEY = "User-Agent";
+    private static final String ACCEPT_KEY = "Accept";
+
+    private static final String USER_AGENT_VALUE = "%s/%s".formatted(BitTorrentClient.NAME, BitTorrentClient.VERSION);
+    private static final String ACCEPT_VALUE = "*/*";
+
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public TrackerResponse announce(final String query) {
@@ -17,8 +24,8 @@ public final class TrackerClient implements Closeable {
             final HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(new URI(query))
                     .GET()
-                    .header("User-Agent", "JBitTorrent/0.01")
-                    .header("Accept", "*/*")
+                    .header(USER_AGENT_KEY, USER_AGENT_VALUE)
+                    .header(ACCEPT_KEY, ACCEPT_VALUE)
                     .build();
             final byte[] bytes = httpClient
                     .send(httpRequest, HttpResponse.BodyHandlers.ofByteArray())

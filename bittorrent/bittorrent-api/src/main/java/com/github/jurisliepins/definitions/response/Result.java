@@ -12,10 +12,10 @@ public record Result<T>(
     }
 
     public static <T> Result<T> success(final T data) {
-        return new Result<>(StatusType.SUCCESS, data);
+        return new Result<>(StatusType.Success, data);
     }
 
     public static <T> Result<T> failure(final T data) {
-        return new Result<>(StatusType.FAILURE, data);
+        return new Result<>(StatusType.Failure, data);
     }
 }
