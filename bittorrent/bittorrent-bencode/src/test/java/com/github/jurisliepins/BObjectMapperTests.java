@@ -1,6 +1,9 @@
 package com.github.jurisliepins;
 
-import com.github.jurisliepins.value.*;
+import com.github.jurisliepins.value.BInteger;
+import com.github.jurisliepins.value.BByteString;
+import com.github.jurisliepins.value.BList;
+import com.github.jurisliepins.value.BDictionary;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
