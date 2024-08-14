@@ -30,7 +30,7 @@ public interface Actor {
     }
 
     class RunnableActor implements ActorRef, Runnable {
-        private final LinkedBlockingQueue<Envelope> mailbox = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<Letter> mailbox = new LinkedBlockingQueue<>();
         private final ActorSystem system;
         private final ActorReceiver receiver;
 
@@ -41,13 +41,13 @@ public interface Actor {
 
         public <T> ActorRef post(final T message, final ActorRef sender) {
             Objects.requireNonNull(message, "message is null");
-            mailbox.add(new Envelope.Success(message, system, this, sender));
+            mailbox.add(new Letter(message, system, this, sender));
             return this;
         }
 
         public <T> ActorRef post(final T message) {
             Objects.requireNonNull(message, "message is null");
-            mailbox.add(new Envelope.Success(message, system, this, BlankActor.INSTANCE));
+            mailbox.add(new Letter(message, system, this, BlankActor.INSTANCE));
             return this;
         }
 
@@ -85,14 +85,19 @@ public interface Actor {
             NextState nextState;
             do {
                 try {
-                    nextState = receiver.receive(mailbox.take());
-                } catch (Throwable cause) {
+                    final Letter letter = mailbox.take();
                     try {
-                        nextState = receiver.receive(new Envelope.Failure(cause, system));
-                    } catch (Throwable ignored) {
-                        // If actor throws while handling an exception then we can fall into an infinite loop so we simply return.
-                        return;
+                        nextState = receiver.receive(Envelope.Success.fromLetter(letter));
+                    } catch (Throwable cause) {
+                        try {
+                            nextState = receiver.receive(Envelope.Failure.fromLetter(letter, cause));
+                        } catch (Throwable ignored) {
+                            // If actor throws while handling an exception then we can fall into an infinite loop so we simply return.
+                            return;
+                        }
                     }
+                } catch (InterruptedException e) {
+                    throw new ActorException("Actor interrupted", e);
                 }
             } while (nextState == NextState.Receive);
         }

@@ -45,18 +45,12 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleCommand(final Envelope.Success envelope, final ClientCommand command) {
-        try {
-            return switch (command) {
-                case ClientCommand.Add add -> handleAddCommand(envelope, add);
-                case ClientCommand.Remove remove -> handleRemoveCommand(envelope, remove);
-                case ClientCommand.Start start -> handleStartCommand(envelope, start);
-                case ClientCommand.Stop stop -> handleStopCommand(envelope, stop);
-            };
-        } catch (Exception e) {
-            Log.error(Client.class, "Failed to handle command", e);
-            envelope.reply(new ClientCommandResult.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
-        }
-        return NextState.Receive;
+        return switch (command) {
+            case ClientCommand.Add add -> handleAddCommand(envelope, add);
+            case ClientCommand.Remove remove -> handleRemoveCommand(envelope, remove);
+            case ClientCommand.Start start -> handleStartCommand(envelope, start);
+            case ClientCommand.Stop stop -> handleStopCommand(envelope, stop);
+        };
     }
 
     private NextState handleAddCommand(final Envelope.Success envelope, final ClientCommand.Add command) {
@@ -139,15 +133,9 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleRequest(final Envelope.Success envelope, final ClientRequest request) {
-        try {
-            return switch (request) {
-                case ClientRequest.Get get -> handleGetRequest(envelope, get);
-            };
-        } catch (Exception e) {
-            Log.error(Client.class, "Failed to handle request", e);
-            envelope.reply(new ClientResponse.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(e.getMessage())));
-        }
-        return NextState.Receive;
+        return switch (request) {
+            case ClientRequest.Get get -> handleGetRequest(envelope, get);
+        };
     }
 
     private NextState handleGetRequest(final Envelope.Success envelope, final ClientRequest.Get request) {
@@ -168,16 +156,11 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleTorrentNotification(final Envelope.Success envelope, final TorrentNotification notification) {
-        try {
-            return switch (notification) {
-                case TorrentNotification.StatusChanged statusChanged -> handleStatusChangedTorrentNotification(envelope, statusChanged);
-                case TorrentNotification.Terminated terminated -> handleTerminatedTorrentNotification(envelope, terminated);
-                case TorrentNotification.Failure failure -> handleFailureTorrentNotification(envelope, failure);
-            };
-        } catch (Exception e) {
-            Log.error(Client.class, "Failed to handle torrent notification", e);
-        }
-        return NextState.Receive;
+        return switch (notification) {
+            case TorrentNotification.StatusChanged statusChanged -> handleStatusChangedTorrentNotification(envelope, statusChanged);
+            case TorrentNotification.Terminated terminated -> handleTerminatedTorrentNotification(envelope, terminated);
+            case TorrentNotification.Failure failure -> handleFailureTorrentNotification(envelope, failure);
+        };
     }
 
     private NextState handleStatusChangedTorrentNotification(final Envelope.Success envelope, final TorrentNotification.StatusChanged notification) {
@@ -196,8 +179,23 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleFailure(final Envelope.Failure envelope) {
-        Log.error(Client.class, "Terminating with failure", envelope.cause());
-        return NextState.Terminate;
+        switch (envelope.message()) {
+            case ClientCommand command -> {
+                Log.error(Client.class, "Failed to handle command", envelope.cause());
+                envelope.reply(new ClientCommandResult.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(envelope.cause().getMessage())));
+            }
+            case ClientRequest request -> {
+                Log.error(Client.class, "Failed to handle request", envelope.cause());
+                envelope.reply(new ClientResponse.Failure(InfoHash.BLANK, "Failed with '%s'".formatted(envelope.cause().getMessage())));
+            }
+            case TorrentNotification notification -> {
+                Log.error(Client.class, "Failed to handle torrent notification", envelope.cause());
+            }
+            default -> {
+                Log.error(Client.class, "Failed to handle message", envelope.cause());
+            }
+        }
+        return NextState.Receive;
     }
 
     private NextState unhandled(final Object message) {
