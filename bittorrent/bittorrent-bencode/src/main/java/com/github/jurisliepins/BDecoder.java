@@ -70,31 +70,19 @@ public final class BDecoder {
     }
 
     private static BValue decodeInteger(final BInputStream stream) {
-        final long multiplier = 10L;
-
         long sign = 1L;
         long result = 0L;
 
         for (byte value = stream.readByte(); value != (byte) 'e'; value = stream.readByte()) {
-            switch (value) {
-                case '-':
-                    sign = -1L;
-                    break;
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                    result = (result * multiplier) + ((long) (value - (byte) '0'));
-                    break;
-                default:
-                    throw new BException("Unexpected char '%c' when reading %s"
-                                                 .formatted((char) value, BValueType.BIntegerType));
+            if (value == '-') {
+                sign = -1L;
+            } else {
+                if (value >= '0' && value <= '9') {
+                    result *= 10L;
+                    result += value - (byte) '0';
+                } else {
+                    throw new BException("Unexpected char '%c' when reading %s".formatted((char) value, BValueType.BIntegerType));
+                }
             }
         }
 
@@ -102,27 +90,14 @@ public final class BDecoder {
     }
 
     private static BValue decodeByteString(final BInputStream stream) throws IOException {
-        final int multiplier = 10;
-
         int length = 0;
 
         for (byte value = stream.readByte(); value != (byte) ':'; value = stream.readByte()) {
-            switch (value) {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                    length = (length * multiplier) + (value - (byte) '0');
-                    break;
-                default:
-                    throw new BException("Unexpected char '%c' when reading %s"
-                                                 .formatted((char) value, BValueType.BByteStringType));
+            if (value >= '0' && value <= '9') {
+                length *= 10;
+                length += value - (byte) '0';
+            } else {
+                throw new BException("Unexpected char '%c' when reading %s".formatted((char) value, BValueType.BByteStringType));
             }
         }
 
