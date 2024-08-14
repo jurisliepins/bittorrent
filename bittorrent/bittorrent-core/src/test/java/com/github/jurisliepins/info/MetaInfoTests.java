@@ -29,7 +29,6 @@ public class MetaInfoTests {
 
     @Test
     @DisplayName("Should decode one file meta-info")
-    @SuppressWarnings("checkstyle:MagicNumber")
     public void shouldDecodeOneFileMetaInfo() throws IOException {
         switch (MetaInfo.fromBytes(readFileAsBytes(SINGLE_FILE_TORRENT))) {
             case MetaInfo metaInfo -> {
@@ -58,7 +57,6 @@ public class MetaInfoTests {
 
     @Test
     @DisplayName("Should decode many file meta-info")
-    @SuppressWarnings("checkstyle:MagicNumber")
     public void shouldDecodeManyFileMetaInfo() throws IOException {
         switch (MetaInfo.fromBytes(readFileAsBytes(MULTI_FILE_TORRENT))) {
             case MetaInfo metaInfo -> {
@@ -98,7 +96,6 @@ public class MetaInfoTests {
 
     @Test
     @DisplayName("Should encode/decode UTF-8 strings")
-    @SuppressWarnings("checkstyle:MagicNumber")
     public void shouldEncodeDecodeUtf8Strings() {
         final MetaInfoEntity utf8MetaInfo = new MetaInfoEntity(
                 new InfoEntity(

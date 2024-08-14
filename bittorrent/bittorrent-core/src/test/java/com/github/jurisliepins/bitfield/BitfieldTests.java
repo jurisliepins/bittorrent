@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("Bitfield tests")
 public final class BitfieldTests {
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     @DisplayName("Should bitfield get/set")
     public void shouldBitfieldGetSet() {
@@ -75,7 +74,6 @@ public final class BitfieldTests {
         assertTrue(bitfield.getBit(21));
     }
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     @DisplayName("Should bitfield set bytes")
     public void shouldBitfieldSetBytes() {
@@ -136,7 +134,6 @@ public final class BitfieldTests {
         }, bitfield.toByteArray());
     }
 
-        @SuppressWarnings("checkstyle:MagicNumber")
         @Test
         @DisplayName("Should bitfield get bit capacity")
         public void shouldBitfieldGetBitCapacity() {
@@ -150,7 +147,6 @@ public final class BitfieldTests {
             assertEquals(34, bitfield4.capacity());
         }
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     @DisplayName("Should bitfield get bit count")
     public void shouldBitfieldGetBitCount() {
@@ -190,7 +186,6 @@ public final class BitfieldTests {
         assertEquals((Byte.SIZE * 4), bitfield.count());
     }
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     @DisplayName("Should bitfield get is empty")
     public void shouldBitfieldGetIsEmpty() {
@@ -203,7 +198,6 @@ public final class BitfieldTests {
         assertTrue(bitfield.isEmpty());
     }
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     @DisplayName("Should bitfield get is full")
     public void shouldBitfieldGetIsFull() {
@@ -216,7 +210,6 @@ public final class BitfieldTests {
         assertFalse(bitfield.isFull());
     }
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     @DisplayName("Should bitfield get byte array")
     public void shouldBitfieldGetByteArray() {
@@ -230,7 +223,6 @@ public final class BitfieldTests {
         assertArrayEquals(bytes, bitfield.toByteArray());
     }
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     @DisplayName("Should bitfield equals")
     public void shouldBitfieldEquals() {
@@ -254,7 +246,6 @@ public final class BitfieldTests {
         assertNotEquals(bitfield1, bitfield2);
     }
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     @Test
     @DisplayName("Should bitfield hash code")
     public void shouldBitfieldHashCode() {
