@@ -103,8 +103,7 @@ public final class BDecoder {
 
         final byte[] bytes = stream.readNBytes(length);
         if (bytes.length != length) {
-            throw new BException("Unexpected byte count '%d' when expected length '%d"
-                                         .formatted(length, bytes.length));
+            throw new BException("Unexpected byte count '%d' when expected length '%d".formatted(length, bytes.length));
         }
 
         return new BByteString(bytes);
