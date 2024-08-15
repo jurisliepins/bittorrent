@@ -99,7 +99,7 @@ public interface Actor {
                             return;
                         }
                     }
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                     // Interrupted means actor system has been shutdown, so we stop the actor.
                     return;
                 }
