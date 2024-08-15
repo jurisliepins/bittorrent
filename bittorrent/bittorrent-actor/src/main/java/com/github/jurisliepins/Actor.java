@@ -1,7 +1,6 @@
 package com.github.jurisliepins;
 
-import com.github.jurisliepins.mailbox.MailboxFailure;
-import com.github.jurisliepins.mailbox.MailboxSuccess;
+import com.github.jurisliepins.mailbox.Mailbox;
 
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -90,10 +89,10 @@ public interface Actor {
                 try {
                     final Letter letter = letters.take();
                     try {
-                        nextState = receiver.receive(MailboxSuccess.of(letter));
+                        nextState = receiver.receive(Mailbox.success(letter));
                     } catch (Throwable cause) {
                         try {
-                            nextState = receiver.receive(MailboxFailure.of(letter, cause));
+                            nextState = receiver.receive(Mailbox.failure(letter, cause));
                         } catch (Throwable ignored) {
                             // If actor throws while handling an exception then we can fall into an infinite loop so we simply return.
                             return;

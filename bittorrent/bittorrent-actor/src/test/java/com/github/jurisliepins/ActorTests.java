@@ -1,7 +1,5 @@
 package com.github.jurisliepins;
 
-import com.github.jurisliepins.mailbox.MailboxFailure;
-import com.github.jurisliepins.mailbox.MailboxSuccess;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,10 +43,7 @@ public final class ActorTests {
         final CountDownLatch latch = new CountDownLatch(1);
 
         final ActorRef ref = system.spawn(mailbox -> {
-            switch (mailbox) {
-                case MailboxSuccess ignored -> latch.countDown();
-                case MailboxFailure ignored -> latch.countDown();
-            }
+            latch.countDown();
             return NextState.Receive;
         });
         ref.post("Hello, World!");
@@ -63,13 +58,16 @@ public final class ActorTests {
         final String response = "Response!";
 
         final ActorRef ref = system.spawn(mailbox -> {
-            switch (mailbox) {
-                case MailboxSuccess success -> {
-                    success.sender().post(response);
+            switch (mailbox.status()) {
+                case Success -> {
+                    mailbox.sender().post(response);
                     return NextState.Receive;
                 }
-                case MailboxFailure ignored -> {
+                case Failure -> {
                     return NextState.Receive;
+                }
+                default -> {
+                    return NextState.Terminate;
                 }
             }
         });
@@ -84,13 +82,16 @@ public final class ActorTests {
         final String response = "Response!";
 
         final ActorRef ref = system.spawn(mailbox -> {
-            switch (mailbox) {
-                case MailboxSuccess success -> {
-                    success.sender().post(response);
+            switch (mailbox.status()) {
+                case Success -> {
+                    mailbox.sender().post(response);
                     return NextState.Receive;
                 }
-                case MailboxFailure ignored -> {
+                case Failure -> {
                     return NextState.Receive;
+                }
+                default -> {
+                    return NextState.Terminate;
                 }
             }
         });
@@ -108,26 +109,32 @@ public final class ActorTests {
         final CountDownLatch latch2 = new CountDownLatch(messageCount);
 
         final ActorRef ref1 = system.spawn(mailbox -> {
-            switch (mailbox) {
-                case MailboxSuccess success -> {
-                    success.sender().post(success.message(), success.self());
+            switch (mailbox.status()) {
+                case Success -> {
+                    mailbox.sender().post(mailbox.message(), mailbox.self());
                     latch1.countDown();
                     return NextState.Receive;
                 }
-                case MailboxFailure ignored -> {
+                case Failure -> {
                     return NextState.Receive;
+                }
+                default -> {
+                    return NextState.Terminate;
                 }
             }
         });
         final ActorRef ref2 = system.spawn(mailbox -> {
-            switch (mailbox) {
-                case MailboxSuccess success -> {
-                    success.sender().post(success.message(), success.self());
+            switch (mailbox.status()) {
+                case Success -> {
+                    mailbox.sender().post(mailbox.message(), mailbox.self());
                     latch2.countDown();
                     return NextState.Receive;
                 }
-                case MailboxFailure ignored -> {
+                case Failure -> {
                     return NextState.Receive;
+                }
+                default -> {
+                    return NextState.Terminate;
                 }
             }
         });
@@ -146,8 +153,8 @@ public final class ActorTests {
 
         final CountDownLatch latch = new CountDownLatch(messageCount);
 
-        final ActorRef ref = system.spawn(mailbox -> switch (mailbox) {
-            case MailboxSuccess success -> switch (success.message()) {
+        final ActorRef ref = system.spawn(mailbox -> switch (mailbox.status()) {
+            case Success -> switch (mailbox.message()) {
                 case String command -> {
                     if ("receive".equals(command)) {
                         latch.countDown();
@@ -160,7 +167,7 @@ public final class ActorTests {
                 }
                 default -> throw new RuntimeException("Should not have reached this code");
             };
-            case MailboxFailure ignored -> throw new RuntimeException("Should not have reached this code");
+            default -> throw new RuntimeException("Should not have reached this code");
         });
 
         ref.post("receive");
@@ -179,7 +186,6 @@ public final class ActorTests {
         assertFalse(result, "Actor should have stopped processing messages");
 
         final int count = (int) latch.getCount();
-        assertEquals(messageCount / 2, count,
-                     "Actor should have processed only %d messages".formatted(messageCount / 2));
+        assertEquals(messageCount / 2, count, "Actor should have processed only %d messages".formatted(messageCount / 2));
     }
 }
