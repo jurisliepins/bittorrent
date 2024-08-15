@@ -1,5 +1,9 @@
 package com.github.jurisliepins;
 
+import com.github.jurisliepins.mailbox.Mailbox;
+import com.github.jurisliepins.mailbox.MailboxFailure;
+import com.github.jurisliepins.mailbox.MailboxSuccess;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -11,13 +15,13 @@ public final class Awaiter<T> implements ActorReceiver {
 
     @SuppressWarnings("unchecked")
     @Override
-    public NextState receive(final Envelope envelope) {
-        switch (envelope) {
-            case Envelope.Success success -> {
+    public NextState receive(final Mailbox mailbox) {
+        switch (mailbox) {
+            case MailboxSuccess success -> {
                 result = (T) success.message();
                 latch.countDown();
             }
-            case Envelope.Failure ignored -> {
+            case MailboxFailure ignored -> {
                 result = null;
                 latch.countDown();
             }

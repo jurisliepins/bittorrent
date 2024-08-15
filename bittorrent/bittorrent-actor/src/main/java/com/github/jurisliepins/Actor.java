@@ -1,5 +1,8 @@
 package com.github.jurisliepins;
 
+import com.github.jurisliepins.mailbox.MailboxFailure;
+import com.github.jurisliepins.mailbox.MailboxSuccess;
+
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +33,7 @@ public interface Actor {
     }
 
     class RunnableActor implements ActorRef, Runnable {
-        private final LinkedBlockingQueue<Letter> mailbox = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<Letter> letters = new LinkedBlockingQueue<>();
         private final ActorSystem system;
         private final ActorReceiver receiver;
 
@@ -41,13 +44,13 @@ public interface Actor {
 
         public <T> ActorRef post(final T message, final ActorRef sender) {
             Objects.requireNonNull(message, "message is null");
-            mailbox.add(new Letter(message, system, this, sender));
+            letters.add(new Letter(message, system, this, sender));
             return this;
         }
 
         public <T> ActorRef post(final T message) {
             Objects.requireNonNull(message, "message is null");
-            mailbox.add(new Letter(message, system, this, BlankActor.INSTANCE));
+            letters.add(new Letter(message, system, this, BlankActor.INSTANCE));
             return this;
         }
 
@@ -85,19 +88,20 @@ public interface Actor {
             NextState nextState;
             do {
                 try {
-                    final Letter letter = mailbox.take();
+                    final Letter letter = letters.take();
                     try {
-                        nextState = receiver.receive(Envelope.Success.fromLetter(letter));
+                        nextState = receiver.receive(MailboxSuccess.of(letter));
                     } catch (Throwable cause) {
                         try {
-                            nextState = receiver.receive(Envelope.Failure.fromLetter(letter, cause));
+                            nextState = receiver.receive(MailboxFailure.of(letter, cause));
                         } catch (Throwable ignored) {
                             // If actor throws while handling an exception then we can fall into an infinite loop so we simply return.
                             return;
                         }
                     }
                 } catch (InterruptedException e) {
-                    throw new ActorException("Actor interrupted", e);
+                    // Interrupted means actor system has been shutdown, so we stop the actor.
+                    return;
                 }
             } while (nextState == NextState.Receive);
         }

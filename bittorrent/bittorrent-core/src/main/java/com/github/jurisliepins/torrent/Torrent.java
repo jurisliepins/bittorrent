@@ -2,9 +2,11 @@ package com.github.jurisliepins.torrent;
 
 import com.github.jurisliepins.ActorReceiver;
 import com.github.jurisliepins.ActorRef;
-import com.github.jurisliepins.Envelope;
+import com.github.jurisliepins.mailbox.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.log.Log;
+import com.github.jurisliepins.mailbox.MailboxFailure;
+import com.github.jurisliepins.mailbox.MailboxSuccess;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.torrent.state.TorrentState;
@@ -23,26 +25,26 @@ public final class Torrent implements ActorReceiver {
     }
 
     @Override
-    public NextState receive(final Envelope envelope) {
-        return switch (envelope) {
-            case Envelope.Success success -> handleSuccess(success);
-            case Envelope.Failure failure -> handleFailure(failure);
+    public NextState receive(final Mailbox mailbox) {
+        return switch (mailbox) {
+            case MailboxSuccess success -> handleSuccess(success);
+            case MailboxFailure failure -> handleFailure(failure);
         };
     }
 
-    private NextState handleSuccess(final Envelope.Success envelope) {
-        return switch (envelope.message()) {
-            case TorrentCommand command -> handleCommand(envelope, command);
-            default -> unhandled(envelope.message());
+    private NextState handleSuccess(final MailboxSuccess mailbox) {
+        return switch (mailbox.message()) {
+            case TorrentCommand command -> handleCommand(mailbox, command);
+            default -> unhandled(mailbox.message());
         };
     }
 
-    private NextState handleCommand(final Envelope.Success envelope, final TorrentCommand command) {
+    private NextState handleCommand(final MailboxSuccess mailbox, final TorrentCommand command) {
         try {
             return switch (command) {
-                case TorrentCommand.Start start -> handleStartCommand(envelope, start);
-                case TorrentCommand.Stop stop -> handleStopCommand(envelope, stop);
-                case TorrentCommand.Terminate terminate -> handleTerminateCommand(envelope, terminate);
+                case TorrentCommand.Start start -> handleStartCommand(mailbox, start);
+                case TorrentCommand.Stop stop -> handleStopCommand(mailbox, stop);
+                case TorrentCommand.Terminate terminate -> handleTerminateCommand(mailbox, terminate);
             };
         } catch (Exception e) {
             Log.error(Torrent.class, "[{}] Failed to handle command", state.getInfoHash(), e);
@@ -51,7 +53,7 @@ public final class Torrent implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleStartCommand(final Envelope.Success envelope, final TorrentCommand.Start command) {
+    private NextState handleStartCommand(final MailboxSuccess mailbox, final TorrentCommand.Start command) {
         Log.debug(Torrent.class, "[{}] Handling start command {}", state.getInfoHash(), command);
 
         switch (state.getStatus()) {
@@ -65,7 +67,7 @@ public final class Torrent implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleStopCommand(final Envelope.Success envelope, final TorrentCommand.Stop command) {
+    private NextState handleStopCommand(final MailboxSuccess mailbox, final TorrentCommand.Stop command) {
         Log.debug(Torrent.class, "[{}] Handling stop command {}", state.getInfoHash(), command);
 
         switch (state.getStatus()) {
@@ -81,14 +83,14 @@ public final class Torrent implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleTerminateCommand(final Envelope.Success envelope, final TorrentCommand.Terminate command) {
+    private NextState handleTerminateCommand(final MailboxSuccess mailbox, final TorrentCommand.Terminate command) {
         Log.debug(Torrent.class, "[{}] Handling terminate command {}", state.getInfoHash(), command);
         notifiedRef.post(new TorrentNotification.Terminated(state.getInfoHash()));
         return NextState.Terminate;
     }
 
-    private NextState handleFailure(final Envelope.Failure envelope) {
-        Log.error(Torrent.class, "[{}] Terminating with failure", state.getInfoHash(), envelope.cause());
+    private NextState handleFailure(final MailboxFailure mailbox) {
+        Log.error(Torrent.class, "[{}] Terminating with failure", state.getInfoHash(), mailbox.cause());
         notifiedRef.post(new TorrentNotification.Terminated(state.getInfoHash()));
         return NextState.Terminate;
     }

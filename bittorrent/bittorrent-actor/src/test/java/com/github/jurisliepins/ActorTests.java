@@ -1,5 +1,7 @@
 package com.github.jurisliepins;
 
+import com.github.jurisliepins.mailbox.MailboxFailure;
+import com.github.jurisliepins.mailbox.MailboxSuccess;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +35,7 @@ public final class ActorTests {
     @Test
     @DisplayName("Should spawn actor")
     public void shouldSpawnActor() {
-        final ActorRef ref = system.spawn(envelope -> NextState.Terminate);
+        final ActorRef ref = system.spawn(mailbox -> NextState.Terminate);
         assertNotNull(ref, "Spawned actor should not be null");
     }
 
@@ -42,10 +44,10 @@ public final class ActorTests {
     public void shouldPostMessage() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
-        final ActorRef ref = system.spawn(envelope -> {
-            switch (envelope) {
-                case Envelope.Success ignored -> latch.countDown();
-                case Envelope.Failure ignored -> latch.countDown();
+        final ActorRef ref = system.spawn(mailbox -> {
+            switch (mailbox) {
+                case MailboxSuccess ignored -> latch.countDown();
+                case MailboxFailure ignored -> latch.countDown();
             }
             return NextState.Receive;
         });
@@ -60,13 +62,13 @@ public final class ActorTests {
     public void shouldPostMessageWithReply() {
         final String response = "Response!";
 
-        final ActorRef ref = system.spawn(envelope -> {
-            switch (envelope) {
-                case Envelope.Success success -> {
+        final ActorRef ref = system.spawn(mailbox -> {
+            switch (mailbox) {
+                case MailboxSuccess success -> {
                     success.sender().post(response);
                     return NextState.Receive;
                 }
-                case Envelope.Failure ignored -> {
+                case MailboxFailure ignored -> {
                     return NextState.Receive;
                 }
             }
@@ -81,13 +83,13 @@ public final class ActorTests {
     public void shouldPostMessageWithReplyWithTimeout() {
         final String response = "Response!";
 
-        final ActorRef ref = system.spawn(envelope -> {
-            switch (envelope) {
-                case Envelope.Success success -> {
+        final ActorRef ref = system.spawn(mailbox -> {
+            switch (mailbox) {
+                case MailboxSuccess success -> {
                     success.sender().post(response);
                     return NextState.Receive;
                 }
-                case Envelope.Failure ignored -> {
+                case MailboxFailure ignored -> {
                     return NextState.Receive;
                 }
             }
@@ -105,26 +107,26 @@ public final class ActorTests {
         final CountDownLatch latch1 = new CountDownLatch(messageCount);
         final CountDownLatch latch2 = new CountDownLatch(messageCount);
 
-        final ActorRef ref1 = system.spawn(envelope -> {
-            switch (envelope) {
-                case Envelope.Success success -> {
+        final ActorRef ref1 = system.spawn(mailbox -> {
+            switch (mailbox) {
+                case MailboxSuccess success -> {
                     success.sender().post(success.message(), success.self());
                     latch1.countDown();
                     return NextState.Receive;
                 }
-                case Envelope.Failure ignored -> {
+                case MailboxFailure ignored -> {
                     return NextState.Receive;
                 }
             }
         });
-        final ActorRef ref2 = system.spawn(envelope -> {
-            switch (envelope) {
-                case Envelope.Success success -> {
+        final ActorRef ref2 = system.spawn(mailbox -> {
+            switch (mailbox) {
+                case MailboxSuccess success -> {
                     success.sender().post(success.message(), success.self());
                     latch2.countDown();
                     return NextState.Receive;
                 }
-                case Envelope.Failure ignored -> {
+                case MailboxFailure ignored -> {
                     return NextState.Receive;
                 }
             }
@@ -144,8 +146,8 @@ public final class ActorTests {
 
         final CountDownLatch latch = new CountDownLatch(messageCount);
 
-        final ActorRef ref = system.spawn(envelope -> switch (envelope) {
-            case Envelope.Success success -> switch (success.message()) {
+        final ActorRef ref = system.spawn(mailbox -> switch (mailbox) {
+            case MailboxSuccess success -> switch (success.message()) {
                 case String command -> {
                     if ("receive".equals(command)) {
                         latch.countDown();
@@ -158,7 +160,7 @@ public final class ActorTests {
                 }
                 default -> throw new RuntimeException("Should not have reached this code");
             };
-            case Envelope.Failure ignored -> throw new RuntimeException("Should not have reached this code");
+            case MailboxFailure ignored -> throw new RuntimeException("Should not have reached this code");
         });
 
         ref.post("receive");
