@@ -88,9 +88,7 @@ public final class Torrent implements ActorReceiver {
                 Log.error(Torrent.class, "[{}] Failed to handle command", state.getInfoHash(), mailbox.cause());
                 notifiedRef.post(new TorrentNotification.Failure(state.getInfoHash(), mailbox.cause()));
             }
-            default -> {
-                Log.error(Client.class, "Failed to handle message", mailbox.cause());
-            }
+            default -> Log.error(Client.class, "Failed to handle message", mailbox.cause());
         }
         return NextState.Terminate;
     }

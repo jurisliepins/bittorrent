@@ -191,9 +191,7 @@ public final class Client implements ActorReceiver {
             case TorrentNotification notification -> {
                 Log.error(Client.class, "Failed to handle torrent notification", mailbox.cause());
             }
-            default -> {
-                Log.error(Client.class, "Failed to handle message", mailbox.cause());
-            }
+            default -> Log.error(Client.class, "Failed to handle message", mailbox.cause());
         }
         return NextState.Receive;
     }
