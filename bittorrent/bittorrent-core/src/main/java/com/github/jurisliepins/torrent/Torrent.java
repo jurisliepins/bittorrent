@@ -92,9 +92,6 @@ public final class Torrent implements ActorReceiver {
                 Log.error(Client.class, "Failed to handle message", mailbox.cause());
             }
         }
-
-        Log.error(Torrent.class, "[{}] Terminating with failure", state.getInfoHash(), mailbox.cause());
-        notifiedRef.post(new TorrentNotification.Terminated(state.getInfoHash()));
         return NextState.Terminate;
     }
 
