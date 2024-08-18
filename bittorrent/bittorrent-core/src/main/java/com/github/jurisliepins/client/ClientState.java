@@ -1,4 +1,4 @@
-package com.github.jurisliepins.client.state;
+package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.info.InfoHash;
 

@@ -1,7 +1,7 @@
 package com.github.jurisliepins.torrent.message;
 
 import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.torrent.state.TorrentState;
+import com.github.jurisliepins.types.StatusType;
 
 import java.util.Objects;
 
@@ -10,7 +10,7 @@ public sealed interface TorrentNotification permits
         TorrentNotification.Terminated,
         TorrentNotification.Failure {
 
-    record StatusChanged(InfoHash infoHash, TorrentState.Status status) implements TorrentNotification {
+    record StatusChanged(InfoHash infoHash, StatusType status) implements TorrentNotification {
         public StatusChanged {
             Objects.requireNonNull(infoHash, "infoHash is null");
             Objects.requireNonNull(status, "status is null");

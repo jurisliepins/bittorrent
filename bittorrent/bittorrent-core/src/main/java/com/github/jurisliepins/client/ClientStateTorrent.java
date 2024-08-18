@@ -1,17 +1,17 @@
-package com.github.jurisliepins.client.state;
+package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.bitfield.Bitfield;
 import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.info.MetaInfo;
+import com.github.jurisliepins.types.StatusType;
 
 import java.util.Objects;
 
-public final class ClientStateTorrent implements ImmutableClientStateTorrent {
+public final class ClientStateTorrent {
     private ActorRef ref;
-    private Status status;
+    private StatusType status;
     private InfoHash infoHash;
-//    private Object peerId;
+    private Object peerId;
     private Bitfield bitfield;
     private String name;
     private long length;
@@ -21,21 +21,6 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
     private double downloadRate;
     private double uploadRate;
 
-    public ClientStateTorrent(final ActorRef ref, final MetaInfo metaInfo) {
-        this.ref = Objects.requireNonNull(ref, "ref is null");
-        this.status = Status.Stopped;
-        this.infoHash = metaInfo.info().hash();
-//        this.peerId = new Object();
-        this.bitfield = new Bitfield(metaInfo.info().pieces().length);
-        this.name = metaInfo.info().name();
-        this.length = metaInfo.info().length();
-        this.downloaded = 0L;
-        this.uploaded = 0L;
-        this.left = metaInfo.info().length();
-        this.downloadRate = 0.0;
-        this.uploadRate = 0.0;
-    }
-
     public ActorRef getRef() {
         return ref;
     }
@@ -44,16 +29,14 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
         this.ref = Objects.requireNonNull(ref, "ref is null");
     }
 
-    @Override
-    public Status getStatus() {
+    public StatusType getStatus() {
         return status;
     }
 
-    public void setStatus(final Status status) {
+    public void setStatus(final StatusType status) {
         this.status = Objects.requireNonNull(status, "status is null");
     }
 
-    @Override
     public InfoHash getInfoHash() {
         return infoHash;
     }
@@ -62,16 +45,14 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
         this.infoHash = Objects.requireNonNull(infoHash, "infoHash is null");
     }
 
-//    @Override
-//    public Object getPeerId() {
-//        return peerId;
-//    }
-//
-//    public void setPeerId(final Object peerId) {
-//        this.peerId = Objects.requireNonNull(peerId, "peerId is null");
-//    }
+    public Object getPeerId() {
+        return peerId;
+    }
 
-    @Override
+    public void setPeerId(final Object peerId) {
+        this.peerId = Objects.requireNonNull(peerId, "peerId is null");
+    }
+
     public Bitfield getBitfield() {
         return bitfield;
     }
@@ -80,7 +61,6 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
         this.bitfield = Objects.requireNonNull(bitfield, "bitfield is null");
     }
 
-    @Override
     public String getName() {
         return name;
     }
@@ -89,7 +69,6 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
         this.name = Objects.requireNonNull(name, "name is null");
     }
 
-    @Override
     public long getLength() {
         return length;
     }
@@ -98,7 +77,6 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
         this.length = length;
     }
 
-    @Override
     public long getDownloaded() {
         return downloaded;
     }
@@ -107,7 +85,6 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
         this.downloaded = downloaded;
     }
 
-    @Override
     public long getUploaded() {
         return uploaded;
     }
@@ -116,7 +93,6 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
         this.uploaded = uploaded;
     }
 
-    @Override
     public long getLeft() {
         return left;
     }
@@ -125,7 +101,6 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
         this.left = left;
     }
 
-    @Override
     public double getDownloadRate() {
         return downloadRate;
     }
@@ -134,18 +109,11 @@ public final class ClientStateTorrent implements ImmutableClientStateTorrent {
         this.downloadRate = downloadRate;
     }
 
-    @Override
     public double getUploadRate() {
         return uploadRate;
     }
 
     public void setUploadRate(final double uploadRate) {
         this.uploadRate = uploadRate;
-    }
-
-    public enum Status {
-        Started,
-        Stopped,
-        Errored
     }
 }

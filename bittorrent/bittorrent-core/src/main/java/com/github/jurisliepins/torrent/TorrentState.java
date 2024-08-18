@@ -1,13 +1,13 @@
-package com.github.jurisliepins.torrent.state;
+package com.github.jurisliepins.torrent;
 
 import com.github.jurisliepins.bitfield.Bitfield;
 import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.info.MetaInfo;
+import com.github.jurisliepins.types.StatusType;
 
 import java.util.List;
 
 public final class TorrentState {
-    private Status status;
+    private StatusType status;
     private InfoHash infoHash;
     private Object peerId;
     private Bitfield bitfield;
@@ -23,29 +23,11 @@ public final class TorrentState {
     private double downloadRate;
     private double uploadRate;
 
-    public TorrentState(final MetaInfo metaInfo) {
-        this.status = Status.Stopped;
-        this.infoHash = metaInfo.info().hash();
-        this.peerId = new Object();
-        this.bitfield = new Bitfield(metaInfo.info().pieces().length);
-        this.pieceLength = metaInfo.info().pieceLength();
-        this.pieces = List.of();
-        this.files = List.of();
-        this.name = metaInfo.info().name();
-        this.length = metaInfo.info().length();
-        this.downloaded = 0L;
-        this.uploaded = 0L;
-        this.left = metaInfo.info().length();
-        this.announce = metaInfo.announce();
-        this.downloadRate = 0.0;
-        this.uploadRate = 0.0;
-    }
-
-    public Status getStatus() {
+    public StatusType getStatus() {
         return status;
     }
 
-    public void setStatus(final Status status) {
+    public void setStatus(final StatusType status) {
         this.status = status;
     }
 
@@ -159,12 +141,5 @@ public final class TorrentState {
 
     public void setUploadRate(final double uploadRate) {
         this.uploadRate = uploadRate;
-    }
-
-    public enum Status {
-        Started,
-        Running,
-        Stopped,
-        Errored
     }
 }

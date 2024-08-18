@@ -7,23 +7,19 @@ import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientCommandResult;
 import com.github.jurisliepins.client.message.ClientRequest;
 import com.github.jurisliepins.client.message.ClientResponse;
-import com.github.jurisliepins.client.state.ClientState;
-import com.github.jurisliepins.client.state.ClientStateTorrent;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.info.MetaInfo;
 import com.github.jurisliepins.log.Log;
-import com.github.jurisliepins.torrent.Torrent;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
-import com.github.jurisliepins.torrent.state.TorrentState;
 
 import java.util.Objects;
 
-public final class Client implements ActorReceiver {
+public final class ClientActor implements ActorReceiver {
 
     private final ClientState state;
 
-    public Client(final ClientState state) {
+    public ClientActor(final ClientState state) {
         this.state = Objects.requireNonNull(state, "state is null");
     }
 
@@ -54,22 +50,22 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleAddCommand(final Mailbox.Success mailbox, final ClientCommand.Add command) {
-        Log.debug(Client.class, "Handling add command {}", command);
+        Log.debug(ClientActor.class, "Handling add command {}", command);
 
         switch (MetaInfo.fromBytes(command.metaInfo())) {
             case MetaInfo metaInfo -> {
                 switch (state.get(metaInfo.info().hash())) {
                     case ClientStateTorrent ignored -> {
-                        Log.info(Client.class, "Torrent '{}' already exists", metaInfo.info().hash());
+                        Log.info(ClientActor.class, "Torrent '{}' already exists", metaInfo.info().hash());
                         mailbox.reply(new ClientCommandResult.Failure(metaInfo.info().hash(), "Torrent already exists"));
                     }
 
                     case null -> {
-                        final ClientStateTorrent torrent = new ClientStateTorrent(
-                                mailbox.system().spawn(new Torrent(mailbox.self(), new TorrentState(metaInfo))),
-                                metaInfo);
-                        state.add(torrent);
-                        Log.info(Client.class, "Torrent '{}' added", metaInfo.info().hash());
+//                        final ClientStateTorrent torrent = new ClientStateTorrent(
+//                                mailbox.system().spawn(new Torrent(mailbox.self(), new TorrentState(metaInfo))),
+//                                metaInfo);
+//                        state.add(torrent);
+                        Log.info(ClientActor.class, "Torrent '{}' added", metaInfo.info().hash());
                         mailbox.reply(new ClientCommandResult.Success(metaInfo.info().hash(), "Torrent added"));
                     }
                 }
@@ -79,17 +75,17 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleRemoveCommand(final Mailbox.Success mailbox, final ClientCommand.Remove command) {
-        Log.debug(Client.class, "Handling remove command {}", command);
+        Log.debug(ClientActor.class, "Handling remove command {}", command);
 
         switch (state.remove(command.infoHash())) {
             case ClientStateTorrent torrent -> {
                 torrent.getRef().post(new TorrentCommand.Terminate(), mailbox.self());
-                Log.info(Client.class, "Removed torrent '{}'", command.infoHash());
+                Log.info(ClientActor.class, "Removed torrent '{}'", command.infoHash());
                 mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent removed"));
             }
 
             case null -> {
-                Log.info(Client.class, "Torrent '{}' doesn't exist", command.infoHash());
+                Log.info(ClientActor.class, "Torrent '{}' doesn't exist", command.infoHash());
                 mailbox.reply(new ClientCommandResult.Failure(command.infoHash(), "Torrent doesn't exist"));
             }
         }
@@ -97,17 +93,17 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleStartCommand(final Mailbox.Success mailbox, final ClientCommand.Start command) {
-        Log.debug(Client.class, "Handling start command {}", command);
+        Log.debug(ClientActor.class, "Handling start command {}", command);
 
         switch (state.get(command.infoHash())) {
             case ClientStateTorrent torrent -> {
                 torrent.getRef().post(new TorrentCommand.Start(), mailbox.self());
-                Log.info(Client.class, "Started torrent '{}'", command.infoHash());
+                Log.info(ClientActor.class, "Started torrent '{}'", command.infoHash());
                 mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent started"));
             }
 
             case null -> {
-                Log.info(Client.class, "Torrent '{}' doesn't exist", command.infoHash());
+                Log.info(ClientActor.class, "Torrent '{}' doesn't exist", command.infoHash());
                 mailbox.reply(new ClientCommandResult.Failure(command.infoHash(), "Torrent doesn't exist"));
             }
         }
@@ -115,17 +111,17 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleStopCommand(final Mailbox.Success mailbox, final ClientCommand.Stop command) {
-        Log.debug(Client.class, "Handling stop command {}", command);
+        Log.debug(ClientActor.class, "Handling stop command {}", command);
 
         switch (state.get(command.infoHash())) {
             case ClientStateTorrent torrent -> {
                 torrent.getRef().post(new TorrentCommand.Stop(), mailbox.self());
-                Log.info(Client.class, "Stopped torrent '{}'", command.infoHash());
+                Log.info(ClientActor.class, "Stopped torrent '{}'", command.infoHash());
                 mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
             }
 
             case null -> {
-                Log.info(Client.class, "Torrent '{}' doesn't exist", command.infoHash());
+                Log.info(ClientActor.class, "Torrent '{}' doesn't exist", command.infoHash());
                 mailbox.reply(new ClientCommandResult.Failure(command.infoHash(), "Torrent doesn't exist"));
             }
         }
@@ -139,16 +135,17 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleGetRequest(final Mailbox.Success mailbox, final ClientRequest.Get request) {
-        Log.debug(Client.class, "Handling get request {}", request);
+        Log.debug(ClientActor.class, "Handling get request {}", request);
 
         switch (state.get(request.infoHash())) {
             case ClientStateTorrent torrent -> {
-                Log.info(Client.class, "Found torrent '{}'", request.infoHash());
+                // TODO: !
+                Log.info(ClientActor.class, "Found torrent '{}'", request.infoHash());
                 mailbox.reply(new ClientResponse.Get(torrent));
             }
 
             case null -> {
-                Log.info(Client.class, "Torrent '{}' doesn't exist", request.infoHash());
+                Log.info(ClientActor.class, "Torrent '{}' doesn't exist", request.infoHash());
                 mailbox.reply(new ClientResponse.Failure(request.infoHash(), "Torrent doesn't exist"));
             }
         }
@@ -164,43 +161,53 @@ public final class Client implements ActorReceiver {
     }
 
     private NextState handleStatusChangedTorrentNotification(final Mailbox.Success mailbox, final TorrentNotification.StatusChanged notification) {
-        Log.debug(Client.class, "Handling torrent status changed notification {}", notification);
+        Log.debug(ClientActor.class, "Handling torrent status changed notification {}", notification);
+
+        switch (state.get(notification.infoHash())) {
+            case ClientStateTorrent torrent -> {
+                torrent.setStatus(notification.status());
+            }
+
+            case null -> {
+                Log.debug(ClientActor.class, "Torrent '%s' doesn't exist".formatted(notification.infoHash()));
+            }
+        }
         return NextState.Receive;
     }
 
     private NextState handleTerminatedTorrentNotification(final Mailbox.Success mailbox, final TorrentNotification.Terminated notification) {
-        Log.debug(Client.class, "Handling torrent terminated notification {}", notification);
+        Log.debug(ClientActor.class, "Handling torrent terminated notification {}", notification);
         return NextState.Receive;
     }
 
     private NextState handleFailureTorrentNotification(final Mailbox mailbox, final TorrentNotification.Failure failure) {
-        Log.debug(Client.class, "Handling torrent failure notification {}", failure);
+        Log.debug(ClientActor.class, "Handling torrent failure notification {}", failure);
         return NextState.Receive;
     }
 
     private NextState handleFailure(final Mailbox.Failure mailbox) {
         switch (mailbox.message()) {
             case ClientCommand command -> {
-                Log.error(Client.class, "Failed to handle command", mailbox.cause());
+                Log.error(ClientActor.class, "Failed to handle command", mailbox.cause());
                 mailbox.reply(new ClientCommandResult.Failure(InfoHash.BLANK, "Command failed with '%s'".formatted(mailbox.cause().getMessage())));
             }
 
             case ClientRequest request -> {
-                Log.error(Client.class, "Failed to handle request", mailbox.cause());
+                Log.error(ClientActor.class, "Failed to handle request", mailbox.cause());
                 mailbox.reply(new ClientResponse.Failure(InfoHash.BLANK, "Request failed with '%s'".formatted(mailbox.cause().getMessage())));
             }
 
             case TorrentNotification notification -> {
-                Log.error(Client.class, "Failed to handle torrent notification", mailbox.cause());
+                Log.error(ClientActor.class, "Failed to handle torrent notification", mailbox.cause());
             }
 
-            default -> Log.error(Client.class, "Failed to handle message", mailbox.cause());
+            default -> Log.error(ClientActor.class, "Failed to handle message", mailbox.cause());
         }
         return NextState.Receive;
     }
 
     private NextState unhandled(final Object message) {
-        Log.error(Client.class, "Unhandled message {}", message);
+        Log.error(ClientActor.class, "Unhandled message {}", message);
         return NextState.Receive;
     }
 }

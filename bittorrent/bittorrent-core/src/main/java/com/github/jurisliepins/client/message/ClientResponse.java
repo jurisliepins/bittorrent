@@ -1,6 +1,5 @@
 package com.github.jurisliepins.client.message;
 
-import com.github.jurisliepins.client.state.ImmutableClientStateTorrent;
 import com.github.jurisliepins.info.InfoHash;
 
 import java.util.Objects;
@@ -9,7 +8,7 @@ public sealed interface ClientResponse permits
         ClientResponse.Get,
         ClientResponse.Failure {
 
-    record Get(ImmutableClientStateTorrent torrent) implements ClientResponse {
+    record Get(Object torrent) implements ClientResponse {
         public Get {
             Objects.requireNonNull(torrent, "torrent is null");
         }
