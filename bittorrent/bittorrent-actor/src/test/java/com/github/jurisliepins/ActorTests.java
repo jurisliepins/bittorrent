@@ -58,16 +58,13 @@ public final class ActorTests {
         final String response = "Response!";
 
         final ActorRef ref = system.spawn(mailbox -> {
-            switch (mailbox.status()) {
-                case Success -> {
-                    mailbox.sender().post(response);
+            switch (mailbox) {
+                case Mailbox.Success success -> {
+                    success.sender().post(response);
                     return NextState.Receive;
                 }
-                case Failure -> {
+                case Mailbox.Failure failure -> {
                     return NextState.Receive;
-                }
-                default -> {
-                    return NextState.Terminate;
                 }
             }
         });
@@ -82,16 +79,13 @@ public final class ActorTests {
         final String response = "Response!";
 
         final ActorRef ref = system.spawn(mailbox -> {
-            switch (mailbox.status()) {
-                case Success -> {
-                    mailbox.sender().post(response);
+            switch (mailbox) {
+                case Mailbox.Success success -> {
+                    success.sender().post(response);
                     return NextState.Receive;
                 }
-                case Failure -> {
+                case Mailbox.Failure failure -> {
                     return NextState.Receive;
-                }
-                default -> {
-                    return NextState.Terminate;
                 }
             }
         });
@@ -109,32 +103,26 @@ public final class ActorTests {
         final CountDownLatch latch2 = new CountDownLatch(messageCount);
 
         final ActorRef ref1 = system.spawn(mailbox -> {
-            switch (mailbox.status()) {
-                case Success -> {
-                    mailbox.sender().post(mailbox.message(), mailbox.self());
+            switch (mailbox) {
+                case Mailbox.Success success -> {
+                    success.sender().post(success.message(), success.self());
                     latch1.countDown();
                     return NextState.Receive;
                 }
-                case Failure -> {
+                case Mailbox.Failure failure -> {
                     return NextState.Receive;
-                }
-                default -> {
-                    return NextState.Terminate;
                 }
             }
         });
         final ActorRef ref2 = system.spawn(mailbox -> {
-            switch (mailbox.status()) {
-                case Success -> {
-                    mailbox.sender().post(mailbox.message(), mailbox.self());
+            switch (mailbox) {
+                case Mailbox.Success success -> {
+                    success.sender().post(success.message(), success.self());
                     latch2.countDown();
                     return NextState.Receive;
                 }
-                case Failure -> {
+                case Mailbox.Failure failure -> {
                     return NextState.Receive;
-                }
-                default -> {
-                    return NextState.Terminate;
                 }
             }
         });
@@ -153,8 +141,8 @@ public final class ActorTests {
 
         final CountDownLatch latch = new CountDownLatch(messageCount);
 
-        final ActorRef ref = system.spawn(mailbox -> switch (mailbox.status()) {
-            case Success -> switch (mailbox.message()) {
+        final ActorRef ref = system.spawn(mailbox -> switch (mailbox) {
+            case Mailbox.Success success -> switch (success.message()) {
                 case String command -> {
                     if ("receive".equals(command)) {
                         latch.countDown();
@@ -165,9 +153,13 @@ public final class ActorTests {
                     }
                     throw new RuntimeException("Should not have reached this code");
                 }
-                default -> throw new RuntimeException("Should not have reached this code");
+                default -> {
+                    throw new RuntimeException("Should not have reached this code");
+                }
             };
-            default -> throw new RuntimeException("Should not have reached this code");
+            case Mailbox.Failure failure -> {
+                throw new RuntimeException("Should not have reached this code");
+            }
         });
 
         ref.post("receive");

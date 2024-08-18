@@ -1,9 +1,5 @@
 package com.github.jurisliepins;
 
-import com.github.jurisliepins.mailbox.Mailbox;
-import com.github.jurisliepins.mailbox.MailboxImpl;
-import com.github.jurisliepins.mailbox.MailboxStatus;
-
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +31,6 @@ public interface Actor {
 
     class RunnableActor implements ActorRef, Runnable {
         private final LinkedBlockingQueue<Letter> letters = new LinkedBlockingQueue<>();
-        private final MailboxImpl mailbox = new MailboxImpl();
         private final ActorSystem system;
         private final ActorReceiver receiver;
 
@@ -92,10 +87,10 @@ public interface Actor {
                 try {
                     final Letter letter = letters.take();
                     try {
-                        nextState = receiver.receive(mailboxSuccess(letter));
+                        nextState = receiver.receive(successMailboxFromLetter(letter));
                     } catch (Throwable cause) {
                         try {
-                            nextState = receiver.receive(mailboxFailure(letter, cause));
+                            nextState = receiver.receive(failureMailboxFromLetter(letter, cause));
                         } catch (Throwable ignored) {
                             // If actor throws while handling an exception then we can fall into an infinite loop so we simply return.
                             return;
@@ -108,24 +103,12 @@ public interface Actor {
             } while (nextState == NextState.Receive);
         }
 
-        private Mailbox mailboxSuccess(final Letter letter) {
-            mailbox.setStatus(MailboxStatus.Success);
-            mailbox.setMessage(letter.message());
-            mailbox.setSystem(letter.system());
-            mailbox.setSelf(letter.self());
-            mailbox.setSender(letter.sender());
-            mailbox.setCause(null);
-            return mailbox;
+        private static Mailbox.Success successMailboxFromLetter(final Letter letter) {
+            return new Mailbox.Success(letter.message(), letter.system(), letter.sender(), letter.self());
         }
 
-        private Mailbox mailboxFailure(final Letter letter, final Throwable cause) {
-            mailbox.setStatus(MailboxStatus.Failure);
-            mailbox.setMessage(letter.message());
-            mailbox.setSystem(letter.system());
-            mailbox.setSelf(letter.self());
-            mailbox.setSender(letter.sender());
-            mailbox.setCause(cause);
-            return mailbox;
+        public static Mailbox.Failure failureMailboxFromLetter(final Letter letter, Throwable cause) {
+            return new Mailbox.Failure(letter.message(), letter.system(), letter.sender(), letter.self(), cause);
         }
     }
 }

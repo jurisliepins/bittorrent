@@ -1,7 +1,7 @@
 package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.ActorReceiver;
-import com.github.jurisliepins.mailbox.Mailbox;
+import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientCommandResult;
@@ -29,13 +29,13 @@ public final class Client implements ActorReceiver {
 
     @Override
     public NextState receive(final Mailbox mailbox) {
-        return switch (mailbox.status()) {
-            case Success -> handleSuccess(mailbox);
-            case Failure -> handleFailure(mailbox);
+        return switch (mailbox) {
+            case Mailbox.Success mailboxSuccess -> handleSuccess(mailboxSuccess);
+            case Mailbox.Failure mailboxFailure -> handleFailure(mailboxFailure);
         };
     }
 
-    private NextState handleSuccess(final Mailbox mailbox) {
+    private NextState handleSuccess(final Mailbox.Success mailbox) {
         return switch (mailbox.message()) {
             case ClientCommand command -> handleCommand(mailbox, command);
             case ClientRequest request -> handleRequest(mailbox, request);
@@ -44,7 +44,7 @@ public final class Client implements ActorReceiver {
         };
     }
 
-    private NextState handleCommand(final Mailbox mailbox, final ClientCommand command) {
+    private NextState handleCommand(final Mailbox.Success mailbox, final ClientCommand command) {
         return switch (command) {
             case ClientCommand.Add add -> handleAddCommand(mailbox, add);
             case ClientCommand.Remove remove -> handleRemoveCommand(mailbox, remove);
@@ -53,7 +53,7 @@ public final class Client implements ActorReceiver {
         };
     }
 
-    private NextState handleAddCommand(final Mailbox mailbox, final ClientCommand.Add command) {
+    private NextState handleAddCommand(final Mailbox.Success mailbox, final ClientCommand.Add command) {
         Log.debug(Client.class, "Handling add command {}", command);
 
         switch (MetaInfo.fromBytes(command.metaInfo())) {
@@ -78,7 +78,7 @@ public final class Client implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleRemoveCommand(final Mailbox mailbox, final ClientCommand.Remove command) {
+    private NextState handleRemoveCommand(final Mailbox.Success mailbox, final ClientCommand.Remove command) {
         Log.debug(Client.class, "Handling remove command {}", command);
 
         switch (state.remove(command.infoHash())) {
@@ -96,7 +96,7 @@ public final class Client implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleStartCommand(final Mailbox mailbox, final ClientCommand.Start command) {
+    private NextState handleStartCommand(final Mailbox.Success mailbox, final ClientCommand.Start command) {
         Log.debug(Client.class, "Handling start command {}", command);
 
         switch (state.get(command.infoHash())) {
@@ -114,7 +114,7 @@ public final class Client implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleStopCommand(final Mailbox mailbox, final ClientCommand.Stop command) {
+    private NextState handleStopCommand(final Mailbox.Success mailbox, final ClientCommand.Stop command) {
         Log.debug(Client.class, "Handling stop command {}", command);
 
         switch (state.get(command.infoHash())) {
@@ -132,13 +132,13 @@ public final class Client implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleRequest(final Mailbox mailbox, final ClientRequest request) {
+    private NextState handleRequest(final Mailbox.Success mailbox, final ClientRequest request) {
         return switch (request) {
             case ClientRequest.Get get -> handleGetRequest(mailbox, get);
         };
     }
 
-    private NextState handleGetRequest(final Mailbox mailbox, final ClientRequest.Get request) {
+    private NextState handleGetRequest(final Mailbox.Success mailbox, final ClientRequest.Get request) {
         Log.debug(Client.class, "Handling get request {}", request);
 
         switch (state.get(request.infoHash())) {
@@ -155,7 +155,7 @@ public final class Client implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleTorrentNotification(final Mailbox mailbox, final TorrentNotification notification) {
+    private NextState handleTorrentNotification(final Mailbox.Success mailbox, final TorrentNotification notification) {
         return switch (notification) {
             case TorrentNotification.StatusChanged statusChanged -> handleStatusChangedTorrentNotification(mailbox, statusChanged);
             case TorrentNotification.Terminated terminated -> handleTerminatedTorrentNotification(mailbox, terminated);
@@ -163,12 +163,12 @@ public final class Client implements ActorReceiver {
         };
     }
 
-    private NextState handleStatusChangedTorrentNotification(final Mailbox mailbox, final TorrentNotification.StatusChanged notification) {
+    private NextState handleStatusChangedTorrentNotification(final Mailbox.Success mailbox, final TorrentNotification.StatusChanged notification) {
         Log.debug(Client.class, "Handling torrent status changed notification {}", notification);
         return NextState.Receive;
     }
 
-    private NextState handleTerminatedTorrentNotification(final Mailbox mailbox, final TorrentNotification.Terminated notification) {
+    private NextState handleTerminatedTorrentNotification(final Mailbox.Success mailbox, final TorrentNotification.Terminated notification) {
         Log.debug(Client.class, "Handling torrent terminated notification {}", notification);
         return NextState.Receive;
     }
@@ -178,19 +178,22 @@ public final class Client implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleFailure(final Mailbox mailbox) {
+    private NextState handleFailure(final Mailbox.Failure mailbox) {
         switch (mailbox.message()) {
             case ClientCommand command -> {
                 Log.error(Client.class, "Failed to handle command", mailbox.cause());
                 mailbox.reply(new ClientCommandResult.Failure(InfoHash.BLANK, "Command failed with '%s'".formatted(mailbox.cause().getMessage())));
             }
+
             case ClientRequest request -> {
                 Log.error(Client.class, "Failed to handle request", mailbox.cause());
                 mailbox.reply(new ClientResponse.Failure(InfoHash.BLANK, "Request failed with '%s'".formatted(mailbox.cause().getMessage())));
             }
+
             case TorrentNotification notification -> {
                 Log.error(Client.class, "Failed to handle torrent notification", mailbox.cause());
             }
+
             default -> Log.error(Client.class, "Failed to handle message", mailbox.cause());
         }
         return NextState.Receive;
