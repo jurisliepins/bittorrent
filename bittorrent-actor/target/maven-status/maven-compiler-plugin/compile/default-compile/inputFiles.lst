@@ -1,9 +1,0 @@
-/home/liepij/Projects/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/Actor.java
-/home/liepij/Projects/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/ActorException.java
-/home/liepij/Projects/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/ActorReceiver.java
-/home/liepij/Projects/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/ActorRef.java
-/home/liepij/Projects/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/ActorSystem.java
-/home/liepij/Projects/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/Awaiter.java
-/home/liepij/Projects/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/Letter.java
-/home/liepij/Projects/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/Mailbox.java
-/home/liepij/Projects/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/NextState.java
