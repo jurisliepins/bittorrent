@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e30896d8-540f-4bd5-995e-0bc1f121ce72" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.editorconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.idea/checkstyle-idea.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/Actor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/ActorException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/ActorReceiver.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/ActorRef.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/ActorSystem.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/Awaiter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/Letter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/Mailbox.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/main/java/com/github/jurisliepins/NextState.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-actor/src/test/java/com/github/jurisliepins/ActorTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/.dockerignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/.mvn/wrapper/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/.mvn/wrapper/MavenWrapperDownloader.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/docker/Dockerfile.jvm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/docker/Dockerfile.legacy-jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/docker/Dockerfile.native" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/docker/Dockerfile.native-micro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/java/com/github/jurisliepins/client/ClientProducer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/java/com/github/jurisliepins/definitions/response/Result.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/java/com/github/jurisliepins/definitions/response/StatusType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/java/com/github/jurisliepins/jackson/customizers/BitTorrentModuleCustomizer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/java/com/github/jurisliepins/jackson/deserializers/InfoHashDeserializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/java/com/github/jurisliepins/jackson/modules/BitTorrentModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/java/com/github/jurisliepins/jackson/serializers/BitfieldSerializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/java/com/github/jurisliepins/jackson/serializers/InfoHashSerializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/java/com/github/jurisliepins/resources/TorrentResource.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-api/src/test/java/com/github/jurisliepins/resources/TorrentResourceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/BConstants.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/BDecoder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/BEncoder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/BException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/BObjectMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/BProperty.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/stream/BInputStream.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/stream/BOutputStream.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/value/BByteString.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/value/BDictionary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/value/BInteger.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/value/BList.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/value/BValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/main/java/com/github/jurisliepins/value/BValueType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/test/java/com/github/jurisliepins/BEncodeTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-bencode/src/test/java/com/github/jurisliepins/BObjectMapperTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/BitTorrentClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/CoreException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/bitfield/Bitfield.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/bitfield/ImmutableBitfield.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/client/ClientActor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/client/ClientState.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/client/message/ClientCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/client/message/ClientCommandResult.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/client/message/ClientRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/client/message/ClientResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/info/File.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/info/Info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/info/InfoHash.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/info/MetaInfo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/info/entity/FileEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/info/entity/InfoEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/info/entity/MetaInfoEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/log/Log.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/torrent/TorrentActor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/torrent/TorrentState.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/torrent/message/TorrentCommand.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/torrent/message/TorrentNotification.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/TrackerClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/TrackerEventType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/TrackerRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/TrackerRequestBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/TrackerResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/url/BinaryNamedParameterValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/url/NamedParameterValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/url/NumberNamedParameterValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/url/StringNamedParameterValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/tracker/url/UrlEncoding.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/main/java/com/github/jurisliepins/types/StatusType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/test/java/com/github/jurisliepins/bitfield/BitfieldTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/test/java/com/github/jurisliepins/info/InfoHashTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/test/java/com/github/jurisliepins/info/MetaInfoTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/test/resources/multi_file.torrent" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/bittorrent-core/src/test/resources/single_file.torrent" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/checkstyle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bittorrent/pom.xml" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="2ktT3J1AOkgL7h6a2qmx6q3qrKP" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/liepij/Projects/bittorrent/pom.xml",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="bittorrent-api" type="QuarkusRunConfigurationType" factoryName="Quarkus" nameIsGenerated="true">
+      <module name="bittorrent-api" />
+      <QsMavenRunConfiguration>
+        <MavenSettings>
+          <option name="myGeneralSettings" />
+          <option name="myRunnerSettings" />
+          <option name="myRunnerParameters">
+            <MavenRunnerParameters>
+              <option name="cmdOptions" />
+              <option name="profiles">
+                <set />
+              </option>
+              <option name="goals">
+                <list>
+                  <option value="quarkus:dev" />
+                </list>
+              </option>
+              <option name="multimoduleDir" />
+              <option name="pomFileName" value="pom.xml" />
+              <option name="profilesMap">
+                <map />
+              </option>
+              <option name="projectsCmdOptionValues">
+                <list />
+              </option>
+              <option name="resolveToWorkspace" value="false" />
+              <option name="workingDirPath" value="$PROJECT_DIR$/bittorrent-api" />
+            </MavenRunnerParameters>
+          </option>
+        </MavenSettings>
+        <targetMavenLocalRepo />
+        <emulateTerminal>true</emulateTerminal>
+        <profile>dev</profile>
+      </QsMavenRunConfiguration>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.15" />
+        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.15" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e30896d8-540f-4bd5-995e-0bc1f121ce72" name="Changes" comment="" />
+      <created>1724101675097</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1724101675097</updated>
+      <workItem from="1724101676026" duration="632000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
