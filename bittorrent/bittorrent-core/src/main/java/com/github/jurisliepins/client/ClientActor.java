@@ -55,7 +55,7 @@ public final class ClientActor implements ActorReceiver {
         switch (MetaInfo.fromBytes(command.metaInfo())) {
             case MetaInfo metaInfo -> {
                 switch (state.get(metaInfo.info().hash())) {
-                    case ClientStateTorrent ignored -> {
+                    case ClientState.Torrent ignored -> {
                         Log.info(ClientActor.class, "Torrent '{}' already exists", metaInfo.info().hash());
                         mailbox.reply(new ClientCommandResult.Failure(metaInfo.info().hash(), "Torrent already exists"));
                     }
@@ -78,7 +78,7 @@ public final class ClientActor implements ActorReceiver {
         Log.debug(ClientActor.class, "Handling remove command {}", command);
 
         switch (state.remove(command.infoHash())) {
-            case ClientStateTorrent torrent -> {
+            case ClientState.Torrent torrent -> {
                 torrent.getRef().post(new TorrentCommand.Terminate(), mailbox.self());
                 Log.info(ClientActor.class, "Removed torrent '{}'", command.infoHash());
                 mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent removed"));
@@ -96,7 +96,7 @@ public final class ClientActor implements ActorReceiver {
         Log.debug(ClientActor.class, "Handling start command {}", command);
 
         switch (state.get(command.infoHash())) {
-            case ClientStateTorrent torrent -> {
+            case ClientState.Torrent torrent -> {
                 torrent.getRef().post(new TorrentCommand.Start(), mailbox.self());
                 Log.info(ClientActor.class, "Started torrent '{}'", command.infoHash());
                 mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent started"));
@@ -114,7 +114,7 @@ public final class ClientActor implements ActorReceiver {
         Log.debug(ClientActor.class, "Handling stop command {}", command);
 
         switch (state.get(command.infoHash())) {
-            case ClientStateTorrent torrent -> {
+            case ClientState.Torrent torrent -> {
                 torrent.getRef().post(new TorrentCommand.Stop(), mailbox.self());
                 Log.info(ClientActor.class, "Stopped torrent '{}'", command.infoHash());
                 mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
@@ -138,10 +138,21 @@ public final class ClientActor implements ActorReceiver {
         Log.debug(ClientActor.class, "Handling get request {}", request);
 
         switch (state.get(request.infoHash())) {
-            case ClientStateTorrent torrent -> {
-                // TODO: !
+            case ClientState.Torrent torrent -> {
                 Log.info(ClientActor.class, "Found torrent '{}'", request.infoHash());
-                mailbox.reply(new ClientResponse.Get(torrent));
+                final ClientResponse.Torrent responseTorrent = new ClientResponse.Torrent(
+                        torrent.getStatus(),
+                        torrent.getInfoHash(),
+                        torrent.getPeerId(),
+                        torrent.getBitfield(),
+                        torrent.getName(),
+                        torrent.getLength(),
+                        torrent.getDownloaded(),
+                        torrent.getUploaded(),
+                        torrent.getLeft(),
+                        torrent.getDownloadRate(),
+                        torrent.getUploadRate());
+                mailbox.reply(new ClientResponse.Get(responseTorrent));
             }
 
             case null -> {
@@ -164,7 +175,7 @@ public final class ClientActor implements ActorReceiver {
         Log.debug(ClientActor.class, "Handling torrent status changed notification {}", notification);
 
         switch (state.get(notification.infoHash())) {
-            case ClientStateTorrent torrent -> {
+            case ClientState.Torrent torrent -> {
                 torrent.setStatus(notification.status());
             }
 
