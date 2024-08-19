@@ -34,7 +34,7 @@ public final class TorrentActor implements ActorReceiver {
     private NextState handleSuccess(final Mailbox.Success mailbox) {
         return switch (mailbox.message()) {
             case TorrentCommand command -> handleCommand(mailbox, command);
-            default -> unhandled(mailbox.message());
+            default -> unhandled(mailbox);
         };
     }
 
@@ -102,8 +102,8 @@ public final class TorrentActor implements ActorReceiver {
         return NextState.Terminate;
     }
 
-    private NextState unhandled(final Object message) {
-        Log.error(TorrentActor.class, "[{}] Unhandled message {}", state.getInfoHash(), message);
+    private NextState unhandled(final Mailbox.Success mailbox) {
+        Log.error(TorrentActor.class, "[{}] Unhandled message {}", state.getInfoHash(), mailbox.message());
         return NextState.Receive;
     }
 }

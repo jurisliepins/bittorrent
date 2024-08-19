@@ -36,7 +36,7 @@ public final class ClientActor implements ActorReceiver {
             case ClientCommand command -> handleCommand(mailbox, command);
             case ClientRequest request -> handleRequest(mailbox, request);
             case TorrentNotification notification -> handleTorrentNotification(mailbox, notification);
-            default -> unhandled(mailbox.message());
+            default -> unhandled(mailbox);
         };
     }
 
@@ -206,8 +206,8 @@ public final class ClientActor implements ActorReceiver {
         return NextState.Receive;
     }
 
-    private NextState unhandled(final Object message) {
-        Log.error(ClientActor.class, "Unhandled message {}", message);
+    private NextState unhandled(final Mailbox.Success mailbox) {
+        Log.error(ClientActor.class, "Unhandled message {}", mailbox.message());
         return NextState.Receive;
     }
 }
