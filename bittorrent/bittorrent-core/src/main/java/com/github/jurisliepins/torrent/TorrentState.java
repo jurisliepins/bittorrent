@@ -5,9 +5,9 @@ import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.types.StatusType;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class TorrentState {
-    // TODO: Null assertions!
     private StatusType status;
     private InfoHash infoHash;
     private Object peerId;
@@ -29,7 +29,7 @@ public final class TorrentState {
     }
 
     public void setStatus(final StatusType status) {
-        this.status = status;
+        this.status = Objects.requireNonNull(status, "status is null");
     }
 
     public InfoHash getInfoHash() {
@@ -37,7 +37,7 @@ public final class TorrentState {
     }
 
     public void setInfoHash(final InfoHash infoHash) {
-        this.infoHash = infoHash;
+        this.infoHash = Objects.requireNonNull(infoHash, "infoHash is null");
     }
 
     public Object getPeerId() {
@@ -45,7 +45,7 @@ public final class TorrentState {
     }
 
     public void setPeerId(final Object peerId) {
-        this.peerId = peerId;
+        this.peerId = Objects.requireNonNull(peerId, "peerId is null");
     }
 
     public Bitfield getBitfield() {
@@ -53,7 +53,7 @@ public final class TorrentState {
     }
 
     public void setBitfield(final Bitfield bitfield) {
-        this.bitfield = bitfield;
+        this.bitfield = Objects.requireNonNull(bitfield, "bitfield is null");
     }
 
     public int getPieceLength() {
@@ -69,7 +69,7 @@ public final class TorrentState {
     }
 
     public void setPieces(final List<Object> pieces) {
-        this.pieces = pieces;
+        this.pieces = Objects.requireNonNull(pieces, "pieces is null");
     }
 
     public List<Object> getFiles() {
@@ -77,7 +77,7 @@ public final class TorrentState {
     }
 
     public void setFiles(final List<Object> files) {
-        this.files = files;
+        this.files = Objects.requireNonNull(files, "files is null");
     }
 
     public String getName() {
@@ -85,7 +85,7 @@ public final class TorrentState {
     }
 
     public void setName(final String name) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name is null");
     }
 
     public long getLength() {
@@ -125,7 +125,7 @@ public final class TorrentState {
     }
 
     public void setAnnounce(final String announce) {
-        this.announce = announce;
+        this.announce = Objects.requireNonNull(announce, "announce is null");
     }
 
     public double getDownloadRate() {
