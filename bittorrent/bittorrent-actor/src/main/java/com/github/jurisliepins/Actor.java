@@ -104,11 +104,11 @@ public interface Actor {
         }
 
         private static Mailbox.Success successMailboxFromLetter(final Letter letter) {
-            return new Mailbox.Success(letter.message(), letter.system(), letter.sender(), letter.self());
+            return new Mailbox.Success(letter.message(), letter.system(), letter.self(), letter.sender());
         }
 
         public static Mailbox.Failure failureMailboxFromLetter(final Letter letter, Throwable cause) {
-            return new Mailbox.Failure(letter.message(), letter.system(), letter.sender(), letter.self(), cause);
+            return new Mailbox.Failure(letter.message(), letter.system(), letter.self(), letter.sender(), cause);
         }
     }
 }

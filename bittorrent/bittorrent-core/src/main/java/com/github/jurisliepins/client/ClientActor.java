@@ -1,8 +1,10 @@
 package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.ActorReceiver;
+import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
+import com.github.jurisliepins.bitfield.Bitfield;
 import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientCommandResult;
 import com.github.jurisliepins.client.message.ClientRequest;
@@ -10,9 +12,13 @@ import com.github.jurisliepins.client.message.ClientResponse;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.info.MetaInfo;
 import com.github.jurisliepins.log.Log;
+import com.github.jurisliepins.torrent.TorrentActor;
+import com.github.jurisliepins.torrent.TorrentState;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
+import com.github.jurisliepins.types.StatusType;
 
+import java.util.List;
 import java.util.Objects;
 
 public final class ClientActor implements ActorReceiver {
@@ -61,10 +67,40 @@ public final class ClientActor implements ActorReceiver {
                     }
 
                     case null -> {
-//                        final ClientStateTorrent torrent = new ClientStateTorrent(
-//                                mailbox.system().spawn(new Torrent(mailbox.self(), new TorrentState(metaInfo))),
-//                                metaInfo);
-//                        state.add(torrent);
+                        final ActorRef torrentRef = mailbox.system()
+                                .spawn(new TorrentActor(mailbox.self(),
+                                                        TorrentState.builder()
+                                                                .status(StatusType.Stopped)
+                                                                .infoHash(metaInfo.info().hash())
+                                                                .peerId(new Object())
+                                                                .bitfield(new Bitfield(metaInfo.info().pieces().length))
+                                                                .pieceLength(metaInfo.info().pieceLength())
+                                                                .pieces(List.of())
+                                                                .files(List.of())
+                                                                .name(metaInfo.info().name())
+                                                                .length(metaInfo.info().length())
+                                                                .downloaded(0L)
+                                                                .uploaded(0L)
+                                                                .left(metaInfo.info().length())
+                                                                .announce(metaInfo.announce())
+                                                                .downloadRate(0.0)
+                                                                .uploadRate(0.0)
+                                                                .build()));
+                        state.add(ClientState.Torrent.builder()
+                                          .ref(torrentRef)
+                                          .status(StatusType.Stopped)
+                                          .infoHash(metaInfo.info().hash())
+                                          .peerId(new Object())
+                                          .bitfield(new Bitfield(metaInfo.info().pieces().length))
+                                          .pieceLength(metaInfo.info().pieceLength())
+                                          .name(metaInfo.info().name())
+                                          .length(metaInfo.info().length())
+                                          .downloaded(0L)
+                                          .uploaded(0L)
+                                          .left(metaInfo.info().length())
+                                          .downloadRate(0.0)
+                                          .uploadRate(0.0)
+                                          .build());
                         Log.info(ClientActor.class, "Torrent '{}' added", metaInfo.info().hash());
                         mailbox.reply(new ClientCommandResult.Success(metaInfo.info().hash(), "Torrent added"));
                     }
@@ -97,9 +133,20 @@ public final class ClientActor implements ActorReceiver {
 
         switch (state.get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
-                torrent.getRef().post(new TorrentCommand.Start(), mailbox.self());
-                Log.info(ClientActor.class, "Started torrent '{}'", command.infoHash());
-                mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent started"));
+                switch (torrent.getStatus()) {
+                    case Stopped -> {
+                        torrent.getRef().post(new TorrentCommand.Start(), mailbox.self());
+                        Log.info(ClientActor.class, "Started torrent '{}'", torrent.getInfoHash());
+                        mailbox.reply(new ClientCommandResult.Success(torrent.getInfoHash(), "Torrent started"));
+                    }
+
+                    case Started,
+                         Running,
+                         Errored -> {
+                        Log.info(ClientActor.class, "Torrent '{}' already started", torrent.getInfoHash());
+                        mailbox.reply(new ClientCommandResult.Failure(torrent.getInfoHash(), "Torrent already started"));
+                    }
+                }
             }
 
             case null -> {
@@ -115,9 +162,20 @@ public final class ClientActor implements ActorReceiver {
 
         switch (state.get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
-                torrent.getRef().post(new TorrentCommand.Stop(), mailbox.self());
-                Log.info(ClientActor.class, "Stopped torrent '{}'", command.infoHash());
-                mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
+                switch (torrent.getStatus()) {
+                    case Started,
+                         Running,
+                         Errored -> {
+                        torrent.getRef().post(new TorrentCommand.Stop(), mailbox.self());
+                        Log.info(ClientActor.class, "Stopped torrent '{}'", command.infoHash());
+                        mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
+                    }
+
+                    case Stopped -> {
+                        Log.info(ClientActor.class, "Torrent '{}' already stopped", torrent.getInfoHash());
+                        mailbox.reply(new ClientCommandResult.Failure(torrent.getInfoHash(), "Torrent already stopped"));
+                    }
+                }
             }
 
             case null -> {

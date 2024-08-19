@@ -59,7 +59,7 @@ public final class TorrentActor implements ActorReceiver {
             case Started,
                  Running,
                  Errored -> {
-                Log.debug(TorrentActor.class, "[{}] Torrent already started", state.getInfoHash());
+                Log.info(TorrentActor.class, "[{}] Torrent already started", state.getInfoHash());
             }
         }
         return NextState.Receive;
@@ -78,7 +78,7 @@ public final class TorrentActor implements ActorReceiver {
             }
 
             case Stopped -> {
-                Log.debug(TorrentActor.class, "[{}] Torrent already stopped", state.getInfoHash());
+                Log.info(TorrentActor.class, "[{}] Torrent already stopped", state.getInfoHash());
             }
         }
         return NextState.Receive;
