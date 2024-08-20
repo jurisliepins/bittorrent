@@ -21,16 +21,18 @@ public final class BDictionaryMapper {
                     if (property != null) {
                         final BValue val = dictionary.get(BByteString.of(property.value()));
                         if (val != null) {
-                            return switch (field.getType().getTypeName()) {
+                            Class<?> fieldType;
+                            Class<?> genericFieldType;
+
+                            switch (field.getType().getTypeName()) {
                                 case "java.util.Collection",
                                      "java.util.List",
                                      "java.util.ArrayList" -> {
                                     // Because collections can be generic, we need to figure out the genetic type
                                     // and pass it along to correctly parse entries in a collection.
-                                    final Class<?> fieldType = field.getType();
-                                    final Class<?> genericFieldType = Arrays.stream(
-                                                    ((ParameterizedType) field.getGenericType())
-                                                            .getActualTypeArguments())
+                                    fieldType = field.getType();
+                                    genericFieldType = Arrays.stream(
+                                                    ((ParameterizedType) field.getGenericType()).getActualTypeArguments())
                                             .findFirst()
                                             .map(type -> switch (type) {
                                                 // The generic type of the collection is itself generic.
@@ -39,10 +41,14 @@ public final class BDictionaryMapper {
                                                 case Type t -> (Class<?>) t;
                                             })
                                             .orElse(null);
-                                    yield BObjectMapper.read(val, fieldType, genericFieldType);
                                 }
-                                default -> BObjectMapper.read(val, field.getType(), null);
-                            };
+                                default -> {
+                                    fieldType = field.getType();
+                                    genericFieldType = null;
+                                }
+                            }
+
+                            return BObjectMapper.read(val, fieldType, genericFieldType);
                         }
                     }
                     return null;
