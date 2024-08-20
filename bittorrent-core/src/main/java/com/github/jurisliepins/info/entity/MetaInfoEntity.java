@@ -1,7 +1,7 @@
 package com.github.jurisliepins.info.entity;
 
 import com.github.jurisliepins.BConstants;
-import com.github.jurisliepins.BObjectMapper;
+import com.github.jurisliepins.mapper.BObjectMapper;
 import com.github.jurisliepins.BProperty;
 import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.stream.BOutputStream;

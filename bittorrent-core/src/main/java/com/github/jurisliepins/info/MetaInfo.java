@@ -1,7 +1,7 @@
 package com.github.jurisliepins.info;
 
 import com.github.jurisliepins.BConstants;
-import com.github.jurisliepins.BObjectMapper;
+import com.github.jurisliepins.mapper.BObjectMapper;
 import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.info.entity.InfoEntity;
 import com.github.jurisliepins.info.entity.MetaInfoEntity;
@@ -24,7 +24,7 @@ public record MetaInfo(
 ) {
     public static MetaInfo fromStream(final BInputStream stream) {
         try {
-            return convert(new BObjectMapper().readFromStream(stream, MetaInfoEntity.class));
+            return convert(BObjectMapper.fromStream(stream, MetaInfoEntity.class));
         } catch (Exception e) {
             throw new CoreException("Failed to read meta-info from stream", e);
         }
@@ -32,7 +32,7 @@ public record MetaInfo(
 
     public static MetaInfo fromBytes(final byte[] bytes) {
         try {
-            return convert(new BObjectMapper().readFromBytes(bytes, MetaInfoEntity.class));
+            return convert(BObjectMapper.fromBytes(bytes, MetaInfoEntity.class));
         } catch (Exception e) {
             throw new CoreException("Failed to read meta-info from bytes", e);
         }
@@ -40,7 +40,7 @@ public record MetaInfo(
 
     public static MetaInfo fromString(final String string) {
         try {
-            return convert(new BObjectMapper().readFromString(string, BConstants.DEFAULT_ENCODING, MetaInfoEntity.class));
+            return convert(BObjectMapper.fromString(string, BConstants.DEFAULT_ENCODING, MetaInfoEntity.class));
         } catch (Exception e) {
             throw new CoreException("Failed to read meta-info from string", e);
         }

@@ -1,5 +1,7 @@
 package com.github.jurisliepins;
 
+import com.github.jurisliepins.mapper.BDictionaryMapper;
+import com.github.jurisliepins.mapper.BObjectMapper;
 import com.github.jurisliepins.value.BInteger;
 import com.github.jurisliepins.value.BByteString;
 import com.github.jurisliepins.value.BList;
@@ -21,7 +23,8 @@ public final class BObjectMapperTests {
             @BProperty("utf8-string") String utf8String,
             @BProperty("empty-string") String emptyString,
             @BProperty("bytes") byte[] bytes
-    ) { }
+    ) {
+    }
 
     @Test
     @DisplayName("Should read/write string")
@@ -32,7 +35,7 @@ public final class BObjectMapperTests {
             put(BByteString.of("bytes"), BByteString.of(new byte[]{1, 2}));
         }});
         final BObjectMapper mapper = new BObjectMapper();
-        final BStringValues parsed = mapper.readFromBDictionary(value, BStringValues.class);
+        final BStringValues parsed = BDictionaryMapper.read(value, BStringValues.class);
         final BDictionary mapped = mapper.writeToBDictionary(parsed);
         assertEquals(value, mapped);
     }
@@ -55,7 +58,8 @@ public final class BObjectMapperTests {
             @BProperty("max-char") char maxChar,
             @BProperty("min-char") char minChar,
             @BProperty("epoch-seconds") OffsetDateTime epochSeconds
-    ) { }
+    ) {
+    }
 
     @Test
     @DisplayName("Should read/write integer")
@@ -80,7 +84,7 @@ public final class BObjectMapperTests {
             put(BByteString.of("epoch-seconds"), BInteger.of(OffsetDateTime.now().toEpochSecond()));
         }});
         final BObjectMapper mapper = new BObjectMapper();
-        final BIntegerValues parsed = mapper.readFromBDictionary(value, BIntegerValues.class);
+        final BIntegerValues parsed = BDictionaryMapper.read(value, BIntegerValues.class);
         final BDictionary mapped = mapper.writeToBDictionary(parsed);
         assertEquals(value, mapped);
     }
@@ -103,7 +107,8 @@ public final class BObjectMapperTests {
             @BProperty("boolean-list") List<Boolean> booleanList,
             @BProperty("char-array") char[] charArray,
             @BProperty("char-list") List<Character> charList
-    ) { }
+    ) {
+    }
 
     @Test
     @DisplayName("Should read/write list")
@@ -179,7 +184,7 @@ public final class BObjectMapperTests {
             ));
         }});
         final BObjectMapper mapper = new BObjectMapper();
-        final BListValues parsed = mapper.readFromBDictionary(value, BListValues.class);
+        final BListValues parsed = BDictionaryMapper.read(value, BListValues.class);
         final BDictionary mapped = mapper.writeToBDictionary(parsed);
         assertEquals(value, mapped);
     }
@@ -254,7 +259,7 @@ public final class BObjectMapperTests {
             put(BByteString.of("encoding"), BByteString.of("utf8"));
         }});
         final BObjectMapper mapper = new BObjectMapper();
-        final MetaInfo parsed = mapper.readFromBDictionary(value, MetaInfo.class);
+        final MetaInfo parsed = BDictionaryMapper.read(value, MetaInfo.class);
         final BDictionary mapped = mapper.writeToBDictionary(parsed);
         assertEquals(value, mapped);
     }
