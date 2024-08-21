@@ -8,20 +8,24 @@ import java.util.Map;
 
 public sealed interface BValue extends Comparable<BValue> permits BInteger, BByteString, BList, BDictionary {
 
-    default Byte toByte() {
-        return toShort().byteValue();
+    default char toCharacter() {
+        return (char) toByte();
     }
 
-    default Short toShort() {
-        return toInteger().shortValue();
+    default byte toByte() {
+        return (byte) toShort();
     }
 
-    default Integer toInteger() {
-        return toLong().intValue();
+    default short toShort() {
+        return (short) toInteger();
     }
 
-    default Long toLong() {
-        return toBInteger().value();
+    default int toInteger() {
+        return (int) toLong();
+    }
+
+    default long toLong() {
+        return (long) toBInteger().value();
     }
 
     default BInteger toBInteger() {

@@ -10,9 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,6 +22,11 @@ public final class BObjectMapperTests {
             @BProperty("empty-string") String emptyString,
             @BProperty("bytes") byte[] bytes
     ) {
+        public BStringValues {
+            Objects.requireNonNull(utf8String);
+            Objects.requireNonNull(emptyString);
+            Objects.requireNonNull(bytes);
+        }
     }
 
     @Test
@@ -41,6 +44,8 @@ public final class BObjectMapperTests {
     }
 
     public record BIntegerValues(
+            @BProperty("min-char") char minChar,
+            @BProperty("max-char") char maxChar,
             @BProperty("max-byte") byte maxByte,
             @BProperty("min-byte") byte minByte,
             @BProperty("max-short") short maxShort,
@@ -48,23 +53,17 @@ public final class BObjectMapperTests {
             @BProperty("max-integer") int maxInteger,
             @BProperty("min-integer") int minInteger,
             @BProperty("max-long") long maxLong,
-            @BProperty("min-long") long minLong,
-            @BProperty("max-float") float maxFloat,
-            @BProperty("min-float") float minFloat,
-            @BProperty("max-double") double maxDouble,
-            @BProperty("min-double") double minDouble,
-            @BProperty("boolean-true") boolean booleanTrue,
-            @BProperty("boolean-false") boolean booleanFalse,
-            @BProperty("max-char") char maxChar,
-            @BProperty("min-char") char minChar,
-            @BProperty("epoch-seconds") OffsetDateTime epochSeconds
+            @BProperty("min-long") long minLong
     ) {
+        //
     }
 
     @Test
     @DisplayName("Should read/write integer")
     public void shouldReadWriteInteger() {
         final BDictionary value = BDictionary.of(new HashMap<>() {{
+            put(BByteString.of("max-char"), BInteger.of((byte) 'z'));
+            put(BByteString.of("min-char"), BInteger.of((byte) 'a'));
             put(BByteString.of("max-byte"), BInteger.of(Byte.MAX_VALUE));
             put(BByteString.of("min-byte"), BInteger.of(Byte.MIN_VALUE));
             put(BByteString.of("max-short"), BInteger.of(Short.MAX_VALUE));
@@ -73,15 +72,6 @@ public final class BObjectMapperTests {
             put(BByteString.of("min-integer"), BInteger.of(Integer.MIN_VALUE));
             put(BByteString.of("max-long"), BInteger.of(Long.MAX_VALUE));
             put(BByteString.of("min-long"), BInteger.of(Long.MIN_VALUE));
-            put(BByteString.of("max-float"), BInteger.of(1));
-            put(BByteString.of("min-float"), BInteger.of(0));
-            put(BByteString.of("max-double"), BInteger.of(1));
-            put(BByteString.of("min-double"), BInteger.of(0));
-            put(BByteString.of("boolean-true"), BInteger.of(1));
-            put(BByteString.of("boolean-false"), BInteger.of(0));
-            put(BByteString.of("max-char"), BInteger.of((byte) 'z'));
-            put(BByteString.of("min-char"), BInteger.of((byte) 'a'));
-            put(BByteString.of("epoch-seconds"), BInteger.of(OffsetDateTime.now().toEpochSecond()));
         }});
         final BObjectMapper mapper = new BObjectMapper();
         final BIntegerValues parsed = BDictionaryMapper.read(value, BIntegerValues.class);
@@ -90,6 +80,8 @@ public final class BObjectMapperTests {
     }
 
     public record BListValues(
+            @BProperty("char-array") char[] charArray,
+            @BProperty("char-list") List<Character> charList,
             //            Skipping byte array because byte arrays are written as BByteString.
             //            @BProperty("byte-array") byte[] byteArray,
             @BProperty("byte-list") List<Byte> byteList,
@@ -98,22 +90,25 @@ public final class BObjectMapperTests {
             @BProperty("integer-array") int[] integerArray,
             @BProperty("integer-list") List<Integer> integerList,
             @BProperty("long-array") long[] longArray,
-            @BProperty("long-list") List<Long> longList,
-            @BProperty("float-array") float[] floatArray,
-            @BProperty("float-list") List<Float> floatList,
-            @BProperty("double-array") double[] doubleArray,
-            @BProperty("double-list") List<Double> doubleList,
-            @BProperty("boolean-array") boolean[] booleanArray,
-            @BProperty("boolean-list") List<Boolean> booleanList,
-            @BProperty("char-array") char[] charArray,
-            @BProperty("char-list") List<Character> charList
+            @BProperty("long-list") List<Long> longList
     ) {
+        //
     }
 
     @Test
     @DisplayName("Should read/write list")
     public void shouldReadWriteList() {
         final BDictionary value = BDictionary.of(new HashMap<>() {{
+            put(BByteString.of("char-array"), BList.of(
+                    BInteger.of((byte) 'a'),
+                    BInteger.of((byte) 'b'),
+                    BInteger.of((byte) 'c')
+            ));
+            put(BByteString.of("char-list"), BList.of(
+                    BInteger.of((byte) 'a'),
+                    BInteger.of((byte) 'b'),
+                    BInteger.of((byte) 'c')
+            ));
             //            Skipping byte array because byte arrays are written as BByteString.
             //            put(BByteString.of("byte-array"), BList.of(
             //                    BInteger.of((byte) 1),
@@ -148,40 +143,6 @@ public final class BObjectMapperTests {
                     BInteger.of(1),
                     BInteger.of(2)
             ));
-            put(BByteString.of("float-array"), BList.of(
-                    BInteger.of(1),
-                    BInteger.of(2)
-            ));
-            put(BByteString.of("float-list"), BList.of(
-                    BInteger.of(1),
-                    BInteger.of(2)
-            ));
-            put(BByteString.of("double-array"), BList.of(
-                    BInteger.of(1),
-                    BInteger.of(2)
-            ));
-            put(BByteString.of("double-list"), BList.of(
-                    BInteger.of(1),
-                    BInteger.of(2)
-            ));
-            put(BByteString.of("boolean-array"), BList.of(
-                    BInteger.of(0),
-                    BInteger.of(1)
-            ));
-            put(BByteString.of("boolean-list"), BList.of(
-                    BInteger.of(0),
-                    BInteger.of(1)
-            ));
-            put(BByteString.of("char-array"), BList.of(
-                    BInteger.of((byte) 'a'),
-                    BInteger.of((byte) 'b'),
-                    BInteger.of((byte) 'c')
-            ));
-            put(BByteString.of("char-list"), BList.of(
-                    BInteger.of((byte) 'a'),
-                    BInteger.of((byte) 'b'),
-                    BInteger.of((byte) 'c')
-            ));
         }});
         final BObjectMapper mapper = new BObjectMapper();
         final BListValues parsed = BDictionaryMapper.read(value, BListValues.class);
@@ -192,7 +153,7 @@ public final class BObjectMapperTests {
     public record File(
             @BProperty("length") long length,
             @BProperty("md5sum") String md5sum,
-            @BProperty("path") List<String> path
+            @BProperty("path") String[] path
     ) {
         public File {
             Objects.requireNonNull(path, "path is null");
@@ -202,11 +163,11 @@ public final class BObjectMapperTests {
     public record Info(
             @BProperty("piece length") int pieceLength,
             @BProperty("pieces") byte[] pieces,
-            @BProperty("private") Boolean isPrivate,
+            @BProperty("private") Long isPrivate,
             @BProperty("name") String name,
             @BProperty("length") long length,
             @BProperty("md5sum") String md5sum,
-            @BProperty("files") List<File> files
+            @BProperty("files") File[] files
     ) {
         public Info {
             Objects.requireNonNull(pieces, "pieces is null");
@@ -217,8 +178,8 @@ public final class BObjectMapperTests {
     public record MetaInfo(
             @BProperty("info") Info info,
             @BProperty("announce") String announce,
-            @BProperty("announce-list") List<List<String>> announceList,
-            @BProperty("creation date") OffsetDateTime creationDate,
+            @BProperty("announce-list") String[][] announceList,
+            @BProperty("creation date") Long creationDate,
             @BProperty("comment") String comment,
             @BProperty("created by") String createdBy,
             @BProperty("encoding") String encoding
@@ -230,7 +191,7 @@ public final class BObjectMapperTests {
     }
 
     @Test
-    @DisplayName("Should read/write meta-info")
+    @DisplayName("Should read/write dictionary")
     public void shouldReadWriteDictionary() {
         final BDictionary value = BDictionary.of(new HashMap<>() {{
             put(BByteString.of("info"), BDictionary.of(new HashMap<>() {{

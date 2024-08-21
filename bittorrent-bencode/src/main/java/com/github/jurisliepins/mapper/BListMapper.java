@@ -1,103 +1,86 @@
 package com.github.jurisliepins.mapper;
 
-import com.github.jurisliepins.value.BValue;
+import com.github.jurisliepins.BException;
+import com.github.jurisliepins.value.BList;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 public final class BListMapper {
 
-    public static Object read(final BValue value, final Class<?> type, final Class<?> genericType) {
-        return switch (type.getName()) {
-            case "[B" -> readByteArray(value);
-            case "[S" -> readShortArray(value);
-            case "[I" -> readIntegerArray(value);
-            case "[J" -> readLongArray(value);
-            case "[Z" -> readBooleanArray(value);
-            case "[C" -> readCharacterArray(value);
-            case "[F" -> readFloatArray(value);
-            case "[D" -> readDoubleArray(value);
-            default -> readDefault(value, genericType);
-        };
+    @SuppressWarnings("unchecked")
+    public static <T> T read(final BList value, final Class<T> type) {
+        if (type.isArray()) {
+            return switch (type.getName()) {
+                case "[C" -> (T) readCharacters(value);
+                case "[B" -> (T) readBytes(value);
+                case "[S" -> (T) readShorts(value);
+                case "[I" -> (T) readIntegers(value);
+                case "[J" -> (T) readLongs(value);
+                case "[Z" -> throw new BException("Arrays of type '%s' are not supported".formatted(boolean.class.getName()));
+                case "[F" -> throw new BException("Arrays of type '%s' are not supported".formatted(float.class.getName()));
+                case "[D" -> throw new BException("Arrays of type '%s' are not supported".formatted(double.class.getName()));
+                default ->  (T) readArray(value, type.componentType());
+            };
+        }
+        return (T) readCollection(value);
     }
 
-    private static byte[] readByteArray(final BValue value) {
-        final List<BValue> list = value.toList();
-        final byte[] array = new byte[list.size()];
-        for (int idx = 0; idx < list.size(); idx++) {
-            array[idx] = BIntegerMapper.readByte(list.get(idx));
+    private static char[] readCharacters(final BList value) {
+        final char[] array = new char[value.value().size()];
+        for (int idx = 0; idx < value.value().size(); idx++) {
+            array[idx] = BIntegerMapper.readCharacter(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
-    private static short[] readShortArray(final BValue value) {
-        final List<BValue> list = value.toList();
-        final short[] array = new short[list.size()];
-        for (int idx = 0; idx < list.size(); idx++) {
-            array[idx] = BIntegerMapper.readShort(list.get(idx));
+    private static byte[] readBytes(final BList value) {
+        final byte[] array = new byte[value.value().size()];
+        for (int idx = 0; idx < value.value().size(); idx++) {
+            array[idx] = BIntegerMapper.readByte(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
-    private static int[] readIntegerArray(final BValue value) {
-        final List<BValue> list = value.toList();
-        final int[] array = new int[list.size()];
-        for (int idx = 0; idx < list.size(); idx++) {
-            array[idx] = BIntegerMapper.readInteger(list.get(idx));
+    private static short[] readShorts(final BList value) {
+        final short[] array = new short[value.value().size()];
+        for (int idx = 0; idx < value.value().size(); idx++) {
+            array[idx] = BIntegerMapper.readShort(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
-    private static long[] readLongArray(final BValue value) {
-        final List<BValue> list = value.toList();
-        final long[] array = new long[list.size()];
-        for (int idx = 0; idx < list.size(); idx++) {
-            array[idx] = BIntegerMapper.readLong(list.get(idx));
+    private static int[] readIntegers(final BList value) {
+        final int[] array = new int[value.value().size()];
+        for (int idx = 0; idx < value.value().size(); idx++) {
+            array[idx] = BIntegerMapper.readInteger(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
-    private static boolean[] readBooleanArray(final BValue value) {
-        final List<BValue> list = value.toList();
-        final boolean[] array = new boolean[list.size()];
-        for (int idx = 0; idx < list.size(); idx++) {
-            array[idx] = BIntegerMapper.readBoolean(list.get(idx));
+    private static long[] readLongs(final BList value) {
+        final long[] array = new long[value.value().size()];
+        for (int idx = 0; idx < value.value().size(); idx++) {
+            array[idx] = BIntegerMapper.readLong(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
-    private static char[] readCharacterArray(final BValue value) {
-        final List<BValue> list = value.toList();
-        final char[] array = new char[list.size()];
-        for (int idx = 0; idx < list.size(); idx++) {
-            array[idx] = BIntegerMapper.readCharacter(list.get(idx));
+    @SuppressWarnings("unchecked")
+    private static <T> T[] readArray(final BList value, final Class<T> type) {
+        final T[] array = (T[]) Array.newInstance(type, value.value().size());
+        for (int idx = 0; idx < value.value().size(); idx++) {
+            array[idx] = BObjectMapper.read(value.value().get(idx), type);
         }
         return array;
     }
 
-    private static float[] readFloatArray(final BValue value) {
-        final List<BValue> list = value.toList();
-        final float[] array = new float[list.size()];
-        for (int idx = 0; idx < list.size(); idx++) {
-            array[idx] = BIntegerMapper.readFloat(list.get(idx));
-        }
-        return array;
-    }
-
-    private static double[] readDoubleArray(final BValue value) {
-        final List<BValue> list = value.toList();
-        final double[] array = new double[list.size()];
-        for (int idx = 0; idx < list.size(); idx++) {
-            array[idx] = BIntegerMapper.readDouble(list.get(idx));
-        }
-        return array;
-    }
-
-    private static Object readDefault(final BValue value, final Class<?> genericType) {
-        return value.toList()
+    private static Collection<Object> readCollection(final BList value) {
+        return value.value()
                 .stream()
-                .map(val -> BObjectMapper.read(val, genericType, genericType))
+                .map(val -> BObjectMapper.read(val, Object.class))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 }

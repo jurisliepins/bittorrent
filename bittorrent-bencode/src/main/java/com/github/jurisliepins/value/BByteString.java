@@ -27,6 +27,11 @@ public record BByteString(byte[] value) implements BValue {
         };
     }
 
+    @Override
+    public String toString() {
+        return "BByteString[value=\"%s\"]".formatted(new String(value, StandardCharsets.UTF_8));
+    }
+
     public static BByteString of(final byte[] value) {
         return new BByteString(Objects.requireNonNull(value, "value is null"));
     }

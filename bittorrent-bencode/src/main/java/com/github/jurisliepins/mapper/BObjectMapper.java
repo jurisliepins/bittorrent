@@ -23,40 +23,30 @@ import java.util.stream.Collectors;
 
 public class BObjectMapper {
 
-    public static Object read(final BValue value, final Class<?> type, final Class<?> genericType) {
+    public static <T> T read(final BValue value, final Class<T> type) {
         return switch (value) {
             case BByteString val -> BByteStringMapper.read(val, type);
             case BInteger val -> BIntegerMapper.read(val, type);
-            case BList val -> BListMapper.read(val, type, genericType);
+            case BList val -> BListMapper.read(val, type);
             case BDictionary val -> BDictionaryMapper.read(val, type);
         };
     }
 
-    public static <T> T fromStream(final BInputStream value, final Class<T> clazz) throws IOException {
-        return switch (BDecoder.fromStream(value)) {
-            case BDictionary dictionary -> BDictionaryMapper.read(dictionary, clazz);
-            default -> throw new BException("Unexpected type read from stream - BDictionary expected");
-        };
+    public static <T> T fromStream(final BInputStream value, final Class<T> type) throws IOException {
+        return read(BDecoder.fromStream(value), type);
     }
 
-    public static <T> T fromBytes(final byte[] value, final Class<T> clazz) throws IOException {
+    public static <T> T fromBytes(final byte[] value, final Class<T> type) throws IOException {
         try (BInputStream stream = new BInputStream(value)) {
-            return fromStream(stream, clazz);
+            return fromStream(stream, type);
         }
     }
 
-    public static <T> T fromString(final String value, final Charset encoding, final Class<T> clazz) throws IOException {
-        return fromBytes(value.getBytes(encoding), clazz);
+    public static <T> T fromString(final String value, final Charset encoding, final Class<T> type) throws IOException {
+        return fromBytes(value.getBytes(encoding), type);
     }
 
-
     // ---
-
-
-
-
-
-
 
     public <T> BOutputStream writeToStream(final T value) throws IOException {
         final BValue dictionary = writeToBDictionary(value);
