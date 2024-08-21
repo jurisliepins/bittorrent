@@ -6,7 +6,11 @@ import com.github.jurisliepins.value.BByteString;
 import com.github.jurisliepins.value.BDictionary;
 import com.github.jurisliepins.value.BValue;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class BDictionaryMapper {
 
@@ -24,6 +28,31 @@ public final class BDictionaryMapper {
                 })
                 .toArray();
         return createInstance(type, args);
+    }
+
+    public static <T> BDictionary write(final T value) {
+        final Map<BValue, BValue> values = Arrays.stream(value.getClass().getDeclaredFields())
+                    .map(field -> {
+                        final BProperty property = field.getAnnotation(BProperty.class);
+                        if (property != null) {
+                            try {
+                                if (field.trySetAccessible()) {
+                                    final Object fieldValue = field.get(value);
+                                    if (fieldValue != null) {
+                                        final BValue key = BByteString.of(property.value());
+                                        final BValue val = BObjectMapper.write(fieldValue);
+                                        return new SimpleEntry<>(key, val);
+                                    }
+                                }
+                            } catch (IllegalAccessException e) {
+                                throw new BException("Failed to access field '%s'".formatted(field.getName()), e);
+                            }
+                        }
+                        return null;
+                    })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return BDictionary.of(values);
     }
 
     @SuppressWarnings("unchecked")

@@ -11,7 +11,7 @@ public record BInteger(long value) implements BValue {
     @Override
     public boolean equals(final Object other) {
         return switch (other) {
-            case BValue val -> ((Long) value).equals(val.toLong());
+            case BInteger val -> value() == val.value();
             default -> false;
         };
     }
@@ -21,19 +21,23 @@ public record BInteger(long value) implements BValue {
         return ((Long) value).compareTo(Objects.requireNonNull(other, "other is null").toLong());
     }
 
-    public static BInteger of(final Byte value) {
-        return of(Objects.requireNonNull(value, "value is null").shortValue());
+    public static BInteger of(final char value) {
+        return of((byte) value);
     }
 
-    public static BInteger of(final Short value) {
-        return of(Objects.requireNonNull(value, "value is null").intValue());
+    public static BInteger of(final byte value) {
+        return of((short) value);
     }
 
-    public static BInteger of(final Integer value) {
-        return of(Objects.requireNonNull(value, "value is null").longValue());
+    public static BInteger of(final short value) {
+        return of((int) value);
     }
 
-    public static BInteger of(final Long value) {
-        return new BInteger(Objects.requireNonNull(value, "value is null"));
+    public static BInteger of(final int value) {
+        return of((long) value);
+    }
+
+    public static BInteger of(final long value) {
+        return new BInteger(value);
     }
 }

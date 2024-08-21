@@ -5,6 +5,7 @@ import com.github.jurisliepins.BException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 public record BList(List<BValue> value) implements BValue {
     public BList {
@@ -19,7 +20,7 @@ public record BList(List<BValue> value) implements BValue {
     @Override
     public boolean equals(final Object other) {
         return switch (other) {
-            case BValue val -> value.equals(val.toList());
+            case BList val -> value().equals(val.value());
             default -> false;
         };
     }

@@ -19,7 +19,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     @Override
     public boolean equals(final Object other) {
         return switch (other) {
-            case BValue val -> value.equals(val.toMap());
+            case BDictionary val -> value().equals(val.value());
             default -> false;
         };
     }

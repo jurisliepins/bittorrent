@@ -2,6 +2,7 @@ package com.github.jurisliepins.mapper;
 
 import com.github.jurisliepins.BException;
 import com.github.jurisliepins.value.BInteger;
+import com.github.jurisliepins.value.BValue;
 
 public final class BIntegerMapper {
 
@@ -42,5 +43,36 @@ public final class BIntegerMapper {
 
     public static Object readDefault(final BInteger value) {
         return value.value();
+    }
+
+    public static <T> BValue write(final T value) {
+        return switch (value.getClass().getName()) {
+            case "char", "java.lang.Character" -> write((char) value);
+            case "byte", "java.lang.Byte" -> write((byte) value);
+            case "short", "java.lang.Short" -> write((short) value);
+            case "int", "java.lang.Integer" -> write((int) value);
+            case "long", "java.lang.Long" -> write((long) value);
+            default -> throw new BException("Type '%s' is not supported".formatted(value.getClass().getName()));
+        };
+    }
+
+    public static BInteger write(final char value) {
+        return BInteger.of(value);
+    }
+
+    public static BInteger write(final byte value) {
+        return BInteger.of(value);
+    }
+
+    public static BInteger write(final short value) {
+        return BInteger.of(value);
+    }
+
+    public static BInteger write(final int value) {
+        return BInteger.of(value);
+    }
+
+    public static BInteger write(final long value) {
+        return BInteger.of(value);
     }
 }

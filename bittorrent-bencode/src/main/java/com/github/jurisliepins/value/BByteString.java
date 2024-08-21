@@ -22,7 +22,7 @@ public record BByteString(byte[] value) implements BValue {
     @Override
     public boolean equals(final Object other) {
         return switch (other) {
-            case BValue val -> Arrays.equals(value, val.toBytes());
+            case BByteString val -> Arrays.equals(value(), val.value());
             default -> false;
         };
     }

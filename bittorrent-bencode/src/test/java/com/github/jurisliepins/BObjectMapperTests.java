@@ -1,7 +1,6 @@
 package com.github.jurisliepins;
 
 import com.github.jurisliepins.mapper.BDictionaryMapper;
-import com.github.jurisliepins.mapper.BObjectMapper;
 import com.github.jurisliepins.value.BInteger;
 import com.github.jurisliepins.value.BByteString;
 import com.github.jurisliepins.value.BList;
@@ -37,9 +36,8 @@ public final class BObjectMapperTests {
             put(BByteString.of("empty-string"), BByteString.of(""));
             put(BByteString.of("bytes"), BByteString.of(new byte[]{1, 2}));
         }});
-        final BObjectMapper mapper = new BObjectMapper();
         final BStringValues parsed = BDictionaryMapper.read(value, BStringValues.class);
-        final BDictionary mapped = mapper.writeToBDictionary(parsed);
+        final BDictionary mapped = BDictionaryMapper.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -73,9 +71,8 @@ public final class BObjectMapperTests {
             put(BByteString.of("max-long"), BInteger.of(Long.MAX_VALUE));
             put(BByteString.of("min-long"), BInteger.of(Long.MIN_VALUE));
         }});
-        final BObjectMapper mapper = new BObjectMapper();
         final BIntegerValues parsed = BDictionaryMapper.read(value, BIntegerValues.class);
-        final BDictionary mapped = mapper.writeToBDictionary(parsed);
+        final BDictionary mapped = BDictionaryMapper.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -144,9 +141,8 @@ public final class BObjectMapperTests {
                     BInteger.of(2)
             ));
         }});
-        final BObjectMapper mapper = new BObjectMapper();
         final BListValues parsed = BDictionaryMapper.read(value, BListValues.class);
-        final BDictionary mapped = mapper.writeToBDictionary(parsed);
+        final BDictionary mapped = BDictionaryMapper.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -219,9 +215,8 @@ public final class BObjectMapperTests {
             put(BByteString.of("created by"), BByteString.of("Пользователь"));
             put(BByteString.of("encoding"), BByteString.of("utf8"));
         }});
-        final BObjectMapper mapper = new BObjectMapper();
         final MetaInfo parsed = BDictionaryMapper.read(value, MetaInfo.class);
-        final BDictionary mapped = mapper.writeToBDictionary(parsed);
+        final BDictionary mapped = BDictionaryMapper.write(parsed);
         assertEquals(value, mapped);
     }
 }
