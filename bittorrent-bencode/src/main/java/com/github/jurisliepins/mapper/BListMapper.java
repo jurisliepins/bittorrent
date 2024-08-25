@@ -16,18 +16,26 @@ public final class BListMapper {
     public static <T> T read(final BList value, final Class<T> type) {
         if (type.isArray()) {
             return switch (type.getName()) {
+                case "[Z" -> (T) readBooleans(value);
                 case "[C" -> (T) readCharacters(value);
                 case "[B" -> (T) readBytes(value);
                 case "[S" -> (T) readShorts(value);
                 case "[I" -> (T) readIntegers(value);
                 case "[J" -> (T) readLongs(value);
-                case "[Z" -> throw new BException("Arrays of type '%s' are not supported".formatted(boolean.class.getName()));
-                case "[F" -> throw new BException("Arrays of type '%s' are not supported".formatted(float.class.getName()));
-                case "[D" -> throw new BException("Arrays of type '%s' are not supported".formatted(double.class.getName()));
+                case "[F" -> (T) readFloats(value);
+                case "[D" -> (T) readDoubles(value);
                 default ->  (T) readArray(value, type.componentType());
             };
         }
         return (T) readCollection(value);
+    }
+
+    public static boolean[] readBooleans(final BList value) {
+        final boolean[] array = new boolean[value.value().size()];
+        for (int idx = 0; idx < value.value().size(); idx++) {
+            array[idx] = BIntegerMapper.readBoolean(value.value().get(idx).toBInteger());
+        }
+        return array;
     }
 
     public static char[] readCharacters(final BList value) {
@@ -70,6 +78,22 @@ public final class BListMapper {
         return array;
     }
 
+    public static float[] readFloats(final BList value) {
+        final float[] array = new float[value.value().size()];
+        for (int idx = 0; idx < value.value().size(); idx++) {
+            array[idx] = BIntegerMapper.readFloat(value.value().get(idx).toBInteger());
+        }
+        return array;
+    }
+
+    public static double[] readDoubles(final BList value) {
+        final double[] array = new double[value.value().size()];
+        for (int idx = 0; idx < value.value().size(); idx++) {
+            array[idx] = BIntegerMapper.readDouble(value.value().get(idx).toBInteger());
+        }
+        return array;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T[] readArray(final BList value, final Class<T> type) {
         final T[] array = (T[]) Array.newInstance(type, value.value().size());
@@ -90,18 +114,26 @@ public final class BListMapper {
     public static <T> BValue write(final T value) {
         if (value.getClass().isArray()) {
             return switch (value.getClass().getName()) {
+                case "[Z" -> write((boolean[]) value);
                 case "[B" -> write((byte[]) value);
                 case "[C" -> write((char[]) value);
                 case "[S" -> write((short[]) value);
                 case "[I" -> write((int[]) value);
                 case "[J" -> write((long[]) value);
-                case "[F" -> throw new BException("Type '%s' is not supported".formatted(float[].class.getName()));
-                case "[D" -> throw new BException("Type '%s' is not supported".formatted(double[].class.getName()));
-                case "[Z" -> throw new BException("Type '%s' is not supported".formatted(boolean[].class.getName()));
+                case "[F" -> write((float[]) value);
+                case "[D" -> write((double[]) value);
                 default -> write((Object[]) value);
             };
         }
         return write((Collection<Object>) value);
+    }
+
+    public static BList write(final boolean[] value) {
+        final BValue[] array = new BValue[value.length];
+        for (int idx = 0; idx < value.length; idx++) {
+            array[idx] = BInteger.of(value[idx]);
+        }
+        return BList.of(array);
     }
 
     public static BList write(final byte[] value) {
@@ -137,6 +169,22 @@ public final class BListMapper {
     }
 
     public static BList write(final long[] value) {
+        final BValue[] array = new BValue[value.length];
+        for (int idx = 0; idx < value.length; idx++) {
+            array[idx] = BInteger.of(value[idx]);
+        }
+        return BList.of(array);
+    }
+
+    public static BList write(final float[] value) {
+        final BValue[] array = new BValue[value.length];
+        for (int idx = 0; idx < value.length; idx++) {
+            array[idx] = BInteger.of(value[idx]);
+        }
+        return BList.of(array);
+    }
+
+    public static BList write(final double[] value) {
         final BValue[] array = new BValue[value.length];
         for (int idx = 0; idx < value.length; idx++) {
             array[idx] = BInteger.of(value[idx]);

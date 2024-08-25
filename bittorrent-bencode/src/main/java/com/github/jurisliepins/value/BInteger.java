@@ -18,7 +18,11 @@ public record BInteger(long value) implements BValue {
 
     @Override
     public int compareTo(final BValue other) {
-        return ((Long) value).compareTo(Objects.requireNonNull(other, "other is null").toLong());
+        return Long.compare(value, Objects.requireNonNull(other, "other is null").toLong());
+    }
+
+    public static BInteger of(final boolean value) {
+        return of(value ? 1L : 0L);
     }
 
     public static BInteger of(final char value) {
@@ -39,5 +43,13 @@ public record BInteger(long value) implements BValue {
 
     public static BInteger of(final long value) {
         return new BInteger(value);
+    }
+
+    public static BInteger of(final float value) {
+        return of((int) value);
+    }
+
+    public static BInteger of(final double value) {
+        return of((long) value);
     }
 }

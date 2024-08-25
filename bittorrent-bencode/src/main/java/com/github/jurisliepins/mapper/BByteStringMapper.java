@@ -13,7 +13,7 @@ public final class BByteStringMapper {
         return switch (type.getName()) {
             case "[B" -> (T) readBytes(value);
             case "java.lang.String" -> (T) readString(value);
-            default -> (T) readDefault(value);
+            default -> throw new BException("Type '%s' is not supported".formatted(value.getClass().getName()));
         };
     }
 
@@ -22,10 +22,6 @@ public final class BByteStringMapper {
     }
 
     public static String readString(final BByteString value) {
-        return value.toString(StandardCharsets.UTF_8);
-    }
-
-    public static Object readDefault(final BByteString value) {
         return value.toString(StandardCharsets.UTF_8);
     }
 

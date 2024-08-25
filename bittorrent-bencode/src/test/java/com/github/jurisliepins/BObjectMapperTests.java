@@ -42,6 +42,8 @@ public final class BObjectMapperTests {
     }
 
     public record BIntegerValues(
+            @BProperty("min-boolean") boolean minBoolean,
+            @BProperty("max-boolean") boolean maxBoolean,
             @BProperty("min-char") char minChar,
             @BProperty("max-char") char maxChar,
             @BProperty("max-byte") byte maxByte,
@@ -51,7 +53,11 @@ public final class BObjectMapperTests {
             @BProperty("max-integer") int maxInteger,
             @BProperty("min-integer") int minInteger,
             @BProperty("max-long") long maxLong,
-            @BProperty("min-long") long minLong
+            @BProperty("min-long") long minLong,
+            @BProperty("max-float") float maxFloat,
+            @BProperty("min-float") float minFloat,
+            @BProperty("max-double") double maxDouble,
+            @BProperty("min-double") double minDouble
     ) {
         //
     }
@@ -60,6 +66,8 @@ public final class BObjectMapperTests {
     @DisplayName("Should read/write integer")
     public void shouldReadWriteInteger() {
         final BDictionary value = BDictionary.of(new HashMap<>() {{
+            put(BByteString.of("max-boolean"), BInteger.of(true));
+            put(BByteString.of("min-boolean"), BInteger.of(false));
             put(BByteString.of("max-char"), BInteger.of((byte) 'z'));
             put(BByteString.of("min-char"), BInteger.of((byte) 'a'));
             put(BByteString.of("max-byte"), BInteger.of(Byte.MAX_VALUE));
@@ -70,6 +78,10 @@ public final class BObjectMapperTests {
             put(BByteString.of("min-integer"), BInteger.of(Integer.MIN_VALUE));
             put(BByteString.of("max-long"), BInteger.of(Long.MAX_VALUE));
             put(BByteString.of("min-long"), BInteger.of(Long.MIN_VALUE));
+            put(BByteString.of("max-float"), BInteger.of(Float.MAX_VALUE));
+            put(BByteString.of("min-float"), BInteger.of(Float.MIN_VALUE));
+            put(BByteString.of("max-double"), BInteger.of(Double.MAX_VALUE));
+            put(BByteString.of("min-double"), BInteger.of(Double.MIN_VALUE));
         }});
         final BIntegerValues parsed = BDictionaryMapper.read(value, BIntegerValues.class);
         final BDictionary mapped = BDictionaryMapper.write(parsed);

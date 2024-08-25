@@ -52,14 +52,14 @@ public class BObjectMapper {
         return switch (value.getClass().getName()) {
             case "java.lang.String" -> BByteStringMapper.write(value);
 
-            case "boolean", "java.lang.Boolean" -> throw new BException("Type '%s' is not supported".formatted(boolean.class.getName()));
-            case "float", "java.lang.Float" -> throw new BException("Type '%s' is not supported".formatted(float.class.getName()));
-            case "double", "java.lang.Double" -> throw new BException("Type '%s' is not supported".formatted(double.class.getName()));
-            case "char", "java.lang.Character",
+            case "boolean", "java.lang.Boolean",
+                 "char", "java.lang.Character",
                  "byte", "java.lang.Byte",
                  "short", "java.lang.Short",
                  "int", "java.lang.Integer",
-                 "long", "java.lang.Long" -> BIntegerMapper.write(value);
+                 "long", "java.lang.Long",
+                 "float", "java.lang.Float",
+                 "double", "java.lang.Double" -> BIntegerMapper.write(value);
 
             // TODO: Extend this?
             case "java.util.Collection",

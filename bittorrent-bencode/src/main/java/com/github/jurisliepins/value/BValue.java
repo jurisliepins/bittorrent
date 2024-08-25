@@ -8,6 +8,14 @@ import java.util.Map;
 
 public sealed interface BValue extends Comparable<BValue> permits BInteger, BByteString, BList, BDictionary {
 
+    default boolean toBoolean() {
+        return switch (toByte()) {
+            case 0 -> false;
+            case 1 -> true;
+            default -> throw new BException("Unsupported value '%d' for boolean".formatted(toByte()));
+        };
+    }
+
     default char toCharacter() {
         return (char) toByte();
     }
@@ -26,6 +34,14 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
 
     default long toLong() {
         return (long) toBInteger().value();
+    }
+
+    default float toFloat() {
+        return (float) toInteger();
+    }
+
+    default double toDouble() {
+        return (double) toLong();
     }
 
     default BInteger toBInteger() {

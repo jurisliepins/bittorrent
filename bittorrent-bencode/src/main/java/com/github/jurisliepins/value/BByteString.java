@@ -10,11 +10,6 @@ public record BByteString(byte[] value) implements BValue {
     }
 
     @Override
-    public int compareTo(final BValue other) {
-        return Arrays.compare(value, Objects.requireNonNull(other, "other is null").toBytes());
-    }
-
-    @Override
     public int hashCode() {
         return Arrays.hashCode(value);
     }
@@ -25,6 +20,11 @@ public record BByteString(byte[] value) implements BValue {
             case BByteString val -> Arrays.equals(value(), val.value());
             default -> false;
         };
+    }
+
+    @Override
+    public int compareTo(final BValue other) {
+        return Arrays.compare(value, Objects.requireNonNull(other, "other is null").toBytes());
     }
 
     @Override
