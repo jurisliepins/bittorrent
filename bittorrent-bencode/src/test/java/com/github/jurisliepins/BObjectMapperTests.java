@@ -1,15 +1,16 @@
 package com.github.jurisliepins;
 
-import com.github.jurisliepins.mapper.BDictionaryMapper;
 import com.github.jurisliepins.value.BInteger;
 import com.github.jurisliepins.value.BByteString;
 import com.github.jurisliepins.value.BList;
 import com.github.jurisliepins.value.BDictionary;
+import com.github.jurisliepins.value.BValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,8 +37,8 @@ public final class BObjectMapperTests {
             put(BByteString.of("empty-string"), BByteString.of(""));
             put(BByteString.of("bytes"), BByteString.of(new byte[]{1, 2}));
         }});
-        final BStringValues parsed = BDictionaryMapper.read(value, BStringValues.class);
-        final BDictionary mapped = BDictionaryMapper.write(parsed);
+        final BStringValues parsed = BObjectReader.read(value, BStringValues.class);
+        final BValue mapped = BObjectWriter.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -83,23 +84,22 @@ public final class BObjectMapperTests {
             put(BByteString.of("max-double"), BInteger.of(Double.MAX_VALUE));
             put(BByteString.of("min-double"), BInteger.of(Double.MIN_VALUE));
         }});
-        final BIntegerValues parsed = BDictionaryMapper.read(value, BIntegerValues.class);
-        final BDictionary mapped = BDictionaryMapper.write(parsed);
+        final BIntegerValues parsed = BObjectReader.read(value, BIntegerValues.class);
+        final BValue mapped = BObjectWriter.write(parsed);
         assertEquals(value, mapped);
     }
 
+    public record BListValue(@BProperty("value") int value) { }
+
     public record BListValues(
+            @BProperty("boolean-array") boolean[] booleanArray,
             @BProperty("char-array") char[] charArray,
-            @BProperty("char-list") List<Character> charList,
-            //            Skipping byte array because byte arrays are written as BByteString.
-            //            @BProperty("byte-array") byte[] byteArray,
-            @BProperty("byte-list") List<Byte> byteList,
             @BProperty("short-array") short[] shortArray,
-            @BProperty("short-list") List<Short> shortList,
             @BProperty("integer-array") int[] integerArray,
-            @BProperty("integer-list") List<Integer> integerList,
             @BProperty("long-array") long[] longArray,
-            @BProperty("long-list") List<Long> longList
+            @BProperty("float-array") float[] floatArray,
+            @BProperty("double-array") double[] doubleArray,
+            @BProperty("object-array") BListValue[] objectArray
     ) {
         //
     }
@@ -108,53 +108,41 @@ public final class BObjectMapperTests {
     @DisplayName("Should read/write list")
     public void shouldReadWriteList() {
         final BDictionary value = BDictionary.of(new HashMap<>() {{
+            put(BByteString.of("boolean-array"), BList.of(
+                    BInteger.of(true),
+                    BInteger.of(false)
+            ));
             put(BByteString.of("char-array"), BList.of(
                     BInteger.of((byte) 'a'),
-                    BInteger.of((byte) 'b'),
-                    BInteger.of((byte) 'c')
-            ));
-            put(BByteString.of("char-list"), BList.of(
-                    BInteger.of((byte) 'a'),
-                    BInteger.of((byte) 'b'),
-                    BInteger.of((byte) 'c')
-            ));
-            //            Skipping byte array because byte arrays are written as BByteString.
-            //            put(BByteString.of("byte-array"), BList.of(
-            //                    BInteger.of((byte) 1),
-            //                    BInteger.of((byte) 2),
-            //                    BInteger.of((byte) 3)
-            //            ));
-            put(BByteString.of("byte-list"), BList.of(
-                    BInteger.of((byte) 1),
-                    BInteger.of((byte) 2)
+                    BInteger.of((byte) 'b')
             ));
             put(BByteString.of("short-array"), BList.of(
                     BInteger.of((short) 1),
                     BInteger.of((short) 2)
             ));
-            put(BByteString.of("short-list"), BList.of(
-                    BInteger.of((short) 1),
-                    BInteger.of((short) 2)
-            ));
             put(BByteString.of("integer-array"), BList.of(
-                    BInteger.of(1),
-                    BInteger.of(2)
-            ));
-            put(BByteString.of("integer-list"), BList.of(
-                    BInteger.of(1),
-                    BInteger.of(2)
+                    BInteger.of((int) 1),
+                    BInteger.of((int) 2)
             ));
             put(BByteString.of("long-array"), BList.of(
-                    BInteger.of(1),
-                    BInteger.of(2)
+                    BInteger.of((long) 1),
+                    BInteger.of((long) 2)
             ));
-            put(BByteString.of("long-list"), BList.of(
-                    BInteger.of(1),
-                    BInteger.of(2)
+            put(BByteString.of("float-array"), BList.of(
+                    BInteger.of((float) 1),
+                    BInteger.of((float) 2)
+            ));
+            put(BByteString.of("double-array"), BList.of(
+                    BInteger.of((double) 1),
+                    BInteger.of((double) 2)
+            ));
+            put(BByteString.of("object-array"), BList.of(
+                    BDictionary.of(new HashMap<>() {{ put(BByteString.of("value"), BInteger.of(1)); }}),
+                    BDictionary.of(new HashMap<>() {{ put(BByteString.of("value"), BInteger.of(2)); }})
             ));
         }});
-        final BListValues parsed = BDictionaryMapper.read(value, BListValues.class);
-        final BDictionary mapped = BDictionaryMapper.write(parsed);
+        final BListValues parsed = BObjectReader.read(value, BListValues.class);
+        final BValue mapped = BObjectWriter.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -227,8 +215,8 @@ public final class BObjectMapperTests {
             put(BByteString.of("created by"), BByteString.of("Пользователь"));
             put(BByteString.of("encoding"), BByteString.of("utf8"));
         }});
-        final MetaInfo parsed = BDictionaryMapper.read(value, MetaInfo.class);
-        final BDictionary mapped = BDictionaryMapper.write(parsed);
+        final MetaInfo parsed = BObjectReader.read(value, MetaInfo.class);
+        final BValue mapped = BObjectWriter.write(parsed);
         assertEquals(value, mapped);
     }
 }

@@ -1,16 +1,15 @@
-package com.github.jurisliepins.info.entity;
+package com.github.jurisliepins.info.objects;
 
 import com.github.jurisliepins.BProperty;
 
-import java.util.List;
 import java.util.Objects;
 
-public record FileEntity(
+public record FileBObject(
         @BProperty("length") long length,
         @BProperty("md5sum") String md5sum,
-        @BProperty("path") List<String> path
+        @BProperty("path") String[] path
 ) {
-    public FileEntity {
+    public FileBObject {
         Objects.requireNonNull(path, "path is null");
     }
 }

@@ -2,7 +2,7 @@ package com.github.jurisliepins.info;
 
 import com.github.jurisliepins.CoreException;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
 
 public sealed interface Info permits Info.OneFileInfo, Info.ManyFileInfo {
@@ -27,7 +27,7 @@ public sealed interface Info permits Info.OneFileInfo, Info.ManyFileInfo {
             byte[] pieces,
             Boolean isPrivate,
             String name,
-            List<File> files,
+            File[] files,
             InfoHash hash
     ) implements Info {
         public ManyFileInfo {
@@ -67,9 +67,7 @@ public sealed interface Info permits Info.OneFileInfo, Info.ManyFileInfo {
     default Long length() {
         return switch (this) {
             case Info.OneFileInfo info -> info.length();
-            case Info.ManyFileInfo info -> info.files().stream()
-                    .mapToLong(File::length)
-                    .sum();
+            case Info.ManyFileInfo info -> Arrays.stream(info.files()).mapToLong(File::length).sum();
         };
     }
 
@@ -80,7 +78,7 @@ public sealed interface Info permits Info.OneFileInfo, Info.ManyFileInfo {
         };
     }
 
-    default List<File> files() {
+    default File[] files() {
         return switch (this) {
             case Info.OneFileInfo ignored -> throw new CoreException("Info doesn't have files");
             case Info.ManyFileInfo info -> info.files();

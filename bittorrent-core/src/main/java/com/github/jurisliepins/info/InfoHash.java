@@ -12,6 +12,7 @@ public final class InfoHash {
 
     private final byte[] bytes;
     private final String string;
+    private final int hashCode;
 
     public InfoHash(final byte[] bytes) {
         this.bytes = Objects.requireNonNull(bytes, "bytes are null");
@@ -19,6 +20,7 @@ public final class InfoHash {
             throw new IllegalArgumentException("Bytes length must be %s characters".formatted(BYTES_LENGTH));
         }
         this.string = HexFormat.of().formatHex(bytes);
+        this.hashCode = Arrays.hashCode(bytes);
     }
 
     public InfoHash(final String string) {
@@ -27,11 +29,13 @@ public final class InfoHash {
             throw new IllegalArgumentException("String length must be %s characters".formatted(STRING_LENGTH));
         }
         this.bytes = HexFormat.of().parseHex(string);
+        this.hashCode = Arrays.hashCode(bytes);
     }
 
     private InfoHash() {
         this.bytes = new byte[]{};
         this.string = "";
+        this.hashCode = Arrays.hashCode(bytes);
     }
 
     public byte[] toByteArray() {
@@ -45,7 +49,7 @@ public final class InfoHash {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(bytes);
+        return hashCode;
     }
 
     @Override

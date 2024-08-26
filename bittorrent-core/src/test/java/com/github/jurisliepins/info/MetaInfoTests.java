@@ -1,16 +1,16 @@
 package com.github.jurisliepins.info;
 
-import java.io.IOException;
-
-import com.github.jurisliepins.info.entity.InfoEntity;
-import com.github.jurisliepins.info.entity.MetaInfoEntity;
+import com.github.jurisliepins.info.objects.InfoBObject;
+import com.github.jurisliepins.info.objects.MetaInfoBObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,18 +19,18 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @DisplayName("Meta-info tests")
 public class MetaInfoTests {
 
-    private static final String SINGLE_FILE_TORRENT = "single_file.torrent";
+    private static final String ONE_FILE_TORRENT = "one_file.torrent";
 
-    private static final String MULTI_FILE_TORRENT = "multi_file.torrent";
+    private static final String MANY_FILE_TORRENT = "many_file.torrent";
 
-    private static final InfoHash SINGLE_FILE_INFO_HASH = new InfoHash("aa171ca77f14f55d6ec23d7e9541b7791e6c383c");
+    private static final InfoHash ONE_FILE_INFO_HASH = new InfoHash("aa171ca77f14f55d6ec23d7e9541b7791e6c383c");
 
-    private static final InfoHash MULTI_FILE_INFO_HASH = new InfoHash("6e540ebbc92131138746231ff3e44f165fd3b373");
+    private static final InfoHash MANY_FILE_INFO_HASH = new InfoHash("6e540ebbc92131138746231ff3e44f165fd3b373");
 
     @Test
     @DisplayName("Should decode one file meta-info")
     public void shouldDecodeOneFileMetaInfo() throws IOException {
-        switch (MetaInfo.fromBytes(readFileAsBytes(SINGLE_FILE_TORRENT))) {
+        switch (MetaInfo.fromBytes(readFileAsBytes(ONE_FILE_TORRENT))) {
             case MetaInfo metaInfo -> {
                 assertNotNull(metaInfo.info());
                 assertEquals("udp://tracker.openbittorrent.com:6969", metaInfo.announce());
@@ -47,7 +47,7 @@ public class MetaInfoTests {
                         assertEquals("war_and_peace.txt", info.name());
                         assertEquals(3266164, info.length());
                         assertNull(info.md5sum());
-                        assertEquals(SINGLE_FILE_INFO_HASH, info.hash());
+                        assertEquals(ONE_FILE_INFO_HASH, info.hash());
                     }
                     default -> throw new RuntimeException("Should not have reached this code");
                 }
@@ -58,7 +58,7 @@ public class MetaInfoTests {
     @Test
     @DisplayName("Should decode many file meta-info")
     public void shouldDecodeManyFileMetaInfo() throws IOException {
-        switch (MetaInfo.fromBytes(readFileAsBytes(MULTI_FILE_TORRENT))) {
+        switch (MetaInfo.fromBytes(readFileAsBytes(MANY_FILE_TORRENT))) {
             case MetaInfo metaInfo -> {
                 assertNotNull(metaInfo.info());
                 assertEquals("udp://tracker.openbittorrent.com:6969", metaInfo.announce());
@@ -73,20 +73,20 @@ public class MetaInfoTests {
                         assertNotNull(info.pieces());
                         assertFalse(info.isPrivate());
                         assertEquals("war_and_peace", info.name());
-                        assertEquals(4, info.files().size());
-                        assertEquals(11682, info.files().get(0).length());
-                        assertNull(info.files().get(0).md5sum());
-                        assertEquals(List.of("file_1.txt"), info.files().get(0).path());
-                        assertEquals(7923, info.files().get(1).length());
-                        assertNull(info.files().get(1).md5sum());
-                        assertEquals(List.of("file_2.txt"), info.files().get(1).path());
-                        assertEquals(8751, info.files().get(2).length());
-                        assertNull(info.files().get(2).md5sum());
-                        assertEquals(List.of("file_3.txt"), info.files().get(2).path());
-                        assertEquals(8180, info.files().get(3).length());
-                        assertNull(info.files().get(3).md5sum());
-                        assertEquals(List.of("file_4.txt"), info.files().get(3).path());
-                        assertEquals(MULTI_FILE_INFO_HASH, info.hash());
+                        assertEquals(4, info.files().length);
+                        assertEquals(11682, info.files()[0].length());
+                        assertNull(info.files()[0].md5sum());
+                        assertArrayEquals(new String[]{"file_1.txt"}, info.files()[0].path());
+                        assertEquals(7923, info.files()[1].length());
+                        assertNull(info.files()[1].md5sum());
+                        assertArrayEquals(new String[]{"file_2.txt"}, info.files()[1].path());
+                        assertEquals(8751, info.files()[2].length());
+                        assertNull(info.files()[2].md5sum());
+                        assertArrayEquals(new String[]{"file_3.txt"}, info.files()[2].path());
+                        assertEquals(8180, info.files()[3].length());
+                        assertNull(info.files()[3].md5sum());
+                        assertArrayEquals(new String[]{"file_4.txt"}, info.files()[3].path());
+                        assertEquals(MANY_FILE_INFO_HASH, info.hash());
                     }
                     default -> throw new RuntimeException("Should not have reached this code");
                 }
@@ -97,8 +97,8 @@ public class MetaInfoTests {
     @Test
     @DisplayName("Should encode/decode UTF-8 strings")
     public void shouldEncodeDecodeUtf8Strings() {
-        final MetaInfoEntity utf8MetaInfo = new MetaInfoEntity(
-                new InfoEntity(
+        final MetaInfoBObject utf8MetaInfo = new MetaInfoBObject(
+                new InfoBObject(
                         0,
                         new byte[]{},
                         false,
@@ -108,7 +108,7 @@ public class MetaInfoTests {
                         null),
                 "",
                 null,
-                OffsetDateTime.parse("2000-01-01T00:00:00Z"),
+                OffsetDateTime.parse("2000-01-01T00:00:00Z").toEpochSecond(),
                 "Комментарий",
                 "Пользователь",
                 null);

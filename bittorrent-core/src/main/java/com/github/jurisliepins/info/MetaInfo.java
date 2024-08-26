@@ -1,22 +1,23 @@
 package com.github.jurisliepins.info;
 
 import com.github.jurisliepins.BConstants;
-import com.github.jurisliepins.mapper.BObjectMapper;
+import com.github.jurisliepins.BObjectMapper;
 import com.github.jurisliepins.CoreException;
-import com.github.jurisliepins.info.entity.InfoEntity;
-import com.github.jurisliepins.info.entity.MetaInfoEntity;
+import com.github.jurisliepins.info.objects.InfoBObject;
+import com.github.jurisliepins.info.objects.MetaInfoBObject;
 import com.github.jurisliepins.stream.BInputStream;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.ZoneOffset;
+import java.util.Arrays;
 
 public record MetaInfo(
         Info info,
         String announce,
-        List<List<String>> announceList,
+        String[][] announceList,
         OffsetDateTime creationDate,
         String comment,
         String createdBy,
@@ -24,7 +25,7 @@ public record MetaInfo(
 ) {
     public static MetaInfo fromStream(final BInputStream stream) {
         try {
-            return convert(BObjectMapper.fromStream(stream, MetaInfoEntity.class));
+            return convert(BObjectMapper.fromStream(stream, MetaInfoBObject.class));
         } catch (Exception e) {
             throw new CoreException("Failed to read meta-info from stream", e);
         }
@@ -32,7 +33,7 @@ public record MetaInfo(
 
     public static MetaInfo fromBytes(final byte[] bytes) {
         try {
-            return convert(BObjectMapper.fromBytes(bytes, MetaInfoEntity.class));
+            return convert(BObjectMapper.fromBytes(bytes, MetaInfoBObject.class));
         } catch (Exception e) {
             throw new CoreException("Failed to read meta-info from bytes", e);
         }
@@ -40,27 +41,29 @@ public record MetaInfo(
 
     public static MetaInfo fromString(final String string) {
         try {
-            return convert(BObjectMapper.fromString(string, BConstants.DEFAULT_ENCODING, MetaInfoEntity.class));
+            return convert(BObjectMapper.fromString(string, BConstants.DEFAULT_ENCODING, MetaInfoBObject.class));
         } catch (Exception e) {
             throw new CoreException("Failed to read meta-info from string", e);
         }
     }
 
-    private static MetaInfo convert(final MetaInfoEntity metaInfo) {
-        if (metaInfo.info().files() != null && !metaInfo.info().files().isEmpty()) {
+    private static MetaInfo convert(final MetaInfoBObject metaInfo) {
+        if (metaInfo.info().files() != null && metaInfo.info().files().length > 0) {
             return new MetaInfo(
                     new Info.ManyFileInfo(
                             metaInfo.info().pieceLength(),
                             metaInfo.info().pieces(),
                             metaInfo.info().isPrivate(),
                             metaInfo.info().name(),
-                            metaInfo.info().files().stream()
-                                    .map(file -> new File(file.length(), file.md5sum(), file.path()))
-                                    .collect(Collectors.toList()),
+                            Arrays.stream(metaInfo.info().files())
+                                    .map(file -> new File(file.length(),
+                                                          file.md5sum(),
+                                                          file.path()))
+                                    .toArray(File[]::new),
                             hash(metaInfo.info())),
                     metaInfo.announce(),
                     metaInfo.announceList(),
-                    metaInfo.creationDate(),
+                    OffsetDateTime.ofInstant(Instant.ofEpochSecond(metaInfo.creationDate()), ZoneOffset.UTC),
                     metaInfo.comment(),
                     metaInfo.createdBy(),
                     metaInfo.encoding());
@@ -76,13 +79,13 @@ public record MetaInfo(
                         hash(metaInfo.info())),
                 metaInfo.announce(),
                 metaInfo.announceList(),
-                metaInfo.creationDate(),
+                OffsetDateTime.ofInstant(Instant.ofEpochSecond(metaInfo.creationDate()), ZoneOffset.UTC),
                 metaInfo.comment(),
                 metaInfo.createdBy(),
                 metaInfo.encoding());
     }
 
-    private static InfoHash hash(final InfoEntity info) {
+    private static InfoHash hash(final InfoBObject info) {
         try {
             return new InfoHash(MessageDigest.getInstance("SHA-1").digest(info.toBytes()));
         } catch (NoSuchAlgorithmException e) {
