@@ -146,6 +146,8 @@ public final class ClientActor implements ActorReceiver {
                         Log.info(ClientActor.class, "Torrent '{}' already started", torrent.getInfoHash());
                         mailbox.reply(new ClientCommandResult.Failure(torrent.getInfoHash(), "Torrent already started"));
                     }
+
+                    default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(torrent.getStatus()));
                 }
             }
 
@@ -175,6 +177,8 @@ public final class ClientActor implements ActorReceiver {
                         Log.info(ClientActor.class, "Torrent '{}' already stopped", torrent.getInfoHash());
                         mailbox.reply(new ClientCommandResult.Failure(torrent.getInfoHash(), "Torrent already stopped"));
                     }
+
+                    default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(torrent.getStatus()));
                 }
             }
 

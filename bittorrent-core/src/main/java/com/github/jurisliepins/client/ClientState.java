@@ -2,9 +2,7 @@ package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.bitfield.Bitfield;
-import com.github.jurisliepins.bitfield.ImmutableBitfield;
 import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.torrent.TorrentState;
 import com.github.jurisliepins.types.StatusType;
 
 import java.util.HashMap;
@@ -151,100 +149,100 @@ public final class ClientState {
         }
 
         public static final class Builder {
-            private ActorRef ref;
-            private StatusType status;
-            private InfoHash infoHash;
-            private Object peerId;
-            private Bitfield bitfield;
-            private int pieceLength;
-            private String name;
-            private long length;
-            private long downloaded;
-            private long uploaded;
-            private long left;
-            private double downloadRate;
-            private double uploadRate;
+            private ActorRef withRef;
+            private StatusType withStatus;
+            private InfoHash withInfoHash;
+            private Object withPeerId;
+            private Bitfield withBitfield;
+            private int withPieceLength;
+            private String withName;
+            private long withLength;
+            private long withDownloaded;
+            private long withUploaded;
+            private long withLeft;
+            private double withDownloadRate;
+            private double withUploadRate;
 
             public Builder ref(final ActorRef ref) {
-                this.ref = ref;
+                this.withRef = ref;
                 return this;
             }
 
             public Builder status(final StatusType status) {
-                this.status = status;
+                this.withStatus = status;
                 return this;
             }
 
             public Builder infoHash(final InfoHash infoHash) {
-                this.infoHash = infoHash;
+                this.withInfoHash = infoHash;
                 return this;
             }
 
             public Builder peerId(final Object peerId) {
-                this.peerId = peerId;
+                this.withPeerId = peerId;
                 return this;
             }
 
             public Builder bitfield(final Bitfield bitfield) {
-                this.bitfield = bitfield;
+                this.withBitfield = bitfield;
                 return this;
             }
 
             public Builder pieceLength(final int pieceLength) {
-                this.pieceLength = pieceLength;
+                this.withPieceLength = pieceLength;
                 return this;
             }
 
             public Builder name(final String name) {
-                this.name = name;
+                this.withName = name;
                 return this;
             }
 
             public Builder length(final long length) {
-                this.length = length;
+                this.withLength = length;
                 return this;
             }
 
             public Builder downloaded(final long downloaded) {
-                this.downloaded = downloaded;
+                this.withDownloaded = downloaded;
                 return this;
             }
 
             public Builder uploaded(final long uploaded) {
-                this.uploaded = uploaded;
+                this.withUploaded = uploaded;
                 return this;
             }
 
             public Builder left(final long left) {
-                this.left = left;
+                this.withLeft = left;
                 return this;
             }
 
             public Builder downloadRate(final double downloadRate) {
-                this.downloadRate = downloadRate;
+                this.withDownloadRate = downloadRate;
                 return this;
             }
 
             public Builder uploadRate(final double uploadRate) {
-                this.uploadRate = uploadRate;
+                this.withUploadRate = uploadRate;
                 return this;
             }
 
             public Torrent build() {
                 final Torrent torrent = new Torrent();
-                torrent.setRef(ref);
-                torrent.setStatus(status);
-                torrent.setInfoHash(infoHash);
-                torrent.setPeerId(peerId);
-                torrent.setBitfield(bitfield);
-                torrent.setPieceLength(pieceLength);
-                torrent.setName(name);
-                torrent.setLength(length);
-                torrent.setDownloaded(downloaded);
-                torrent.setUploaded(uploaded);
-                torrent.setLeft(left);
-                torrent.setDownloadRate(downloadRate);
-                torrent.setUploadRate(uploadRate);
+                torrent.setRef(withRef);
+                torrent.setStatus(withStatus);
+                torrent.setInfoHash(withInfoHash);
+                torrent.setPeerId(withPeerId);
+                torrent.setBitfield(withBitfield);
+                torrent.setPieceLength(withPieceLength);
+                torrent.setName(withName);
+                torrent.setLength(withLength);
+                torrent.setDownloaded(withDownloaded);
+                torrent.setUploaded(withUploaded);
+                torrent.setLeft(withLeft);
+                torrent.setDownloadRate(withDownloadRate);
+                torrent.setUploadRate(withUploadRate);
                 return torrent;
             }
         }

@@ -149,114 +149,114 @@ public final class TorrentState {
     }
 
     public static final class Builder {
-        private StatusType status;
-        private InfoHash infoHash;
-        private Object peerId;
-        private Bitfield bitfield;
-        private int pieceLength;
-        private List<Object> pieces;
-        private List<Object> files;
-        private String name;
-        private long length;
-        private long downloaded;
-        private long uploaded;
-        private long left;
-        private String announce;
-        private double downloadRate;
-        private double uploadRate;
+        private StatusType withStatus;
+        private InfoHash withInfoHash;
+        private Object withPeerId;
+        private Bitfield withBitfield;
+        private int withPieceLength;
+        private List<Object> withPieces;
+        private List<Object> withFiles;
+        private String withName;
+        private long withLength;
+        private long withDownloaded;
+        private long withUploaded;
+        private long withLeft;
+        private String withAnnounce;
+        private double withDownloadRate;
+        private double withUploadRate;
 
         public Builder status(final StatusType status) {
-            this.status = status;
+            this.withStatus = status;
             return this;
         }
 
         public Builder infoHash(final InfoHash infoHash) {
-            this.infoHash = infoHash;
+            this.withInfoHash = infoHash;
             return this;
         }
 
         public Builder peerId(final Object peerId) {
-            this.peerId = peerId;
+            this.withPeerId = peerId;
             return this;
         }
 
         public Builder bitfield(final Bitfield bitfield) {
-            this.bitfield = bitfield;
+            this.withBitfield = bitfield;
             return this;
         }
 
         public Builder pieceLength(final int pieceLength) {
-            this.pieceLength = pieceLength;
+            this.withPieceLength = pieceLength;
             return this;
         }
 
         public Builder pieces(final List<Object> pieces) {
-            this.pieces = pieces;
+            this.withPieces = pieces;
             return this;
         }
 
         public Builder files(final List<Object> files) {
-            this.files = files;
+            this.withFiles = files;
             return this;
         }
 
         public Builder name(final String name) {
-            this.name = name;
+            this.withName = name;
             return this;
         }
 
         public Builder length(final long length) {
-            this.length = length;
+            this.withLength = length;
             return this;
         }
 
         public Builder downloaded(final long downloaded) {
-            this.downloaded = downloaded;
+            this.withDownloaded = downloaded;
             return this;
         }
 
         public Builder uploaded(final long uploaded) {
-            this.uploaded = uploaded;
+            this.withUploaded = uploaded;
             return this;
         }
 
         public Builder left(final long left) {
-            this.left = left;
+            this.withLeft = left;
             return this;
         }
 
         public Builder announce(final String announce) {
-            this.announce = announce;
+            this.withAnnounce = announce;
             return this;
         }
 
         public Builder downloadRate(final double downloadRate) {
-            this.downloadRate = downloadRate;
+            this.withDownloadRate = downloadRate;
             return this;
         }
 
         public Builder uploadRate(final double uploadRate) {
-            this.uploadRate = uploadRate;
+            this.withUploadRate = uploadRate;
             return this;
         }
 
         public TorrentState build() {
             final TorrentState state = new TorrentState();
-            state.setStatus(status);
-            state.setInfoHash(infoHash);
-            state.setPeerId(peerId);
-            state.setBitfield(bitfield);
-            state.setPieceLength(pieceLength);
-            state.setPieces(pieces);
-            state.setFiles(files);
-            state.setName(name);
-            state.setLength(length);
-            state.setDownloaded(downloaded);
-            state.setUploaded(uploaded);
-            state.setLeft(left);
-            state.setAnnounce(announce);
-            state.setDownloadRate(downloadRate);
-            state.setUploadRate(uploadRate);
+            state.setStatus(withStatus);
+            state.setInfoHash(withInfoHash);
+            state.setPeerId(withPeerId);
+            state.setBitfield(withBitfield);
+            state.setPieceLength(withPieceLength);
+            state.setPieces(withPieces);
+            state.setFiles(withFiles);
+            state.setName(withName);
+            state.setLength(withLength);
+            state.setDownloaded(withDownloaded);
+            state.setUploaded(withUploaded);
+            state.setLeft(withLeft);
+            state.setAnnounce(withAnnounce);
+            state.setDownloadRate(withDownloadRate);
+            state.setUploadRate(withUploadRate);
             return state;
         }
     }

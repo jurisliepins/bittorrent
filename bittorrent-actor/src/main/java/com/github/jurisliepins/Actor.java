@@ -107,7 +107,7 @@ public interface Actor {
             return new Mailbox.Success(letter.message(), letter.system(), letter.self(), letter.sender());
         }
 
-        public static Mailbox.Failure failureMailboxFromLetter(final Letter letter, Throwable cause) {
+        public static Mailbox.Failure failureMailboxFromLetter(final Letter letter, final Throwable cause) {
             return new Mailbox.Failure(letter.message(), letter.system(), letter.self(), letter.sender(), cause);
         }
     }

@@ -30,9 +30,13 @@ public final class UrlEncoding {
     }
 
     private static boolean isSafeChar(final char value) {
-        return switch ((Character) value) {
-            case Character val when val >= 'A' && val <= 'Z' -> true;
-            case Character val when val >= 'a' && val <= 'z' -> true;
+        if (value >= 'A' && value <= 'Z') {
+            return true;
+        }
+        if (value >= 'a' && value <= 'z') {
+            return true;
+        }
+        return switch (value) {
             case '-', '.', '_', '~' -> true;
             default -> false;
         };

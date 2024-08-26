@@ -61,6 +61,8 @@ public final class TorrentActor implements ActorReceiver {
                  Errored -> {
                 Log.info(TorrentActor.class, "[{}] Torrent already started", state.getInfoHash());
             }
+
+            default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(state.getStatus()));
         }
         return NextState.Receive;
     }
@@ -80,6 +82,8 @@ public final class TorrentActor implements ActorReceiver {
             case Stopped -> {
                 Log.info(TorrentActor.class, "[{}] Torrent already stopped", state.getInfoHash());
             }
+
+            default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(state.getStatus()));
         }
         return NextState.Receive;
     }
