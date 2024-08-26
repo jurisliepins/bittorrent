@@ -24,13 +24,13 @@ public final class BEncoder {
     }
 
     public static BOutputStream toStream(final BValue value) throws IOException {
-        final BOutputStream stream = new BOutputStream();
+        var stream = new BOutputStream();
         write(stream, value);
         return stream;
     }
 
     public static byte[] toBytes(final BValue value) throws IOException {
-        try (BOutputStream stream = toStream(value)) {
+        try (var stream = toStream(value)) {
             return stream.toByteArray();
         }
     }
@@ -68,7 +68,7 @@ public final class BEncoder {
 
     private static void write(final BOutputStream stream, final BList value) throws IOException {
         stream.write(L_BYTE);
-        for (final BValue val : value.value()) {
+        for (var val : value.value()) {
             write(stream, val);
         }
         stream.write(E_BYTE);
@@ -77,7 +77,7 @@ public final class BEncoder {
 
     private static void write(final BOutputStream stream, final BDictionary value) throws IOException {
         stream.write(D_BYTE);
-        for (final Map.Entry<BValue, BValue> val : value.value().entrySet()
+        for (var val : value.value().entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByKey())
                 .toList()) {

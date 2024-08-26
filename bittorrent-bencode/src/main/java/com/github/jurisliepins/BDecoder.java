@@ -23,7 +23,7 @@ public final class BDecoder {
     }
 
     public static BValue fromBytes(final byte[] value) throws IOException {
-        try (BInputStream stream = new BInputStream(value)) {
+        try (var stream = new BInputStream(value)) {
             return fromStream(stream);
         }
     }
@@ -70,10 +70,10 @@ public final class BDecoder {
     }
 
     private static BValue decodeInteger(final BInputStream stream) {
-        long sign = 1L;
-        long result = 0L;
+        var sign = 1L;
+        var result = 0L;
 
-        for (byte value = stream.readByte(); value != (byte) 'e'; value = stream.readByte()) {
+        for (var value = stream.readByte(); value != (byte) 'e'; value = stream.readByte()) {
             if (value == '-') {
                 sign = -1L;
             } else {
@@ -90,9 +90,9 @@ public final class BDecoder {
     }
 
     private static BValue decodeByteString(final BInputStream stream) throws IOException {
-        int length = 0;
+        var length = 0;
 
-        for (byte value = stream.readByte(); value != (byte) ':'; value = stream.readByte()) {
+        for (var value = stream.readByte(); value != (byte) ':'; value = stream.readByte()) {
             if (value >= '0' && value <= '9') {
                 length *= 10;
                 length += value - (byte) '0';
@@ -101,7 +101,7 @@ public final class BDecoder {
             }
         }
 
-        final byte[] bytes = stream.readNBytes(length);
+        var bytes = stream.readNBytes(length);
         if (bytes.length != length) {
             throw new BException("Unexpected byte count '%d' when expected length '%d".formatted(length, bytes.length));
         }
@@ -110,10 +110,10 @@ public final class BDecoder {
     }
 
     private static BValue decodeList(final BInputStream stream) throws IOException {
-        final ArrayList<BValue> result = new ArrayList<>();
+        var result = new ArrayList<BValue>();
 
         while (stream.peekByte() != (byte) 'e') {
-            final BValue val = read(stream);
+            var val = read(stream);
             result.add(val);
         }
 
@@ -125,11 +125,11 @@ public final class BDecoder {
     }
 
     private static BValue decodeDictionary(final BInputStream stream) throws IOException {
-        final HashMap<BValue, BValue> result = new HashMap<>();
+        var result = new HashMap<BValue, BValue>();
 
         while (stream.peekByte() != (byte) 'e') {
-            final BValue key = read(stream);
-            final BValue val = read(stream);
+            var key = read(stream);
+            var val = read(stream);
             result.put(key, val);
         }
 

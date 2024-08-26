@@ -59,17 +59,17 @@ public final class BObjectReader {
             case "[J" -> (T) readLongs(value);
             case "[F" -> (T) readFloats(value);
             case "[D" -> (T) readDoubles(value);
-            case String val when type.isArray() ->  (T) readArray(value, type.componentType());
+            case String val when type.isArray() -> (T) readArray(value, type.componentType());
             default -> throw new BException("Type '%s' is not supported".formatted(type.getName()));
         };
     }
 
     private static <T> T readBDictionary(final BDictionary value, final Class<T> type) {
-        final Object[] args = Arrays.stream(type.getDeclaredFields())
+        var args = Arrays.stream(type.getDeclaredFields())
                 .map(field -> {
-                    final BProperty property = field.getAnnotation(BProperty.class);
+                    var property = field.getAnnotation(BProperty.class);
                     if (property != null) {
-                        final BValue val = value.value().get(BByteString.of(property.value()));
+                        var val = value.value().get(BByteString.of(property.value()));
                         if (val != null) {
                             return read(val, field.getType());
                         }
@@ -121,64 +121,64 @@ public final class BObjectReader {
     }
 
     private static boolean[] readBooleans(final BList value) {
-        final boolean[] array = new boolean[value.value().size()];
-        for (int idx = 0; idx < value.value().size(); idx++) {
+        var array = new boolean[value.value().size()];
+        for (var idx = 0; idx < value.value().size(); idx++) {
             array[idx] = readBoolean(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
     private static char[] readCharacters(final BList value) {
-        final char[] array = new char[value.value().size()];
-        for (int idx = 0; idx < value.value().size(); idx++) {
+        var array = new char[value.value().size()];
+        for (var idx = 0; idx < value.value().size(); idx++) {
             array[idx] = readCharacter(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
     private static byte[] readBytes(final BList value) {
-        final byte[] array = new byte[value.value().size()];
-        for (int idx = 0; idx < value.value().size(); idx++) {
+        var array = new byte[value.value().size()];
+        for (var idx = 0; idx < value.value().size(); idx++) {
             array[idx] = readByte(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
     private static short[] readShorts(final BList value) {
-        final short[] array = new short[value.value().size()];
-        for (int idx = 0; idx < value.value().size(); idx++) {
+        var array = new short[value.value().size()];
+        for (var idx = 0; idx < value.value().size(); idx++) {
             array[idx] = readShort(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
     private static int[] readIntegers(final BList value) {
-        final int[] array = new int[value.value().size()];
-        for (int idx = 0; idx < value.value().size(); idx++) {
+        var array = new int[value.value().size()];
+        for (var idx = 0; idx < value.value().size(); idx++) {
             array[idx] = readInteger(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
     private static long[] readLongs(final BList value) {
-        final long[] array = new long[value.value().size()];
-        for (int idx = 0; idx < value.value().size(); idx++) {
+        var array = new long[value.value().size()];
+        for (var idx = 0; idx < value.value().size(); idx++) {
             array[idx] = readLong(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
     private static float[] readFloats(final BList value) {
-        final float[] array = new float[value.value().size()];
-        for (int idx = 0; idx < value.value().size(); idx++) {
+        var array = new float[value.value().size()];
+        for (var idx = 0; idx < value.value().size(); idx++) {
             array[idx] = readFloat(value.value().get(idx).toBInteger());
         }
         return array;
     }
 
     private static double[] readDoubles(final BList value) {
-        final double[] array = new double[value.value().size()];
-        for (int idx = 0; idx < value.value().size(); idx++) {
+        var array = new double[value.value().size()];
+        for (var idx = 0; idx < value.value().size(); idx++) {
             array[idx] = readDouble(value.value().get(idx).toBInteger());
         }
         return array;
@@ -186,8 +186,8 @@ public final class BObjectReader {
 
     @SuppressWarnings("unchecked")
     private static <T> T[] readArray(final BList value, final Class<T> type) {
-        final T[] array = (T[]) Array.newInstance(type, value.value().size());
-        for (int idx = 0; idx < value.value().size(); idx++) {
+        var array = (T[]) Array.newInstance(type, value.value().size());
+        for (var idx = 0; idx < value.value().size(); idx++) {
             array[idx] = read(value.value().get(idx), type);
         }
         return array;

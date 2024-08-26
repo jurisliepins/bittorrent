@@ -38,7 +38,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     }
 
     public static BDictionary of(final BValue k, final BValue v) {
-        final HashMap<BValue, BValue> map = new HashMap<>();
+        var map = new HashMap<BValue, BValue>();
         map.put(k, v);
         return new BDictionary(map);
     }
@@ -46,7 +46,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     public static BDictionary of(
             final BValue k1, final BValue v1,
             final BValue k2, final BValue v2) {
-        final HashMap<BValue, BValue> map = new HashMap<>();
+        var map = new HashMap<BValue, BValue>();
         map.put(k1, v1);
         map.put(k2, v2);
         return new BDictionary(map);
@@ -56,7 +56,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
             final BValue k1, final BValue v1,
             final BValue k2, final BValue v2,
             final BValue k3, final BValue v3) {
-        final HashMap<BValue, BValue> map = new HashMap<>();
+        var map = new HashMap<BValue, BValue>();
         map.put(k1, v1);
         map.put(k2, v2);
         map.put(k3, v3);

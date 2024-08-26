@@ -10,7 +10,7 @@ public class BInputStream extends ByteArrayInputStream {
     }
 
     public byte readByte() {
-        final int value = read();
+        var value = read();
         if (value == -1) {
             throw new BException("Reached the end of the stream");
         }
@@ -19,7 +19,7 @@ public class BInputStream extends ByteArrayInputStream {
 
     public byte peekByte() {
         mark(1);
-        final byte value = readByte();
+        var value = readByte();
         reset();
         return value;
     }

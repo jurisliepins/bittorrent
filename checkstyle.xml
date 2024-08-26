@@ -183,10 +183,7 @@
         <module name="TodoComment"/>
         <module name="UpperEll"/>
         <module name="FinalParameters"/>
-        <module name="FinalLocalVariableCheck"/>
-        <module name="IllegalType">
-            <property name="illegalClassNames" value="var"/>
-        </module>
+<!--        <module name="FinalLocalVariableCheck"/>-->
 
         <!-- https://checkstyle.org/filters/suppressionxpathfilter.html -->
         <module name="SuppressionXpathFilter">

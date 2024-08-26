@@ -17,12 +17,12 @@ public class BitTorrentModule extends SimpleModule {
 
     @Override
     public void setupModule(final SetupContext context) {
-        final SimpleSerializers serializers = new SimpleSerializers();
+        var serializers = new SimpleSerializers();
         serializers.addSerializer(InfoHash.class, new InfoHashSerializer(InfoHash.class));
         serializers.addSerializer(Bitfield.class, new BitfieldSerializer(Bitfield.class));
         context.addSerializers(serializers);
 
-        final SimpleDeserializers deserializers = new SimpleDeserializers();
+        var deserializers = new SimpleDeserializers();
         deserializers.addDeserializer(InfoHash.class, new InfoHashDeserializer(InfoHash.class));
         context.addDeserializers(deserializers);
     }

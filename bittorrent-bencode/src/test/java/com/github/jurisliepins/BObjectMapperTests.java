@@ -4,7 +4,6 @@ import com.github.jurisliepins.value.BInteger;
 import com.github.jurisliepins.value.BByteString;
 import com.github.jurisliepins.value.BList;
 import com.github.jurisliepins.value.BDictionary;
-import com.github.jurisliepins.value.BValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -32,13 +31,13 @@ public final class BObjectMapperTests {
     @Test
     @DisplayName("Should read/write string")
     public void shouldReadWriteString() {
-        final BDictionary value = BDictionary.of(new HashMap<>() {{
+        var value = BDictionary.of(new HashMap<>() {{
             put(BByteString.of("utf8-string"), BByteString.of("ɄɅ ɱ ϴ ЂЃЃ"));
             put(BByteString.of("empty-string"), BByteString.of(""));
             put(BByteString.of("bytes"), BByteString.of(new byte[]{1, 2}));
         }});
-        final BStringValues parsed = BObjectReader.read(value, BStringValues.class);
-        final BValue mapped = BObjectWriter.write(parsed);
+        var parsed = BObjectReader.read(value, BStringValues.class);
+        var mapped = BObjectWriter.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -66,7 +65,7 @@ public final class BObjectMapperTests {
     @Test
     @DisplayName("Should read/write integer")
     public void shouldReadWriteInteger() {
-        final BDictionary value = BDictionary.of(new HashMap<>() {{
+        var value = BDictionary.of(new HashMap<>() {{
             put(BByteString.of("max-boolean"), BInteger.of(true));
             put(BByteString.of("min-boolean"), BInteger.of(false));
             put(BByteString.of("max-char"), BInteger.of((byte) 'z'));
@@ -84,8 +83,8 @@ public final class BObjectMapperTests {
             put(BByteString.of("max-double"), BInteger.of(Double.MAX_VALUE));
             put(BByteString.of("min-double"), BInteger.of(Double.MIN_VALUE));
         }});
-        final BIntegerValues parsed = BObjectReader.read(value, BIntegerValues.class);
-        final BValue mapped = BObjectWriter.write(parsed);
+        var parsed = BObjectReader.read(value, BIntegerValues.class);
+        var mapped = BObjectWriter.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -107,116 +106,75 @@ public final class BObjectMapperTests {
     @Test
     @DisplayName("Should read/write list")
     public void shouldReadWriteList() {
-        final BDictionary value = BDictionary.of(new HashMap<>() {{
-            put(BByteString.of("boolean-array"), BList.of(
-                    BInteger.of(true),
-                    BInteger.of(false)
-            ));
-            put(BByteString.of("char-array"), BList.of(
-                    BInteger.of((byte) 'a'),
-                    BInteger.of((byte) 'b')
-            ));
-            put(BByteString.of("short-array"), BList.of(
-                    BInteger.of((short) 1),
-                    BInteger.of((short) 2)
-            ));
-            put(BByteString.of("integer-array"), BList.of(
-                    BInteger.of((int) 1),
-                    BInteger.of((int) 2)
-            ));
-            put(BByteString.of("long-array"), BList.of(
-                    BInteger.of((long) 1),
-                    BInteger.of((long) 2)
-            ));
-            put(BByteString.of("float-array"), BList.of(
-                    BInteger.of((float) 1),
-                    BInteger.of((float) 2)
-            ));
-            put(BByteString.of("double-array"), BList.of(
-                    BInteger.of((double) 1),
-                    BInteger.of((double) 2)
-            ));
+        var value = BDictionary.of(new HashMap<>() {{
+            put(BByteString.of("boolean-array"), BList.of(BInteger.of(true), BInteger.of(false)));
+            put(BByteString.of("char-array"), BList.of(BInteger.of((byte) 'a'), BInteger.of((byte) 'b')));
+            put(BByteString.of("short-array"), BList.of(BInteger.of((short) 1), BInteger.of((short) 2)));
+            put(BByteString.of("integer-array"), BList.of(BInteger.of(1), BInteger.of(2)));
+            put(BByteString.of("long-array"), BList.of(BInteger.of(1L), BInteger.of(2L)));
+            put(BByteString.of("float-array"), BList.of(BInteger.of(1.0f), BInteger.of(2.0f)));
+            put(BByteString.of("double-array"), BList.of(BInteger.of(1.0), BInteger.of(2.0)));
             put(BByteString.of("object-array"), BList.of(
                     BDictionary.of(new HashMap<>() {{ put(BByteString.of("value"), BInteger.of(1)); }}),
-                    BDictionary.of(new HashMap<>() {{ put(BByteString.of("value"), BInteger.of(2)); }})
-            ));
+                    BDictionary.of(new HashMap<>() {{ put(BByteString.of("value"), BInteger.of(2)); }})));
         }});
-        final BListValues parsed = BObjectReader.read(value, BListValues.class);
-        final BValue mapped = BObjectWriter.write(parsed);
+        var parsed = BObjectReader.read(value, BListValues.class);
+        var mapped = BObjectWriter.write(parsed);
         assertEquals(value, mapped);
     }
 
     public record File(
             @BProperty("length") long length,
-            @BProperty("md5sum") String md5sum,
-            @BProperty("path") String[] path
+            @BProperty("path") String path
     ) {
-        public File {
-            Objects.requireNonNull(path, "path is null");
-        }
+        //
     }
 
     public record Info(
+            @BProperty("name") String name,
             @BProperty("piece length") int pieceLength,
             @BProperty("pieces") byte[] pieces,
-            @BProperty("private") Long isPrivate,
-            @BProperty("name") String name,
-            @BProperty("length") long length,
-            @BProperty("md5sum") String md5sum,
             @BProperty("files") File[] files
     ) {
-        public Info {
-            Objects.requireNonNull(pieces, "pieces is null");
-            Objects.requireNonNull(name, "name is null");
-        }
+        //
     }
 
     public record MetaInfo(
-            @BProperty("info") Info info,
             @BProperty("announce") String announce,
             @BProperty("announce-list") String[][] announceList,
-            @BProperty("creation date") Long creationDate,
+            @BProperty("creation date") long creationDate,
             @BProperty("comment") String comment,
             @BProperty("created by") String createdBy,
-            @BProperty("encoding") String encoding
+            @BProperty("encoding") String encoding,
+            @BProperty("info") Info info
     ) {
-        public MetaInfo {
-            Objects.requireNonNull(info, "info is null");
-            Objects.requireNonNull(announce, "announce is null");
-        }
+        //
     }
 
     @Test
     @DisplayName("Should read/write dictionary")
     public void shouldReadWriteDictionary() {
-        final BDictionary value = BDictionary.of(new HashMap<>() {{
+        var value = BDictionary.of(new HashMap<>() {{
             put(BByteString.of("info"), BDictionary.of(new HashMap<>() {{
-                put(BByteString.of("piece length"), BInteger.of(1));
-                put(BByteString.of("pieces"), BByteString.of(new byte[]{}));
-                put(BByteString.of("private"), BInteger.of(1));
-                put(BByteString.of("name"), BByteString.of("Название"));
-                put(BByteString.of("length"), BInteger.of(1));
-                put(BByteString.of("md5sum"), BByteString.of("abcdefghijklmnopqrstuvwxyz"));
-                put(BByteString.of("files"), BList.of(BDictionary.of(
-                        BByteString.of("length"), BInteger.of(1),
-                        BByteString.of("md5sum"), BByteString.of("abcdefghijklmnopqrstuvwxyz"),
-                        BByteString.of("path"), BList.of(
-                                BByteString.of("Название-1"),
-                                BByteString.of("Название-2"),
-                                BByteString.of("Название-3")))
-                ));
+                put(BByteString.of("name"), BByteString.of("name"));
+                put(BByteString.of("piece length"), BInteger.of(512));
+                put(BByteString.of("pieces"), BByteString.of(new byte[]{1, 2, 3}));
+                put(BByteString.of("files"), BList.of(
+                        BDictionary.of(new HashMap<>() {{
+                            put(BByteString.of("length"), BInteger.of(123L));
+                            put(BByteString.of("path"), BByteString.of("path"));
+                        }})));
             }}));
             put(BByteString.of("announce"), BByteString.of("announce"));
             put(BByteString.of("announce-list"), BList.of(BList.of(
-                    BByteString.of("announce-list-item-1"),
-                    BByteString.of("announce-list-item-2"))));
+                    BByteString.of("announce1"), BByteString.of("announce2"))));
             put(BByteString.of("creation date"), BInteger.of(OffsetDateTime.now().toEpochSecond()));
             put(BByteString.of("comment"), BByteString.of("Комментарий"));
             put(BByteString.of("created by"), BByteString.of("Пользователь"));
             put(BByteString.of("encoding"), BByteString.of("utf8"));
         }});
-        final MetaInfo parsed = BObjectReader.read(value, MetaInfo.class);
-        final BValue mapped = BObjectWriter.write(parsed);
+        var parsed = BObjectReader.read(value, MetaInfo.class);
+        var mapped = BObjectWriter.write(parsed);
         assertEquals(value, mapped);
     }
 }

@@ -42,7 +42,7 @@ public class TorrentResource {
                          .formatted(input.getParts()
                                             .getFirst()
                                             .getFileName()));
-        final byte[] bytes = input.getParts()
+        var bytes = input.getParts()
                 .getFirst()
                 .getBody()
                 .readAllBytes();

@@ -19,7 +19,7 @@ public final class BObjectMapper {
     }
 
     public static <T> T fromBytes(final byte[] value, final Class<T> type) throws IOException {
-        try (BInputStream stream = new BInputStream(value)) {
+        try (var stream = new BInputStream(value)) {
             return fromStream(stream, type);
         }
     }
@@ -33,7 +33,7 @@ public final class BObjectMapper {
     }
 
     public static <T> byte[] toBytes(final T value) throws IOException {
-        try (BOutputStream stream = toStream(value)) {
+        try (var stream = toStream(value)) {
             return stream.toByteArray();
         }
     }

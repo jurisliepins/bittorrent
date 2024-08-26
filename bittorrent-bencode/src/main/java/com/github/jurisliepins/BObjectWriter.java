@@ -6,7 +6,7 @@ import com.github.jurisliepins.value.BInteger;
 import com.github.jurisliepins.value.BList;
 import com.github.jurisliepins.value.BValue;
 
-import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -85,81 +85,81 @@ public final class BObjectWriter {
     }
 
     public static BList writeBooleans(final boolean[] value) {
-        final BValue[] array = new BValue[value.length];
-        for (int idx = 0; idx < value.length; idx++) {
+        var array = new BValue[value.length];
+        for (var idx = 0; idx < value.length; idx++) {
             array[idx] = BInteger.of(value[idx]);
         }
         return BList.of(array);
     }
 
     public static BList writeCharacters(final char[] value) {
-        final BValue[] array = new BValue[value.length];
-        for (int idx = 0; idx < value.length; idx++) {
+        var array = new BValue[value.length];
+        for (var idx = 0; idx < value.length; idx++) {
             array[idx] = BInteger.of(value[idx]);
         }
         return BList.of(array);
     }
 
     public static BList writeShorts(final short[] value) {
-        final BValue[] array = new BValue[value.length];
-        for (int idx = 0; idx < value.length; idx++) {
+        var array = new BValue[value.length];
+        for (var idx = 0; idx < value.length; idx++) {
             array[idx] = BInteger.of(value[idx]);
         }
         return BList.of(array);
     }
 
     public static BList writeIntegers(final int[] value) {
-        final BValue[] array = new BValue[value.length];
-        for (int idx = 0; idx < value.length; idx++) {
+        var array = new BValue[value.length];
+        for (var idx = 0; idx < value.length; idx++) {
             array[idx] = BInteger.of(value[idx]);
         }
         return BList.of(array);
     }
 
     public static BList writeLongs(final long[] value) {
-        final BValue[] array = new BValue[value.length];
-        for (int idx = 0; idx < value.length; idx++) {
+        var array = new BValue[value.length];
+        for (var idx = 0; idx < value.length; idx++) {
             array[idx] = BInteger.of(value[idx]);
         }
         return BList.of(array);
     }
 
     public static BList writeFloats(final float[] value) {
-        final BValue[] array = new BValue[value.length];
-        for (int idx = 0; idx < value.length; idx++) {
+        var array = new BValue[value.length];
+        for (var idx = 0; idx < value.length; idx++) {
             array[idx] = BInteger.of(value[idx]);
         }
         return BList.of(array);
     }
 
     public static BList writeDoubles(final double[] value) {
-        final BValue[] array = new BValue[value.length];
-        for (int idx = 0; idx < value.length; idx++) {
+        var array = new BValue[value.length];
+        for (var idx = 0; idx < value.length; idx++) {
             array[idx] = BInteger.of(value[idx]);
         }
         return BList.of(array);
     }
 
     public static <T> BList writeObjects(final T[] value) {
-        final BValue[] array = new BValue[value.length];
-        for (int idx = 0; idx < value.length; idx++) {
+        var array = new BValue[value.length];
+        for (var idx = 0; idx < value.length; idx++) {
             array[idx] = write(value[idx]);
         }
         return BList.of(array);
     }
 
     public static <T> BDictionary writeObject(final T value) {
-        final Map<BValue, BValue> values = Arrays.stream(value.getClass().getDeclaredFields())
+        var values = Arrays.stream(value.getClass().getDeclaredFields())
                 .map(field -> {
-                    final BProperty property = field.getAnnotation(BProperty.class);
+                    var property = field.getAnnotation(BProperty.class);
                     if (property != null) {
                         try {
                             if (field.trySetAccessible()) {
-                                final Object fieldValue = field.get(value);
+                                var fieldValue = field.get(value);
                                 if (fieldValue != null) {
-                                    final BValue key = BByteString.of(property.value());
-                                    final BValue val = write(fieldValue);
-                                    return new AbstractMap.SimpleEntry<>(key, val);
+                                    var key = BByteString.of(property.value());
+                                    var val = write(fieldValue);
+                                    return new SimpleEntry<BValue, BValue>(key, val);
                                 }
                             }
                         } catch (IllegalAccessException e) {
