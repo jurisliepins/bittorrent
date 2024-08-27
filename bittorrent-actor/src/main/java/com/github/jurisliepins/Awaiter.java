@@ -3,7 +3,7 @@ package com.github.jurisliepins;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public final class Awaiter<T> implements ActorReceiver {
+public final class Awaiter<T> implements MailboxReceiver {
 
     private final CountDownLatch latch = new CountDownLatch(1);
 
