@@ -12,7 +12,7 @@ public class ActorSystem {
                     .name("actor-thread-", 0)
                     .factory());
 
-    public ActorRef spawn(final ActorReceiver receiver) {
+    public ActorRef spawn(final MailboxReceiver receiver) {
         final Actor.RunnableActor actor = new Actor.RunnableActor(this, receiver);
         executorService.execute(actor);
         return actor;

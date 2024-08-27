@@ -32,9 +32,9 @@ public interface Actor {
     class RunnableActor implements ActorRef, Runnable {
         private final LinkedBlockingQueue<Letter> letters = new LinkedBlockingQueue<>();
         private final ActorSystem system;
-        private final ActorReceiver receiver;
+        private final MailboxReceiver receiver;
 
-        public RunnableActor(final ActorSystem system, final ActorReceiver receiver) {
+        public RunnableActor(final ActorSystem system, final MailboxReceiver receiver) {
             this.system = Objects.requireNonNull(system, "system is null");
             this.receiver = Objects.requireNonNull(receiver, "receiver is null");
         }

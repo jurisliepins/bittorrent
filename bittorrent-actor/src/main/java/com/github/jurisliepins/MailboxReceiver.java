@@ -1,6 +1,6 @@
 package com.github.jurisliepins;
 
 @FunctionalInterface
-public interface ActorReceiver {
+public interface MailboxReceiver {
     NextState receive(Mailbox mailbox);
 }
