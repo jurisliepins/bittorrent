@@ -41,7 +41,7 @@ public final class TrackerRequestBuilder {
             return url;
         }
 
-        final StringBuilder ret = new StringBuilder();
+        var ret = new StringBuilder();
         ret.append(url);
         ret.append("?");
         ret.append(parameters.stream()

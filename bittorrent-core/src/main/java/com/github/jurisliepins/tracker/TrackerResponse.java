@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,7 +61,7 @@ public sealed interface TrackerResponse permits TrackerResponse.Success, Tracker
     }
 
     static TrackerResponse fromBytes(final byte[] bytes) throws IOException {
-        try (BInputStream stream = new BInputStream(bytes)) {
+        try (var stream = new BInputStream(bytes)) {
             return fromStream(stream);
         }
     }
@@ -84,12 +83,12 @@ public sealed interface TrackerResponse permits TrackerResponse.Success, Tracker
     }
 
     private static List<InetSocketAddress> parsePeersFromByteString(final BByteString value) {
-        final ArrayList<InetSocketAddress> parsed = new ArrayList<>();
+        var parsed = new ArrayList<InetSocketAddress>();
 
-        final byte[] b = value.toBytes();
-        for (int i = 0; i <= b.length - 6; i += 6) {
-            final byte[] addr = Arrays.copyOfRange(b, i, i + 4);
-            final byte[] port = Arrays.copyOfRange(b, i + 4, i + 6);
+        var b = value.toBytes();
+        for (var i = 0; i <= b.length - 6; i += 6) {
+            var addr = Arrays.copyOfRange(b, i, i + 4);
+            var port = Arrays.copyOfRange(b, i + 4, i + 6);
             try {
                 parsed.add(new InetSocketAddress(InetAddress.getByAddress(addr), ByteBuffer.wrap(port).getShort()));
             } catch (Exception e) {
@@ -104,9 +103,9 @@ public sealed interface TrackerResponse permits TrackerResponse.Success, Tracker
         return value.value()
                 .stream()
                 .map(peer -> {
-                    final Map<BValue, BValue> dict = peer.toBDictionary().value();
-                    final BValue addr = dict.get(BByteString.of("ip"));
-                    final BValue port = dict.get(BByteString.of("port"));
+                    var dict = peer.toBDictionary().value();
+                    var addr = dict.get(BByteString.of("ip"));
+                    var port = dict.get(BByteString.of("port"));
                     try {
                         return new InetSocketAddress(InetAddress.getByName(addr.toString(StandardCharsets.UTF_8)), port.toInteger());
                     } catch (Exception e) {

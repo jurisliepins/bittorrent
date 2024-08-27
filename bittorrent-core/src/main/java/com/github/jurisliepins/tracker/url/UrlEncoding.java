@@ -6,7 +6,7 @@ public final class UrlEncoding {
     }
 
     public static String requireSafe(final String value) {
-        for (char c : value.toCharArray()) {
+        for (var c : value.toCharArray()) {
             if (!isSafeChar(c)) {
                 throw new IllegalArgumentException("Character '%c' in '%s' is not safe".formatted(c, value));
             }
@@ -15,9 +15,9 @@ public final class UrlEncoding {
     }
 
     public static String encode(final byte[] bytes) {
-        final StringBuilder ret = new StringBuilder();
+        var ret = new StringBuilder();
 
-        for (byte b : bytes) {
+        for (var b : bytes) {
             if (isSafeChar((char) b)) {
                 ret.append((char) b);
             } else {

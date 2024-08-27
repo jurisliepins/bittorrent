@@ -1,7 +1,6 @@
 package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.MailboxReceiver;
-import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.bitfield.Bitfield;
@@ -63,29 +62,31 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
                 switch (state.get(metaInfo.info().hash())) {
                     case ClientState.Torrent ignored -> {
                         Log.info(ClientMailboxReceiver.class, "Torrent '{}' already exists", metaInfo.info().hash());
-                        mailbox.reply(new ClientCommandResult.Failure(metaInfo.info().hash(), "Torrent already exists"));
+                        mailbox.reply(new ClientCommandResult.Failure(
+                                metaInfo.info().hash(), "Torrent already exists"));
                     }
 
                     case null -> {
-                        final ActorRef torrentRef = mailbox.system()
-                                .spawn(new TorrentMailboxReceiver(mailbox.self(),
-                                                                  TorrentState.builder()
-                                                                .status(StatusType.Stopped)
-                                                                .infoHash(metaInfo.info().hash())
-                                                                .peerId(new Object())
-                                                                .bitfield(new Bitfield(metaInfo.info().pieces().length))
-                                                                .pieceLength(metaInfo.info().pieceLength())
-                                                                .pieces(List.of())
-                                                                .files(List.of())
-                                                                .name(metaInfo.info().name())
-                                                                .length(metaInfo.info().length())
-                                                                .downloaded(0L)
-                                                                .uploaded(0L)
-                                                                .left(metaInfo.info().length())
-                                                                .announce(metaInfo.announce())
-                                                                .downloadRate(0.0)
-                                                                .uploadRate(0.0)
-                                                                .build()));
+                        var torrentRef = mailbox.system()
+                                .spawn(new TorrentMailboxReceiver(
+                                        mailbox.self(),
+                                        TorrentState.builder()
+                                                .status(StatusType.Stopped)
+                                                .infoHash(metaInfo.info().hash())
+                                                .peerId(new Object())
+                                                .bitfield(new Bitfield(metaInfo.info().pieces().length))
+                                                .pieceLength(metaInfo.info().pieceLength())
+                                                .pieces(List.of())
+                                                .files(List.of())
+                                                .name(metaInfo.info().name())
+                                                .length(metaInfo.info().length())
+                                                .downloaded(0L)
+                                                .uploaded(0L)
+                                                .left(metaInfo.info().length())
+                                                .announce(metaInfo.announce())
+                                                .downloadRate(0.0)
+                                                .uploadRate(0.0)
+                                                .build()));
                         state.add(ClientState.Torrent.builder()
                                           .ref(torrentRef)
                                           .status(StatusType.Stopped)
@@ -137,17 +138,18 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
                     case Stopped -> {
                         torrent.getRef().post(new TorrentCommand.Start(), mailbox.self());
                         Log.info(ClientMailboxReceiver.class, "Started torrent '{}'", torrent.getInfoHash());
-                        mailbox.reply(new ClientCommandResult.Success(torrent.getInfoHash(), "Torrent started"));
+                        mailbox.reply(new ClientCommandResult.Success(
+                                torrent.getInfoHash(), "Torrent started"));
                     }
 
-                    case Started,
-                         Running,
-                         Errored -> {
+                    case Started, Running, Errored -> {
                         Log.info(ClientMailboxReceiver.class, "Torrent '{}' already started", torrent.getInfoHash());
-                        mailbox.reply(new ClientCommandResult.Failure(torrent.getInfoHash(), "Torrent already started"));
+                        mailbox.reply(new ClientCommandResult.Failure(
+                                torrent.getInfoHash(), "Torrent already started"));
                     }
 
-                    default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(torrent.getStatus()));
+                    default -> throw new IllegalStateException(
+                            "Unexpected status value '%s'".formatted(torrent.getStatus()));
                 }
             }
 
@@ -165,20 +167,21 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
         switch (state.get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 switch (torrent.getStatus()) {
-                    case Started,
-                         Running,
-                         Errored -> {
+                    case Started, Running, Errored -> {
                         torrent.getRef().post(new TorrentCommand.Stop(), mailbox.self());
                         Log.info(ClientMailboxReceiver.class, "Stopped torrent '{}'", command.infoHash());
-                        mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
+                        mailbox.reply(new ClientCommandResult.Success(
+                                command.infoHash(), "Torrent stopped"));
                     }
 
                     case Stopped -> {
                         Log.info(ClientMailboxReceiver.class, "Torrent '{}' already stopped", torrent.getInfoHash());
-                        mailbox.reply(new ClientCommandResult.Failure(torrent.getInfoHash(), "Torrent already stopped"));
+                        mailbox.reply(new ClientCommandResult.Failure(
+                                torrent.getInfoHash(), "Torrent already stopped"));
                     }
 
-                    default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(torrent.getStatus()));
+                    default -> throw new IllegalStateException(
+                            "Unexpected status value '%s'".formatted(torrent.getStatus()));
                 }
             }
 
@@ -202,7 +205,7 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
         switch (state.get(request.infoHash())) {
             case ClientState.Torrent torrent -> {
                 Log.info(ClientMailboxReceiver.class, "Found torrent '{}'", request.infoHash());
-                final ClientResponse.Torrent responseTorrent = new ClientResponse.Torrent(
+                var responseTorrent = new ClientResponse.Torrent(
                         torrent.getStatus(),
                         torrent.getInfoHash(),
                         torrent.getPeerId(),
@@ -233,7 +236,9 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
         };
     }
 
-    private NextState handleStatusChangedTorrentNotification(final Mailbox.Success mailbox, final TorrentNotification.StatusChanged notification) {
+    private NextState handleStatusChangedTorrentNotification(
+            final Mailbox.Success mailbox,
+            final TorrentNotification.StatusChanged notification) {
         Log.debug(ClientMailboxReceiver.class, "Handling torrent status changed notification {}", notification);
 
         switch (state.get(notification.infoHash())) {
@@ -248,12 +253,16 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleTerminatedTorrentNotification(final Mailbox.Success mailbox, final TorrentNotification.Terminated notification) {
+    private NextState handleTerminatedTorrentNotification(
+            final Mailbox.Success mailbox,
+            final TorrentNotification.Terminated notification) {
         Log.debug(ClientMailboxReceiver.class, "Handling torrent terminated notification {}", notification);
         return NextState.Receive;
     }
 
-    private NextState handleFailureTorrentNotification(final Mailbox mailbox, final TorrentNotification.Failure failure) {
+    private NextState handleFailureTorrentNotification(
+            final Mailbox mailbox,
+            final TorrentNotification.Failure failure) {
         Log.debug(ClientMailboxReceiver.class, "Handling torrent failure notification {}", failure);
         return NextState.Receive;
     }
@@ -262,12 +271,16 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
         switch (mailbox.message()) {
             case ClientCommand command -> {
                 Log.error(ClientMailboxReceiver.class, "Failed to handle command", mailbox.cause());
-                mailbox.reply(new ClientCommandResult.Failure(InfoHash.BLANK, "Command failed with '%s'".formatted(mailbox.cause().getMessage())));
+                mailbox.reply(new ClientCommandResult.Failure(
+                        InfoHash.BLANK,
+                        "Command failed with '%s'".formatted(mailbox.cause().getMessage())));
             }
 
             case ClientRequest request -> {
                 Log.error(ClientMailboxReceiver.class, "Failed to handle request", mailbox.cause());
-                mailbox.reply(new ClientResponse.Failure(InfoHash.BLANK, "Request failed with '%s'".formatted(mailbox.cause().getMessage())));
+                mailbox.reply(new ClientResponse.Failure(
+                        InfoHash.BLANK,
+                        "Request failed with '%s'".formatted(mailbox.cause().getMessage())));
             }
 
             case TorrentNotification notification -> {

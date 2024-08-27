@@ -56,9 +56,7 @@ public final class TorrentMailboxReceiver implements MailboxReceiver {
                 notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), StatusType.Started));
             }
 
-            case Started,
-                 Running,
-                 Errored -> {
+            case Started, Running, Errored -> {
                 Log.info(TorrentMailboxReceiver.class, "[{}] Torrent already started", state.getInfoHash());
             }
 
@@ -71,9 +69,7 @@ public final class TorrentMailboxReceiver implements MailboxReceiver {
         Log.debug(TorrentMailboxReceiver.class, "[{}] Handling stop command {}", state.getInfoHash(), command);
 
         switch (state.getStatus()) {
-            case Started,
-                 Running,
-                 Errored -> {
+            case Started, Running, Errored -> {
                 state.setStatus(StatusType.Stopped);
                 Log.info(TorrentMailboxReceiver.class, "[{}] Torrent stopped", state.getInfoHash());
                 notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), StatusType.Stopped));

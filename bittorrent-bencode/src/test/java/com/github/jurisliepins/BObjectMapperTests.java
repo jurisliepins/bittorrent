@@ -115,8 +115,12 @@ public final class BObjectMapperTests {
             put(BByteString.of("float-array"), BList.of(BInteger.of(1.0f), BInteger.of(2.0f)));
             put(BByteString.of("double-array"), BList.of(BInteger.of(1.0), BInteger.of(2.0)));
             put(BByteString.of("object-array"), BList.of(
-                    BDictionary.of(new HashMap<>() {{ put(BByteString.of("value"), BInteger.of(1)); }}),
-                    BDictionary.of(new HashMap<>() {{ put(BByteString.of("value"), BInteger.of(2)); }})));
+                    BDictionary.of(new HashMap<>() {{
+                        put(BByteString.of("value"), BInteger.of(1));
+                    }}),
+                    BDictionary.of(new HashMap<>() {{
+                        put(BByteString.of("value"), BInteger.of(2));
+                    }})));
         }});
         var parsed = BObjectReader.read(value, BListValues.class);
         var mapped = BObjectWriter.write(parsed);
@@ -166,8 +170,7 @@ public final class BObjectMapperTests {
                         }})));
             }}));
             put(BByteString.of("announce"), BByteString.of("announce"));
-            put(BByteString.of("announce-list"), BList.of(BList.of(
-                    BByteString.of("announce1"), BByteString.of("announce2"))));
+            put(BByteString.of("announce-list"), BList.of(BList.of(BByteString.of("announce1"), BByteString.of("announce2"))));
             put(BByteString.of("creation date"), BInteger.of(OffsetDateTime.now().toEpochSecond()));
             put(BByteString.of("comment"), BByteString.of("Комментарий"));
             put(BByteString.of("created by"), BByteString.of("Пользователь"));

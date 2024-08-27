@@ -30,8 +30,8 @@ public final class Bitfield implements ImmutableBitfield {
 
     @Override
     public int count() {
-        int ret = 0;
-        for (byte b : bytes) {
+        var ret = 0;
+        for (var b : bytes) {
             ret += bitCount(b);
         }
         return ret;
@@ -52,8 +52,8 @@ public final class Bitfield implements ImmutableBitfield {
         if (index < 0 || index >= capacity()) {
             return false;
         }
-        final int idx = index / Byte.SIZE;
-        final int pos = index % Byte.SIZE;
+        var idx = index / Byte.SIZE;
+        var pos = index % Byte.SIZE;
         return ((bytes[idx] >> ((Byte.SIZE - 1) - pos)) & ((byte) 1)) != ((byte) 0);
     }
 
@@ -61,8 +61,8 @@ public final class Bitfield implements ImmutableBitfield {
         if (index < 0 || index >= capacity()) {
             return;
         }
-        final int idx = index / Byte.SIZE;
-        final int pos = index % Byte.SIZE;
+        var idx = index / Byte.SIZE;
+        var pos = index % Byte.SIZE;
         if (value) {
             bytes[idx] = (byte) (bytes[idx] | (((byte) 1) << ((Byte.SIZE - 1) - pos)));
         } else {
@@ -72,7 +72,7 @@ public final class Bitfield implements ImmutableBitfield {
 
     public void setBytes(final byte[] array) {
         Objects.requireNonNull(array, "array is null");
-        for (int idx = 0; idx < bytes.length; idx++) {
+        for (var idx = 0; idx < bytes.length; idx++) {
             if (idx < array.length) {
                 bytes[idx] = array[idx];
             } else {
@@ -82,11 +82,10 @@ public final class Bitfield implements ImmutableBitfield {
     }
 
     private static int bitCount(final byte value) {
-        byte i = value;
+        var i = value;
         i = (byte) (i - ((i >>> 1) & 0x55555555));
         i = (byte) ((i & 0x33333333) + ((i >>> 2) & 0x33333333));
         i = (byte) ((i + (i >>> 4)) & 0x0f0f0f0f);
-        i = (byte) (i + (i >>> 8));
         return (byte) (i & 0x3f);
     }
 
