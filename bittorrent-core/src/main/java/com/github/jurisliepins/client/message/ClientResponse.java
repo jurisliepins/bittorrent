@@ -13,7 +13,7 @@ public sealed interface ClientResponse permits
     record Torrent(
             StatusType status,
             InfoHash infoHash,
-            Object peerId,
+//            Object peerId,
             ImmutableBitfield bitfield,
             String name,
             long length,
@@ -26,7 +26,7 @@ public sealed interface ClientResponse permits
         public Torrent {
             Objects.requireNonNull(status, "status is null");
             Objects.requireNonNull(infoHash, "infoHash is null");
-            Objects.requireNonNull(peerId, "peerId is null");
+//            Objects.requireNonNull(peerId, "peerId is null");
             Objects.requireNonNull(bitfield, "bitfield is null");
             Objects.requireNonNull(name, "name is null");
         }
