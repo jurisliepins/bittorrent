@@ -55,28 +55,20 @@ public final class TorrentMailboxReceiver implements MailboxReceiver {
                 notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), StatusType.Started));
             }
 
-            case Started,
-                 Running,
-                 Errored -> LOGGER.info("[{}] Torrent already started", state.getInfoHash());
-
-            default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(state.getStatus()));
+            default -> LOGGER.info("[{}] Torrent already started", state.getInfoHash());
         }
         return NextState.Receive;
     }
 
     private NextState handleStopCommand(final Mailbox.Success mailbox, final TorrentCommand.Stop command) {
         switch (state.getStatus()) {
-            case Started,
-                 Running,
-                 Errored -> {
+            case Started, Running, Errored -> {
                 state.setStatus(StatusType.Stopped);
                 LOGGER.info("[{}] Torrent stopped", state.getInfoHash());
                 notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), StatusType.Stopped));
             }
 
-            case Stopped -> LOGGER.info("[{}] Torrent already stopped", state.getInfoHash());
-
-            default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(state.getStatus()));
+            default -> LOGGER.info("[{}] Torrent already stopped", state.getInfoHash());
         }
         return NextState.Receive;
     }

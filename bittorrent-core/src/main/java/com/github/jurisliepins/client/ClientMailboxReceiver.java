@@ -136,14 +136,10 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
                         mailbox.reply(new ClientCommandResult.Success(torrent.getInfoHash(), "Torrent started"));
                     }
 
-                    case Started,
-                         Running,
-                         Errored -> {
+                    default -> {
                         LOGGER.info("Torrent '{}' already started", torrent.getInfoHash());
                         mailbox.reply(new ClientCommandResult.Failure(torrent.getInfoHash(), "Torrent already started"));
                     }
-
-                    default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(torrent.getStatus()));
                 }
             }
 
@@ -159,20 +155,16 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
         switch (state.get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 switch (torrent.getStatus()) {
-                    case Started,
-                         Running,
-                         Errored -> {
+                    case Started, Running, Errored -> {
                         torrent.getRef().post(new TorrentCommand.Stop(), mailbox.self());
                         LOGGER.info("Stopped torrent '{}'", command.infoHash());
                         mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
                     }
 
-                    case Stopped -> {
+                    default -> {
                         LOGGER.info("Torrent '{}' already stopped", torrent.getInfoHash());
                         mailbox.reply(new ClientCommandResult.Failure(torrent.getInfoHash(), "Torrent already stopped"));
                     }
-
-                    default -> throw new IllegalStateException("Unexpected status value '%s'".formatted(torrent.getStatus()));
                 }
             }
 
