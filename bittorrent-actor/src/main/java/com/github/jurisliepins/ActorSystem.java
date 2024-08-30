@@ -13,7 +13,7 @@ public class ActorSystem {
                     .factory());
 
     public ActorRef spawn(final MailboxReceiver receiver) {
-        final Actor.RunnableActor actor = new Actor.RunnableActor(this, receiver);
+        final Actor.BlockingQueue actor = new Actor.BlockingQueue(this, receiver);
         executorService.execute(actor);
         return actor;
     }

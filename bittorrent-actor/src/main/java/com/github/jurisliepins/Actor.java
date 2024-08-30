@@ -5,8 +5,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public interface Actor {
-    class BlankActor implements ActorRef {
-        public static final BlankActor INSTANCE = new BlankActor();
+    class DeadLetter implements ActorRef {
+        public static final DeadLetter INSTANCE = new DeadLetter();
 
         @Override
         public <T> ActorRef post(final T message, final ActorRef sender) {
@@ -29,12 +29,12 @@ public interface Actor {
         }
     }
 
-    class RunnableActor implements ActorRef, Runnable {
+    class BlockingQueue implements ActorRef, Runnable {
         private final LinkedBlockingQueue<Letter> letters = new LinkedBlockingQueue<>();
         private final ActorSystem system;
         private final MailboxReceiver receiver;
 
-        public RunnableActor(final ActorSystem system, final MailboxReceiver receiver) {
+        public BlockingQueue(final ActorSystem system, final MailboxReceiver receiver) {
             this.system = Objects.requireNonNull(system, "system is null");
             this.receiver = Objects.requireNonNull(receiver, "receiver is null");
         }
@@ -47,7 +47,7 @@ public interface Actor {
 
         public <T> ActorRef post(final T message) {
             Objects.requireNonNull(message, "message is null");
-            letters.add(new Letter(message, system, this, BlankActor.INSTANCE));
+            letters.add(new Letter(message, system, this, DeadLetter.INSTANCE));
             return this;
         }
 
