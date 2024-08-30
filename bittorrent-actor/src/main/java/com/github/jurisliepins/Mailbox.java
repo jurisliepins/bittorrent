@@ -6,19 +6,19 @@ public sealed interface Mailbox permits Mailbox.Success, Mailbox.Failure {
 
     record Success(Object message, ActorSystem system, ActorRef self, ActorRef sender) implements Mailbox {
         public Success {
-            Objects.requireNonNull(message);
-            Objects.requireNonNull(system);
-            Objects.requireNonNull(self);
-            Objects.requireNonNull(sender);
+            Objects.requireNonNull(message, "message must not be null");
+            Objects.requireNonNull(system, "system must not be null");
+            Objects.requireNonNull(self, "self must not be null");
+            Objects.requireNonNull(sender, "sender must not be null");
         }
     }
 
     record Failure(Object message, ActorSystem system, ActorRef self, ActorRef sender, Throwable cause) implements Mailbox {
         public Failure {
-            Objects.requireNonNull(message);
-            Objects.requireNonNull(system);
-            Objects.requireNonNull(self);
-            Objects.requireNonNull(sender);
+            Objects.requireNonNull(message, "message must not be null");
+            Objects.requireNonNull(system, "system must not be null");
+            Objects.requireNonNull(self, "self must not be null");
+            Objects.requireNonNull(sender, "sender must not be null");
         }
     }
 
