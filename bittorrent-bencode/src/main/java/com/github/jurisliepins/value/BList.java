@@ -29,6 +29,11 @@ public record BList(List<BValue> value) implements BValue {
         throw new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
     }
 
+    @Override
+    public String toString() {
+        return "BList[value=\"\"]";
+    }
+
     public static BList of() {
         return new BList(new ArrayList<>());
     }

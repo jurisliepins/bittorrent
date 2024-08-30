@@ -2,6 +2,7 @@ package com.github.jurisliepins.value;
 
 import com.github.jurisliepins.BException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,11 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     @Override
     public int compareTo(final BValue other) {
         throw new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
+    }
+
+    @Override
+    public String toString() {
+        return "BDictionary[value=\"\"]";
     }
 
     public static BDictionary of() {
