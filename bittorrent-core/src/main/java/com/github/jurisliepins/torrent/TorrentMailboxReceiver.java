@@ -1,25 +1,22 @@
 package com.github.jurisliepins.torrent;
 
-import com.github.jurisliepins.MailboxReceiver;
+import com.github.jurisliepins.CoreLoggingMailboxReceiver;
 import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.types.StatusType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-public final class TorrentMailboxReceiver implements MailboxReceiver {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TorrentMailboxReceiver.class);
-
+public final class TorrentMailboxReceiver extends CoreLoggingMailboxReceiver {
     private final ActorRef notifiedRef;
 
     private final TorrentState state;
 
     public TorrentMailboxReceiver(final ActorRef notifiedRef, final TorrentState state) {
+        super(state.getInfoHash());
         this.notifiedRef = Objects.requireNonNull(notifiedRef, "notifiedRef is null");
         this.state = Objects.requireNonNull(state, "state is null");
     }
@@ -51,11 +48,11 @@ public final class TorrentMailboxReceiver implements MailboxReceiver {
         switch (state.getStatus()) {
             case Stopped -> {
                 state.setStatus(StatusType.Started);
-                LOGGER.info("[{}] Torrent started", state.getInfoHash());
+                logger().info("Torrent started");
                 notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), StatusType.Started));
             }
 
-            default -> LOGGER.info("[{}] Torrent already started", state.getInfoHash());
+            default -> logger().info("Torrent already started");
         }
         return NextState.Receive;
     }
@@ -64,11 +61,11 @@ public final class TorrentMailboxReceiver implements MailboxReceiver {
         switch (state.getStatus()) {
             case Started, Running, Errored -> {
                 state.setStatus(StatusType.Stopped);
-                LOGGER.info("[{}] Torrent stopped", state.getInfoHash());
+                logger().info("Torrent stopped");
                 notifiedRef.post(new TorrentNotification.StatusChanged(state.getInfoHash(), StatusType.Stopped));
             }
 
-            default -> LOGGER.info("[{}] Torrent already stopped", state.getInfoHash());
+            default -> logger().info("Torrent already stopped");
         }
         return NextState.Receive;
     }
@@ -81,17 +78,17 @@ public final class TorrentMailboxReceiver implements MailboxReceiver {
     private NextState handleFailure(final Mailbox.Failure mailbox) {
         switch (mailbox.message()) {
             case TorrentCommand command -> {
-                LOGGER.error("Failed to handle command", mailbox.cause());
+                logger().error("Failed to handle command", mailbox.cause());
                 notifiedRef.post(new TorrentNotification.Failure(state.getInfoHash(), mailbox.cause()));
             }
 
-            default -> LOGGER.error("Failed", mailbox.cause());
+            default -> logger().error("Failed", mailbox.cause());
         }
         return NextState.Terminate;
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {
-        LOGGER.error("[{}] Unhandled message {}", state.getInfoHash(), mailbox.message());
+        logger().error("Unhandled message {}", mailbox.message());
         return NextState.Receive;
     }
 }
