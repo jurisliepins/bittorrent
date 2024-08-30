@@ -161,6 +161,8 @@ public final class BObjectWriter {
                                     var val = write(fieldValue);
                                     return new SimpleEntry<BValue, BValue>(key, val);
                                 }
+                            } else {
+                                throw new BException("Failed to set field '%s' as accessible".formatted(field.getName()));
                             }
                         } catch (IllegalAccessException e) {
                             throw new BException("Failed to access field '%s'".formatted(field.getName()), e);

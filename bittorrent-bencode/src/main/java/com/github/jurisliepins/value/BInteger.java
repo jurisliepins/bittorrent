@@ -21,6 +21,11 @@ public record BInteger(long value) implements BValue {
         return Long.compare(value, Objects.requireNonNull(other, "other is null").toLong());
     }
 
+    @Override
+    public String toString() {
+        return "BInteger[value=\"%d\"]".formatted(value);
+    }
+
     public static BInteger of(final boolean value) {
         return of(value ? 1L : 0L);
     }
