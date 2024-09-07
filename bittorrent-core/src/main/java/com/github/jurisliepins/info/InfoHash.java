@@ -1,8 +1,9 @@
 package com.github.jurisliepins.info;
 
+import lombok.NonNull;
+
 import java.util.Arrays;
 import java.util.HexFormat;
-import java.util.Objects;
 
 public final class InfoHash {
     private static final int BYTES_LENGTH = 20;
@@ -14,20 +15,20 @@ public final class InfoHash {
     private final String string;
     private final int hashCode;
 
-    public InfoHash(final byte[] bytes) {
-        this.bytes = Objects.requireNonNull(bytes, "bytes are null");
+    public InfoHash(final byte @NonNull [] bytes) {
         if (bytes.length != BYTES_LENGTH) {
             throw new IllegalArgumentException("Bytes length must be %s characters".formatted(BYTES_LENGTH));
         }
+        this.bytes = bytes;
         this.string = HexFormat.of().formatHex(bytes);
         this.hashCode = Arrays.hashCode(bytes);
     }
 
-    public InfoHash(final String string) {
-        this.string = Objects.requireNonNull(string, "string is null");
+    public InfoHash(@NonNull final String string) {
         if (string.length() != STRING_LENGTH) {
             throw new IllegalArgumentException("String length must be %s characters".formatted(STRING_LENGTH));
         }
+        this.string = string;
         this.bytes = HexFormat.of().parseHex(string);
         this.hashCode = Arrays.hashCode(bytes);
     }

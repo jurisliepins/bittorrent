@@ -6,6 +6,7 @@ import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.info.objects.InfoBObject;
 import com.github.jurisliepins.info.objects.MetaInfoBObject;
 import com.github.jurisliepins.stream.BInputStream;
+import lombok.NonNull;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +24,7 @@ public record MetaInfo(
         String createdBy,
         String encoding
 ) {
-    public static MetaInfo fromStream(final BInputStream stream) {
+    public static MetaInfo fromStream(@NonNull final BInputStream stream) {
         try {
             return convert(BObjectMapper.fromStream(stream, MetaInfoBObject.class));
         } catch (Exception e) {
@@ -31,7 +32,7 @@ public record MetaInfo(
         }
     }
 
-    public static MetaInfo fromBytes(final byte[] bytes) {
+    public static MetaInfo fromBytes(final byte @NonNull [] bytes) {
         try {
             return convert(BObjectMapper.fromBytes(bytes, MetaInfoBObject.class));
         } catch (Exception e) {
@@ -39,7 +40,7 @@ public record MetaInfo(
         }
     }
 
-    public static MetaInfo fromString(final String string) {
+    public static MetaInfo fromString(@NonNull final String string) {
         try {
             return convert(BObjectMapper.fromString(string, BConstants.DEFAULT_ENCODING, MetaInfoBObject.class));
         } catch (Exception e) {
@@ -47,7 +48,7 @@ public record MetaInfo(
         }
     }
 
-    private static MetaInfo convert(final MetaInfoBObject metaInfo) {
+    private static MetaInfo convert(@NonNull final MetaInfoBObject metaInfo) {
         if (metaInfo.info().files() != null && metaInfo.info().files().length > 0) {
             return new MetaInfo(
                     new Info.ManyFileInfo(
@@ -85,7 +86,7 @@ public record MetaInfo(
                 metaInfo.encoding());
     }
 
-    private static InfoHash hash(final InfoBObject info) {
+    private static InfoHash hash(@NonNull final InfoBObject info) {
         try {
             return new InfoHash(MessageDigest.getInstance("SHA-1").digest(info.toBytes()));
         } catch (NoSuchAlgorithmException e) {

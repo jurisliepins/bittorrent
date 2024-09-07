@@ -1,7 +1,8 @@
 package com.github.jurisliepins.bitfield;
 
+import lombok.NonNull;
+
 import java.util.Arrays;
-import java.util.Objects;
 
 public final class Bitfield implements ImmutableBitfield {
 
@@ -17,8 +18,7 @@ public final class Bitfield implements ImmutableBitfield {
         this.capacity = capacity;
     }
 
-    public Bitfield(final byte[] array) {
-        Objects.requireNonNull(array, "array is null");
+    public Bitfield(final byte @NonNull [] array) {
         this.bytes = Arrays.copyOf(array, array.length);
         this.capacity = Byte.SIZE * array.length;
     }
@@ -70,8 +70,7 @@ public final class Bitfield implements ImmutableBitfield {
         }
     }
 
-    public void setBytes(final byte[] array) {
-        Objects.requireNonNull(array, "array is null");
+    public void setBytes(final byte @NonNull [] array) {
         for (var idx = 0; idx < bytes.length; idx++) {
             if (idx < array.length) {
                 bytes[idx] = array[idx];

@@ -4,6 +4,7 @@ import com.github.jurisliepins.tracker.url.BinaryNamedParameterValue;
 import com.github.jurisliepins.tracker.url.NamedParameterValue;
 import com.github.jurisliepins.tracker.url.NumberNamedParameterValue;
 import com.github.jurisliepins.tracker.url.StringNamedParameterValue;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,24 +16,24 @@ public final class TrackerRequestBuilder {
     private final String url;
     private final List<NamedParameterValue> parameters = new ArrayList<>();
 
-    public TrackerRequestBuilder(final String url) {
-        this.url = Objects.requireNonNull(url, "url is null");
+    public TrackerRequestBuilder(@NonNull final String url) {
+        this.url = url;
     }
 
-    public TrackerRequestBuilder parameter(final NamedParameterValue parameter) {
+    public TrackerRequestBuilder parameter(@NonNull final NamedParameterValue parameter) {
         parameters.add(parameter);
         return this;
     }
 
-    public TrackerRequestBuilder parameter(final String name, final byte[] value) {
+    public TrackerRequestBuilder parameter(@NonNull final String name, final byte @NonNull [] value) {
         return parameter(new BinaryNamedParameterValue(name, value));
     }
 
-    public TrackerRequestBuilder parameter(final String name, final Number value) {
+    public TrackerRequestBuilder parameter(@NonNull final String name, @NonNull final Number value) {
         return parameter(new NumberNamedParameterValue(name, value));
     }
 
-    public TrackerRequestBuilder parameter(final String name, final String value) {
+    public TrackerRequestBuilder parameter(@NonNull final String name, @NonNull final String value) {
         return parameter(new StringNamedParameterValue(name, value));
     }
 

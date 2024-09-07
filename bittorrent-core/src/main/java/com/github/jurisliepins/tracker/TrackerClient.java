@@ -2,6 +2,7 @@ package com.github.jurisliepins.tracker;
 
 import com.github.jurisliepins.BitTorrentClient;
 import com.github.jurisliepins.CoreException;
+import lombok.NonNull;
 
 import java.io.Closeable;
 import java.net.URI;
@@ -11,26 +12,20 @@ import java.net.http.HttpResponse;
 
 public final class TrackerClient implements Closeable {
 
-    private static final String USER_AGENT_KEY = "User-Agent";
-    private static final String ACCEPT_KEY = "Accept";
-
-    private static final String USER_AGENT_VALUE = "%s/%s".formatted(BitTorrentClient.NAME, BitTorrentClient.VERSION);
-    private static final String ACCEPT_VALUE = "*/*";
-
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
-    public TrackerResponse announce(final String query) {
+    public TrackerResponse announce(@NonNull final String query) {
         try {
-            final HttpRequest httpRequest = HttpRequest.newBuilder()
+            var request = HttpRequest.newBuilder()
                     .uri(new URI(query))
                     .GET()
-                    .header(USER_AGENT_KEY, USER_AGENT_VALUE)
-                    .header(ACCEPT_KEY, ACCEPT_VALUE)
+                    .header("User-Agent", "%s/%s".formatted(BitTorrentClient.NAME, BitTorrentClient.VERSION))
+                    .header("Accept", "*/*")
                     .build();
-            final byte[] bytes = httpClient
-                    .send(httpRequest, HttpResponse.BodyHandlers.ofByteArray())
+            var bytes = httpClient
+                    .send(request, HttpResponse.BodyHandlers.ofByteArray())
                     .body();
-            return TrackerResponse.fromBytes(bytes);
+            return TrackerResponseParser.fromBytes(bytes);
         } catch (Exception e) {
             throw new CoreException("Failed to announce", e);
         }

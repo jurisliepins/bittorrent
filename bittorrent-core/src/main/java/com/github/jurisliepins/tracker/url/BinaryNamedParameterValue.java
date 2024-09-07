@@ -1,15 +1,15 @@
 package com.github.jurisliepins.tracker.url;
 
-import java.util.Objects;
+import lombok.NonNull;
 
 public final class BinaryNamedParameterValue implements NamedParameterValue {
 
     private final String name;
     private final String value;
 
-    public BinaryNamedParameterValue(final String name, final byte[] value) {
-        this.name = UrlEncoding.requireSafe(Objects.requireNonNull(name, "name is null"));
-        this.value = UrlEncoding.encode(Objects.requireNonNull(value, "value is null"));
+    public BinaryNamedParameterValue(@NonNull final String name, final byte @NonNull [] value) {
+        this.name = UrlEncoding.requireSafe(name);
+        this.value = UrlEncoding.encode(value);
     }
 
     @Override

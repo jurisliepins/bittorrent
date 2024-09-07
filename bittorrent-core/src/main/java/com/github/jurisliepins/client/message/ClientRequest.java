@@ -1,16 +1,10 @@
 package com.github.jurisliepins.client.message;
 
 import com.github.jurisliepins.info.InfoHash;
+import lombok.NonNull;
 
-import java.util.Objects;
+public sealed interface ClientRequest permits ClientRequest.Get {
 
-public sealed interface ClientRequest permits
-        ClientRequest.Get {
-
-    record Get(InfoHash infoHash) implements ClientRequest {
-        public Get {
-            Objects.requireNonNull(infoHash, "hash is null");
-        }
-    }
+    record Get(@NonNull InfoHash infoHash) implements ClientRequest { }
 
 }

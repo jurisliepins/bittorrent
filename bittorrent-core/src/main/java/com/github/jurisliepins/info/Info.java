@@ -1,40 +1,30 @@
 package com.github.jurisliepins.info;
 
 import com.github.jurisliepins.CoreException;
+import lombok.NonNull;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public sealed interface Info permits Info.OneFileInfo, Info.ManyFileInfo {
 
     record OneFileInfo(
             int pieceLength,
-            byte[] pieces,
+            byte @NonNull [] pieces,
             Boolean isPrivate,
-            String name,
+            @NonNull String name,
             Long length,
             String md5sum,
             InfoHash hash
-    ) implements Info {
-        public OneFileInfo {
-            Objects.requireNonNull(pieces, "pieces is null");
-            Objects.requireNonNull(name, "name is null");
-        }
-    }
+    ) implements Info { }
 
     record ManyFileInfo(
             int pieceLength,
-            byte[] pieces,
+            byte @NonNull [] pieces,
             Boolean isPrivate,
-            String name,
+            @NonNull String name,
             File[] files,
             InfoHash hash
-    ) implements Info {
-        public ManyFileInfo {
-            Objects.requireNonNull(pieces, "pieces is null");
-            Objects.requireNonNull(name, "name is null");
-        }
-    }
+    ) implements Info { }
 
     default int pieceLength() {
         return switch (this) {

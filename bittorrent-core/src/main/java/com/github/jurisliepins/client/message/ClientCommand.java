@@ -1,8 +1,7 @@
 package com.github.jurisliepins.client.message;
 
 import com.github.jurisliepins.info.InfoHash;
-
-import java.util.Objects;
+import lombok.NonNull;
 
 public sealed interface ClientCommand permits
         ClientCommand.Add,
@@ -10,27 +9,11 @@ public sealed interface ClientCommand permits
         ClientCommand.Start,
         ClientCommand.Stop {
 
-    record Add(byte[] metaInfo) implements ClientCommand {
-        public Add {
-            Objects.requireNonNull(metaInfo, "metaInfo is null");
-        }
-    }
+    record Add(byte @NonNull [] metaInfo) implements ClientCommand { }
 
-    record Remove(InfoHash infoHash) implements ClientCommand {
-        public Remove {
-            Objects.requireNonNull(infoHash, "hash is null");
-        }
-    }
+    record Remove(@NonNull InfoHash infoHash) implements ClientCommand { }
 
-    record Start(InfoHash infoHash) implements ClientCommand {
-        public Start {
-            Objects.requireNonNull(infoHash, "hash is null");
-        }
-    }
+    record Start(@NonNull InfoHash infoHash) implements ClientCommand { }
 
-    record Stop(InfoHash infoHash) implements ClientCommand {
-        public Stop {
-            Objects.requireNonNull(infoHash, "hash is null");
-        }
-    }
+    record Stop(@NonNull InfoHash infoHash) implements ClientCommand { }
 }

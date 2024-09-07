@@ -5,24 +5,19 @@ import com.github.jurisliepins.BObjectMapper;
 import com.github.jurisliepins.BProperty;
 import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.stream.BOutputStream;
+import lombok.NonNull;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public record InfoBObject(
         @BProperty("piece length") int pieceLength,
-        @BProperty("pieces") byte[] pieces,
+        @BProperty("pieces") byte @NonNull [] pieces,
         @BProperty("private") Boolean isPrivate,
-        @BProperty("name") String name,
+        @BProperty("name") @NonNull String name,
         @BProperty("length") Long length,
         @BProperty("md5sum") String md5sum,
         @BProperty("files") FileBObject[] files
 ) {
-    public InfoBObject {
-        Objects.requireNonNull(pieces, "pieces is null");
-        Objects.requireNonNull(name, "name is null");
-    }
-
     public BOutputStream toStream() {
         try {
             return BObjectMapper.toStream(this);
