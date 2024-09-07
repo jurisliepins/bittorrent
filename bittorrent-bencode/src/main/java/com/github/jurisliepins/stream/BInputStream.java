@@ -1,11 +1,12 @@
 package com.github.jurisliepins.stream;
 
 import com.github.jurisliepins.BException;
+import lombok.NonNull;
 
 import java.io.ByteArrayInputStream;
 
 public class BInputStream extends ByteArrayInputStream {
-    public BInputStream(final byte[] buf) {
+    public BInputStream(final byte @NonNull [] buf) {
         super(buf);
     }
 

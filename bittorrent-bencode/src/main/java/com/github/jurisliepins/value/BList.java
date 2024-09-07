@@ -1,16 +1,12 @@
 package com.github.jurisliepins.value;
 
 import com.github.jurisliepins.BException;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public record BList(List<BValue> value) implements BValue {
-    public BList {
-        Objects.requireNonNull(value, "value is null");
-    }
-
+public record BList(@NonNull List<BValue> value) implements BValue {
     @Override
     public int hashCode() {
         return value.hashCode();
@@ -25,7 +21,7 @@ public record BList(List<BValue> value) implements BValue {
     }
 
     @Override
-    public int compareTo(final BValue other) {
+    public int compareTo(@NonNull final BValue other) {
         throw new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
     }
 
@@ -38,11 +34,11 @@ public record BList(List<BValue> value) implements BValue {
         return new BList(new ArrayList<>());
     }
 
-    public static BList of(final BValue... values) {
-        return new BList(List.of(Objects.requireNonNull(values, "values is null")));
+    public static BList of(@NonNull final BValue... values) {
+        return new BList(List.of(values));
     }
 
-    public static BList of(final List<BValue> values) {
-        return new BList(Objects.requireNonNull(values, "values is null"));
+    public static BList of(@NonNull final List<BValue> values) {
+        return new BList(values);
     }
 }

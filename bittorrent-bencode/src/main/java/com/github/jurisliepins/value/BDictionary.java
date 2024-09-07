@@ -1,16 +1,12 @@
 package com.github.jurisliepins.value;
 
 import com.github.jurisliepins.BException;
+import lombok.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-public record BDictionary(Map<BValue, BValue> value) implements BValue {
-    public BDictionary {
-        Objects.requireNonNull(value, "value is null");
-    }
-
+public record BDictionary(@NonNull Map<BValue, BValue> value) implements BValue {
     @Override
     public int hashCode() {
         return value.hashCode();
@@ -25,7 +21,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     }
 
     @Override
-    public int compareTo(final BValue other) {
+    public int compareTo(@NonNull final BValue other) {
         throw new BException("Comparable not supported for %s".formatted(BValueType.BDictionaryType));
     }
 
@@ -38,19 +34,19 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
         return new BDictionary(new HashMap<>());
     }
 
-    public static BDictionary of(final Map<BValue, BValue> values) {
-        return new BDictionary(Objects.requireNonNull(values, "values is null"));
+    public static BDictionary of(@NonNull final Map<BValue, BValue> values) {
+        return new BDictionary(values);
     }
 
-    public static BDictionary of(final BValue k, final BValue v) {
+    public static BDictionary of(@NonNull final BValue k, @NonNull final BValue v) {
         var map = new HashMap<BValue, BValue>();
         map.put(k, v);
         return new BDictionary(map);
     }
 
     public static BDictionary of(
-            final BValue k1, final BValue v1,
-            final BValue k2, final BValue v2) {
+            @NonNull final BValue k1, @NonNull final BValue v1,
+            @NonNull final BValue k2, @NonNull final BValue v2) {
         var map = new HashMap<BValue, BValue>();
         map.put(k1, v1);
         map.put(k2, v2);
@@ -58,9 +54,9 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     }
 
     public static BDictionary of(
-            final BValue k1, final BValue v1,
-            final BValue k2, final BValue v2,
-            final BValue k3, final BValue v3) {
+            @NonNull final BValue k1, @NonNull final BValue v1,
+            @NonNull final BValue k2, @NonNull final BValue v2,
+            @NonNull final BValue k3, @NonNull final BValue v3) {
         var map = new HashMap<BValue, BValue>();
         map.put(k1, v1);
         map.put(k2, v2);

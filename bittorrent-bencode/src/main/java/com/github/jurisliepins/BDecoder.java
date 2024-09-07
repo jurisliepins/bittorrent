@@ -7,6 +7,7 @@ import com.github.jurisliepins.value.BByteString;
 import com.github.jurisliepins.value.BInteger;
 import com.github.jurisliepins.value.BList;
 import com.github.jurisliepins.value.BDictionary;
+import lombok.NonNull;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -18,21 +19,21 @@ public final class BDecoder {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
-    public static BValue fromStream(final BInputStream value) throws IOException {
+    public static BValue fromStream(@NonNull final BInputStream value) throws IOException {
         return read(value);
     }
 
-    public static BValue fromBytes(final byte[] value) throws IOException {
+    public static BValue fromBytes(final byte @NonNull [] value) throws IOException {
         try (var stream = new BInputStream(value)) {
             return fromStream(stream);
         }
     }
 
-    public static BValue fromString(final String value, final Charset encoding) throws IOException {
+    public static BValue fromString(@NonNull final String value, @NonNull final Charset encoding) throws IOException {
         return fromBytes(value.getBytes(encoding));
     }
 
-    public static BValue read(final BInputStream stream) throws IOException {
+    public static BValue read(@NonNull final BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.peekByte())) {
             case BIntegerType -> readInteger(stream);
             case BByteStringType -> readByteString(stream);
@@ -41,35 +42,35 @@ public final class BDecoder {
         };
     }
 
-    private static BValue readInteger(final BInputStream stream) {
+    private static BValue readInteger(@NonNull final BInputStream stream) {
         return switch (BValueType.fromByte(stream.readByte())) {
             case BIntegerType -> decodeInteger(stream);
             default -> throw new BException("Expected %s".formatted(BValueType.BIntegerType));
         };
     }
 
-    private static BValue readByteString(final BInputStream stream) throws IOException {
+    private static BValue readByteString(@NonNull final BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.peekByte())) {
             case BByteStringType -> decodeByteString(stream);
             default -> throw new BException("Expected %s".formatted(BValueType.BByteStringType));
         };
     }
 
-    private static BValue readList(final BInputStream stream) throws IOException {
+    private static BValue readList(@NonNull final BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.readByte())) {
             case BListType -> decodeList(stream);
             default -> throw new BException("Expected %s".formatted(BValueType.BListType));
         };
     }
 
-    private static BValue readDictionary(final BInputStream stream) throws IOException {
+    private static BValue readDictionary(@NonNull final BInputStream stream) throws IOException {
         return switch (BValueType.fromByte(stream.readByte())) {
             case BDictionaryType -> decodeDictionary(stream);
             default -> throw new BException("Expected %s".formatted(BValueType.BDictionaryType));
         };
     }
 
-    private static BValue decodeInteger(final BInputStream stream) {
+    private static BValue decodeInteger(@NonNull final BInputStream stream) {
         var sign = 1L;
         var result = 0L;
 
@@ -89,7 +90,7 @@ public final class BDecoder {
         return new BInteger(sign * result);
     }
 
-    private static BValue decodeByteString(final BInputStream stream) throws IOException {
+    private static BValue decodeByteString(@NonNull final BInputStream stream) throws IOException {
         var length = 0;
 
         for (var value = stream.readByte(); value != (byte) ':'; value = stream.readByte()) {
@@ -109,7 +110,7 @@ public final class BDecoder {
         return new BByteString(bytes);
     }
 
-    private static BValue decodeList(final BInputStream stream) throws IOException {
+    private static BValue decodeList(@NonNull final BInputStream stream) throws IOException {
         var result = new ArrayList<BValue>();
 
         while (stream.peekByte() != (byte) 'e') {
@@ -124,7 +125,7 @@ public final class BDecoder {
         return new BList(result);
     }
 
-    private static BValue decodeDictionary(final BInputStream stream) throws IOException {
+    private static BValue decodeDictionary(@NonNull final BInputStream stream) throws IOException {
         var result = new HashMap<BValue, BValue>();
 
         while (stream.peekByte() != (byte) 'e') {
