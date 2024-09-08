@@ -1,6 +1,6 @@
 package com.github.jurisliepins.value;
 
-import lombok.NonNull;
+import java.util.Objects;
 
 public record BInteger(long value) implements BValue {
     @Override
@@ -17,8 +17,8 @@ public record BInteger(long value) implements BValue {
     }
 
     @Override
-    public int compareTo(@NonNull final BValue other) {
-        return Long.compare(value, other.toLong());
+    public int compareTo(final BValue other) {
+        return Long.compare(value, Objects.requireNonNull(other, "other is null").toLong());
     }
 
     @Override
@@ -27,11 +27,7 @@ public record BInteger(long value) implements BValue {
     }
 
     public static BInteger of(final boolean value) {
-        if (value) {
-            return of(1L);
-        } else {
-            return of(0L);
-        }
+        return of(value ? 1L : 0L);
     }
 
     public static BInteger of(final char value) {

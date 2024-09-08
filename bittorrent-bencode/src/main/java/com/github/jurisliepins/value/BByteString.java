@@ -1,11 +1,14 @@
 package com.github.jurisliepins.value;
 
-import lombok.NonNull;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Objects;
 
-public record BByteString(byte @NonNull [] value) implements BValue {
+public record BByteString(byte[] value) implements BValue {
+    public BByteString {
+        Objects.requireNonNull(value, "value is null");
+    }
+
     @Override
     public int hashCode() {
         return Arrays.hashCode(value);
@@ -20,8 +23,8 @@ public record BByteString(byte @NonNull [] value) implements BValue {
     }
 
     @Override
-    public int compareTo(@NonNull final BValue other) {
-        return Arrays.compare(value, other.toBytes());
+    public int compareTo(final BValue other) {
+        return Arrays.compare(value, Objects.requireNonNull(other, "other is null").toBytes());
     }
 
     @Override
@@ -29,11 +32,11 @@ public record BByteString(byte @NonNull [] value) implements BValue {
         return "BByteString[value=\"%s\"]".formatted(new String(value, StandardCharsets.UTF_8));
     }
 
-    public static BByteString of(final byte @NonNull [] value) {
-        return new BByteString(value);
+    public static BByteString of(final byte[] value) {
+        return new BByteString(Objects.requireNonNull(value, "value is null"));
     }
 
-    public static BByteString of(@NonNull final String value) {
-        return of(value.getBytes(StandardCharsets.UTF_8));
+    public static BByteString of(final String value) {
+        return of(Objects.requireNonNull(value, "value is null").getBytes(StandardCharsets.UTF_8));
     }
 }

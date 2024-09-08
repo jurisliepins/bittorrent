@@ -6,7 +6,6 @@ import com.github.jurisliepins.value.BByteString;
 import com.github.jurisliepins.value.BInteger;
 import com.github.jurisliepins.value.BList;
 import com.github.jurisliepins.value.BDictionary;
-import lombok.NonNull;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -24,23 +23,23 @@ public final class BEncoder {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
-    public static BOutputStream toStream(@NonNull final BValue value) throws IOException {
+    public static BOutputStream toStream(final BValue value) throws IOException {
         var stream = new BOutputStream();
         write(stream, value);
         return stream;
     }
 
-    public static byte[] toBytes(@NonNull final BValue value) throws IOException {
+    public static byte[] toBytes(final BValue value) throws IOException {
         try (var stream = toStream(value)) {
             return stream.toByteArray();
         }
     }
 
-    public static String toString(@NonNull final BValue value, @NonNull final Charset encoding) throws IOException {
+    public static String toString(final BValue value, final Charset encoding) throws IOException {
         return new String(toBytes(value), encoding);
     }
 
-    public static void write(@NonNull final BOutputStream stream, @NonNull final BValue value) throws IOException {
+    public static void write(final BOutputStream stream, final BValue value) throws IOException {
         switch (value) {
             case BInteger val -> write(stream, val);
             case BByteString val -> write(stream, val);
@@ -49,7 +48,7 @@ public final class BEncoder {
         }
     }
 
-    private static void write(@NonNull final BOutputStream stream, @NonNull final BInteger value) throws IOException {
+    private static void write(final BOutputStream stream, final BInteger value) throws IOException {
         stream.write(I_BYTE);
         stream.write(((Long) value.value())
                              .toString()
@@ -58,7 +57,7 @@ public final class BEncoder {
         stream.flush();
     }
 
-    private static void write(@NonNull final BOutputStream stream, @NonNull final BByteString value) throws IOException {
+    private static void write(final BOutputStream stream, final BByteString value) throws IOException {
         stream.write(((Integer) value.value().length)
                              .toString()
                              .getBytes(StandardCharsets.US_ASCII));
@@ -67,7 +66,7 @@ public final class BEncoder {
         stream.flush();
     }
 
-    private static void write(@NonNull final BOutputStream stream, @NonNull final BList value) throws IOException {
+    private static void write(final BOutputStream stream, final BList value) throws IOException {
         stream.write(L_BYTE);
         for (var val : value.value()) {
             write(stream, val);
@@ -76,7 +75,7 @@ public final class BEncoder {
         stream.flush();
     }
 
-    private static void write(@NonNull final BOutputStream stream, @NonNull final BDictionary value) throws IOException {
+    private static void write(final BOutputStream stream, final BDictionary value) throws IOException {
         stream.write(D_BYTE);
         for (var val : value.value().entrySet()
                 .stream()
@@ -88,4 +87,5 @@ public final class BEncoder {
         stream.write(E_BYTE);
         stream.flush();
     }
+
 }

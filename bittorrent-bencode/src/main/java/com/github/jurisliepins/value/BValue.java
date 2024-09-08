@@ -1,7 +1,6 @@
 package com.github.jurisliepins.value;
 
 import com.github.jurisliepins.BException;
-import lombok.NonNull;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -52,7 +51,7 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
         };
     }
 
-    default String toString(@NonNull Charset encoding) {
+    default String toString(Charset encoding) {
         return new String(toBytes(), encoding);
     }
 
