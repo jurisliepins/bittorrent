@@ -51,7 +51,7 @@ public record MetaInfo(
     private static MetaInfo convert(@NonNull final MetaInfoBObject metaInfo) {
         if (metaInfo.info().files() != null && metaInfo.info().files().length > 0) {
             return new MetaInfo(
-                    new Info.ManyFileInfo(
+                    new Info.MultiFileInfo(
                             metaInfo.info().pieceLength(),
                             metaInfo.info().pieces(),
                             metaInfo.info().isPrivate(),
@@ -70,7 +70,7 @@ public record MetaInfo(
                     metaInfo.encoding());
         }
         return new MetaInfo(
-                new Info.OneFileInfo(
+                new Info.UniFileInfo(
                         metaInfo.info().pieceLength(),
                         metaInfo.info().pieces(),
                         metaInfo.info().isPrivate(),

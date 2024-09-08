@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -19,18 +18,18 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @DisplayName("Meta-info tests")
 public class MetaInfoTests {
 
-    private static final String ONE_FILE_TORRENT = "one_file.torrent";
+    private static final String UNI_FILE_TORRENT = "uni_file.torrent";
 
-    private static final String MANY_FILE_TORRENT = "many_file.torrent";
+    private static final String MULTI_FILE_TORRENT = "multi_file.torrent";
 
-    private static final InfoHash ONE_FILE_INFO_HASH = new InfoHash("aa171ca77f14f55d6ec23d7e9541b7791e6c383c");
+    private static final InfoHash UNI_FILE_INFO_HASH = new InfoHash("aa171ca77f14f55d6ec23d7e9541b7791e6c383c");
 
-    private static final InfoHash MANY_FILE_INFO_HASH = new InfoHash("6e540ebbc92131138746231ff3e44f165fd3b373");
+    private static final InfoHash MULTI_FILE_INFO_HASH = new InfoHash("6e540ebbc92131138746231ff3e44f165fd3b373");
 
     @Test
-    @DisplayName("Should decode one file meta-info")
-    public void shouldDecodeOneFileMetaInfo() throws IOException {
-        switch (MetaInfo.fromBytes(readFileAsBytes(ONE_FILE_TORRENT))) {
+    @DisplayName("Should decode uni file meta-info")
+    public void shouldDecodeUniFileMetaInfo() throws IOException {
+        switch (MetaInfo.fromBytes(readFileAsBytes(UNI_FILE_TORRENT))) {
             case MetaInfo metaInfo -> {
                 assertNotNull(metaInfo.info());
                 assertEquals("udp://tracker.openbittorrent.com:6969", metaInfo.announce());
@@ -40,14 +39,14 @@ public class MetaInfoTests {
                 assertEquals("Juris Liepins", metaInfo.createdBy());
                 assertEquals("UTF-8", metaInfo.encoding());
                 switch (metaInfo.info()) {
-                    case Info.OneFileInfo info -> {
+                    case Info.UniFileInfo info -> {
                         assertEquals(32768, info.pieceLength());
                         assertNotNull(info.pieces());
                         assertFalse(info.isPrivate());
                         assertEquals("war_and_peace.txt", info.name());
                         assertEquals(3266164, info.length());
                         assertNull(info.md5sum());
-                        assertEquals(ONE_FILE_INFO_HASH, info.hash());
+                        assertEquals(UNI_FILE_INFO_HASH, info.hash());
                     }
                     default -> throw new RuntimeException("Should not have reached this code");
                 }
@@ -56,9 +55,9 @@ public class MetaInfoTests {
     }
 
     @Test
-    @DisplayName("Should decode many file meta-info")
-    public void shouldDecodeManyFileMetaInfo() throws IOException {
-        switch (MetaInfo.fromBytes(readFileAsBytes(MANY_FILE_TORRENT))) {
+    @DisplayName("Should decode multi file meta-info")
+    public void shouldDecodeMultiFileMetaInfo() throws IOException {
+        switch (MetaInfo.fromBytes(readFileAsBytes(MULTI_FILE_TORRENT))) {
             case MetaInfo metaInfo -> {
                 assertNotNull(metaInfo.info());
                 assertEquals("udp://tracker.openbittorrent.com:6969", metaInfo.announce());
@@ -68,7 +67,7 @@ public class MetaInfoTests {
                 assertEquals("Juris Liepins", metaInfo.createdBy());
                 assertEquals("UTF-8", metaInfo.encoding());
                 switch (metaInfo.info()) {
-                    case Info.ManyFileInfo info -> {
+                    case Info.MultiFileInfo info -> {
                         assertEquals(32768, info.pieceLength());
                         assertNotNull(info.pieces());
                         assertFalse(info.isPrivate());
@@ -86,7 +85,7 @@ public class MetaInfoTests {
                         assertEquals(8180, info.files()[3].length());
                         assertNull(info.files()[3].md5sum());
                         assertArrayEquals(new String[]{"file_4.txt"}, info.files()[3].path());
-                        assertEquals(MANY_FILE_INFO_HASH, info.hash());
+                        assertEquals(MULTI_FILE_INFO_HASH, info.hash());
                     }
                     default -> throw new RuntimeException("Should not have reached this code");
                 }
@@ -121,7 +120,7 @@ public class MetaInfoTests {
                 assertEquals("Пользователь", metaInfo.createdBy());
                 assertNull(metaInfo.encoding());
                 switch (metaInfo.info()) {
-                    case Info.OneFileInfo info -> {
+                    case Info.UniFileInfo info -> {
                         assertEquals(0, info.pieceLength());
                         assertNotNull(info.pieces());
                         assertFalse(info.isPrivate());
