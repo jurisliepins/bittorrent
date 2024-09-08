@@ -1,6 +1,6 @@
 package com.github.jurisliepins.client;
 
-import com.github.jurisliepins.CoreMailboxReceiver;
+import com.github.jurisliepins.CoreMailboxLoggingReceiver;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.bitfield.Bitfield;
@@ -17,7 +17,7 @@ import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.types.StatusType;
 import lombok.NonNull;
 
-public final class ClientMailboxReceiver extends CoreMailboxReceiver {
+public final class ClientMailboxReceiver extends CoreMailboxLoggingReceiver {
     private final ClientState state;
 
     public ClientMailboxReceiver(@NonNull final ClientState state) {

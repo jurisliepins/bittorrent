@@ -3,10 +3,10 @@ package com.github.jurisliepins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class CoreMailboxReceiver implements MailboxReceiver {
+public abstract class CoreMailboxLoggingReceiver implements MailboxReceiver {
     private final Logger logger;
 
-    public CoreMailboxReceiver() {
+    public CoreMailboxLoggingReceiver() {
         this.logger = LoggerFactory.getLogger(getClass().getName());
     }
 
