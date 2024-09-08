@@ -2,25 +2,18 @@ package com.github.jurisliepins;
 
 import lombok.NonNull;
 
-public abstract class CoreMailboxNotifiedLoggingReceiver<T> extends CoreMailboxLoggingReceiver {
+public abstract class CoreMailboxNotifiedStateLoggingReceiver<T, U> extends CoreMailboxStateLoggingReceiver<U> {
     private final ActorRef notifiedRef;
 
-    public CoreMailboxNotifiedLoggingReceiver(@NonNull final ActorRef notifiedRef) {
+    public CoreMailboxNotifiedStateLoggingReceiver(@NonNull final ActorRef notifiedRef, @NonNull final U state) {
+        super(state);
         this.notifiedRef = notifiedRef;
-    }
-
-    protected final NextState receiveNext() {
-        return NextState.Receive;
     }
 
     @SafeVarargs
     protected final NextState receiveNext(@NonNull final T... notifications) {
         notify(notifications);
         return receiveNext();
-    }
-
-    protected final NextState terminate() {
-        return NextState.Terminate;
     }
 
     @SafeVarargs
