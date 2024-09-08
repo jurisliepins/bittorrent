@@ -1,6 +1,7 @@
 package com.github.jurisliepins.client.message;
 
 import com.github.jurisliepins.bitfield.ImmutableBitfield;
+import com.github.jurisliepins.client.ClientState;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.types.StatusType;
 import lombok.Builder;
@@ -23,7 +24,23 @@ public sealed interface ClientResponse permits
             long left,
             double downloadRate,
             double uploadRate
-    ) { }
+    ) {
+        public static Torrent of(final ClientState.Torrent torrent) {
+            return ClientResponse.Torrent.builder()
+                    .status(torrent.getStatus())
+                    .infoHash(torrent.getInfoHash())
+                    .peerId(torrent.getPeerId())
+                    .bitfield(torrent.getBitfield())
+                    .name(torrent.getName())
+                    .length(torrent.getLength())
+                    .downloaded(torrent.getDownloaded())
+                    .uploaded(torrent.getUploaded())
+                    .left(torrent.getLeft())
+                    .downloadRate(torrent.getDownloadRate())
+                    .uploadRate(torrent.getUploadRate())
+                    .build();
+        }
+    }
 
     record Get(@NonNull Torrent torrent) implements ClientResponse { }
 

@@ -3,6 +3,7 @@ package com.github.jurisliepins.client;
 import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.bitfield.Bitfield;
 import com.github.jurisliepins.info.InfoHash;
+import com.github.jurisliepins.info.MetaInfo;
 import com.github.jurisliepins.types.StatusType;
 import lombok.Builder;
 import lombok.Data;
@@ -43,5 +44,23 @@ public final class ClientState {
         private long left;
         private double downloadRate;
         private double uploadRate;
+
+        public static Torrent of(final ActorRef ref, final MetaInfo metaInfo) {
+            return ClientState.Torrent.builder()
+                    .ref(ref)
+                    .status(StatusType.Stopped)
+                    .infoHash(metaInfo.info().hash())
+                    .peerId(new Object())
+                    .bitfield(new Bitfield(metaInfo.info().pieces().length))
+                    .pieceLength(metaInfo.info().pieceLength())
+                    .name(metaInfo.info().name())
+                    .length(metaInfo.info().length())
+                    .downloaded(0L)
+                    .uploaded(0L)
+                    .left(metaInfo.info().length())
+                    .downloadRate(0.0)
+                    .uploadRate(0.0)
+                    .build();
+        }
     }
 }

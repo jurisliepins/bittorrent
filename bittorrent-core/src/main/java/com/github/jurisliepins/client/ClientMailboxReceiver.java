@@ -3,7 +3,6 @@ package com.github.jurisliepins.client;
 import com.github.jurisliepins.CoreMailboxStateLoggingReceiver;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
-import com.github.jurisliepins.bitfield.Bitfield;
 import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientCommandResult;
 import com.github.jurisliepins.client.message.ClientRequest;
@@ -14,7 +13,6 @@ import com.github.jurisliepins.torrent.TorrentMailboxReceiver;
 import com.github.jurisliepins.torrent.TorrentState;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
-import com.github.jurisliepins.types.StatusType;
 import lombok.NonNull;
 
 public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver<ClientState> {
@@ -56,24 +54,10 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
                             mailbox.reply(new ClientCommandResult.Failure(metaInfo.info().hash(), "Torrent already exists"));
 
                     case null -> {
-                        var torrent = ClientState.Torrent.builder()
-                                .ref(mailbox.system()
-                                             .spawn(new TorrentMailboxReceiver(
-                                                     mailbox.self(),
-                                                     TorrentState.of(metaInfo))))
-                                .status(StatusType.Stopped)
-                                .infoHash(metaInfo.info().hash())
-                                .peerId(new Object())
-                                .bitfield(new Bitfield(metaInfo.info().pieces().length))
-                                .pieceLength(metaInfo.info().pieceLength())
-                                .name(metaInfo.info().name())
-                                .length(metaInfo.info().length())
-                                .downloaded(0L)
-                                .uploaded(0L)
-                                .left(metaInfo.info().length())
-                                .downloadRate(0.0)
-                                .uploadRate(0.0)
-                                .build();
+                        var torrent = ClientState.Torrent.of(
+                                mailbox.system()
+                                        .spawn(new TorrentMailboxReceiver(mailbox.self(), TorrentState.of(metaInfo))),
+                                metaInfo);
                         state().add(torrent);
                         mailbox.reply(new ClientCommandResult.Success(metaInfo.info().hash(), "Torrent added"));
                     }
@@ -139,22 +123,7 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
 
     private NextState handleGetRequest(final Mailbox.Success mailbox, final ClientRequest.Get request) {
         switch (state().get(request.infoHash())) {
-            case ClientState.Torrent torrent -> {
-                var response = ClientResponse.Torrent.builder()
-                        .status(torrent.getStatus())
-                        .infoHash(torrent.getInfoHash())
-                        .peerId(torrent.getPeerId())
-                        .bitfield(torrent.getBitfield())
-                        .name(torrent.getName())
-                        .length(torrent.getLength())
-                        .downloaded(torrent.getDownloaded())
-                        .uploaded(torrent.getUploaded())
-                        .left(torrent.getLeft())
-                        .downloadRate(torrent.getDownloadRate())
-                        .uploadRate(torrent.getUploadRate())
-                        .build();
-                mailbox.reply(new ClientResponse.Get(response));
-            }
+            case ClientState.Torrent torrent -> mailbox.reply(new ClientResponse.Get(ClientResponse.Torrent.of(torrent)));
 
             case null -> mailbox.reply(new ClientResponse.Failure(request.infoHash(), "Torrent doesn't exist"));
         }
