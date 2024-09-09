@@ -4,7 +4,6 @@ public enum StatusType {
 
     Started,
     Running,
-    Stopped,
-    Errored
+    Stopped
 
 }

@@ -3,6 +3,9 @@ package com.github.jurisliepins.client;
 import com.github.jurisliepins.CoreMailboxStateLoggingReceiver;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
+import com.github.jurisliepins.announcer.AnnouncerMailboxReceiver;
+import com.github.jurisliepins.announcer.AnnouncerState;
+import com.github.jurisliepins.announcer.message.AnnouncerNotification;
 import com.github.jurisliepins.bitfield.Bitfield;
 import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientCommandResult;
@@ -37,6 +40,7 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
             case ClientCommand command -> handleCommand(mailbox, command);
             case ClientRequest request -> handleRequest(mailbox, request);
             case TorrentNotification notification -> handleTorrentNotification(mailbox, notification);
+            case AnnouncerNotification notification -> handleAnnouncerNotification(mailbox, notification);
             default -> unhandled(mailbox);
         };
     }
@@ -58,8 +62,19 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
                             mailbox.reply(new ClientCommandResult.Failure(metaInfo.info().hash(), "Torrent already exists"));
 
                     case null -> {
+                        var announcerRef = mailbox.system()
+                                .spawn(new AnnouncerMailboxReceiver(mailbox.self(), AnnouncerState.builder()
+                                        .status(StatusType.Stopped)
+                                        .infoHash(metaInfo.info().hash())
+                                        .selfPeerId(state().getSelfPeerId())
+                                        .announce(metaInfo.announce())
+                                        .port(6881)
+                                        .downloaded(0L)
+                                        .uploaded(0L)
+                                        .left(metaInfo.info().length())
+                                        .build()));
                         var torrentRef = mailbox.system()
-                                .spawn(new TorrentMailboxReceiver(mailbox.self(), TorrentState.builder()
+                                .spawn(new TorrentMailboxReceiver(announcerRef, mailbox.self(), TorrentState.builder()
                                         .status(StatusType.Stopped)
                                         .infoHash(metaInfo.info().hash())
                                         .selfPeerId(state().getSelfPeerId())
@@ -134,7 +149,7 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
         switch (state().getTorrents().get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 switch (torrent.getStatus()) {
-                    case Started, Running, Errored -> {
+                    case Started, Running -> {
                         torrent.getRef().post(new TorrentCommand.Stop(), mailbox.self());
                         mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
                     }
@@ -197,6 +212,15 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
             final Mailbox mailbox,
             final TorrentNotification.Failure failure) {
         logger().error("Torrent {} failed", failure.infoHash(), failure.cause());
+        return receiveNext();
+    }
+
+    private NextState handleAnnouncerNotification(final Mailbox.Success mailbox, final AnnouncerNotification notification) {
+        switch (state().getTorrents().get(notification.infoHash())) {
+            case ClientState.Torrent torrent -> torrent.getRef().post(notification, mailbox.sender());
+
+            case null -> { /* Ignored. */ }
+        }
         return receiveNext();
     }
 

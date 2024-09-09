@@ -20,4 +20,12 @@ public sealed interface TorrentNotification permits
             @NonNull InfoHash infoHash,
             @NonNull Throwable cause
     ) implements TorrentNotification { }
+
+    default InfoHash infoHash() {
+        return switch (this) {
+            case TorrentNotification.StatusChanged notification -> notification.infoHash();
+            case TorrentNotification.Terminated notification -> notification.infoHash();
+            case TorrentNotification.Failure notification -> notification.infoHash();
+        };
+    }
 }
