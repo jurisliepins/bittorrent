@@ -83,7 +83,7 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateLogg
                                           state().getAnnounce(),
                                           success.interval());
                             // TODO: Schedule re-announce!
-                            return receiveNext();
+                            return receiveNext(new AnnouncerNotification.PeersReceived(state().getInfoHash(), success.peers()));
                         }
                         default -> {
                             logger().info("[{}] Not scheduling re-announce since we're stopped", state().getInfoHash());

@@ -28,6 +28,8 @@ public final class BitTorrentClient {
                 ClientState.builder()
                         .selfPeerId(PeerId.createSelfPeerId())
                         .torrents(new ClientState.Torrents())
+                        .peerCount(30)
+                        .port(6881)
                         .build()
         ));
     }

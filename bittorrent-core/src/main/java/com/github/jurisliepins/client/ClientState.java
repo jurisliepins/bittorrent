@@ -20,6 +20,8 @@ public final class ClientState {
     private PeerId selfPeerId;
     @NonNull
     private Torrents torrents;
+    private int peerCount;
+    private int port;
 
     @Data
     @Builder
