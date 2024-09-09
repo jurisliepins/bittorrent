@@ -29,7 +29,7 @@ public sealed interface ClientResponse permits
             return ClientResponse.Torrent.builder()
                     .status(torrent.getStatus())
                     .infoHash(torrent.getInfoHash())
-                    .peerId(torrent.getPeerId())
+                    .peerId(torrent.getSelfPeerId())
                     .bitfield(torrent.getBitfield())
                     .name(torrent.getName())
                     .length(torrent.getLength())

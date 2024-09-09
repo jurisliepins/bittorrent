@@ -7,13 +7,15 @@ import com.github.jurisliepins.client.message.ClientRequest;
 import com.github.jurisliepins.client.message.ClientResponse;
 import com.github.jurisliepins.client.ClientState;
 import com.github.jurisliepins.info.InfoHash;
+import com.github.jurisliepins.peer.PeerId;
 import lombok.NonNull;
 
 import java.util.concurrent.TimeUnit;
 
 public final class BitTorrentClient {
+    public static final String ID = "ZZ";
     public static final String NAME = "BitTorrent";
-    public static final String VERSION = "0.01";
+    public static final String VERSION = "0001";
 
     private static final long TIMEOUT_MS = 5_000;
 
@@ -22,7 +24,12 @@ public final class BitTorrentClient {
     private final ActorRef clientRef;
 
     public BitTorrentClient() {
-        clientRef = actorSystem.spawn(new ClientMailboxReceiver(new ClientState()));
+        clientRef = actorSystem.spawn(new ClientMailboxReceiver(
+                ClientState.builder()
+                        .selfPeerId(PeerId.createSelfPeerId())
+                        .torrents(new ClientState.Torrents())
+                        .build()
+        ));
     }
 
     public ClientResponse get(@NonNull final InfoHash infoHash) {
