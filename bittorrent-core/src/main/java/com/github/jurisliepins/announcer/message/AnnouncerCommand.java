@@ -11,9 +11,15 @@ public sealed interface AnnouncerCommand permits
 
     record Announce(@NonNull TrackerEventType eventType) implements AnnouncerCommand { }
 
-    record Start() implements AnnouncerCommand { }
+    record Start() implements AnnouncerCommand {
+        public static final Start INSTANCE = new Start();
+    }
 
-    record Stop() implements AnnouncerCommand { }
+    record Stop() implements AnnouncerCommand {
+        public static final Stop INSTANCE = new Stop();
+    }
 
-    record Terminate() implements AnnouncerCommand { }
+    record Terminate() implements AnnouncerCommand {
+        public static final Terminate INSTANCE = new Terminate();
+    }
 }

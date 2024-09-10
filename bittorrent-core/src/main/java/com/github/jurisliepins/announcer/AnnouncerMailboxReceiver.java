@@ -72,17 +72,6 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateLogg
                                           state().getAnnounce(),
                                           success.interval());
                             // TODO: Schedule re-announce!
-                            state().setStatus(StatusType.Running);
-                            return receiveNext(
-                                    new AnnouncerNotification.StatusChanged(state().getInfoHash(), StatusType.Running),
-                                    new AnnouncerNotification.PeersReceived(state().getInfoHash(), success.peers()));
-                        }
-                        case Running -> {
-                            logger().info("[{}] Scheduling re-announce on '{}' in '{}'",
-                                          state().getInfoHash(),
-                                          state().getAnnounce(),
-                                          success.interval());
-                            // TODO: Schedule re-announce!
                             return receiveNext(new AnnouncerNotification.PeersReceived(state().getInfoHash(), success.peers()));
                         }
                         default -> {
@@ -122,7 +111,7 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateLogg
 
     private NextState handleStopCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Stop command) {
         return switch (state().getStatus()) {
-            case Started, Running -> {
+            case Started -> {
                 state().setStatus(StatusType.Stopped);
                 mailbox.self().post(new AnnouncerCommand.Announce(TrackerEventType.Stopped), mailbox.self());
                 yield receiveNext(new AnnouncerNotification.StatusChanged(state().getInfoHash(), StatusType.Stopped));

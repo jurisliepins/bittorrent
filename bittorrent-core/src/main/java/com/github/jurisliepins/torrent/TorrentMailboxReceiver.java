@@ -51,7 +51,7 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateLoggin
     private NextState handleStartCommand(final Mailbox.Success mailbox, final TorrentCommand.Start command) {
         return switch (state().getStatus()) {
             case Stopped -> {
-                announcerRef.post(new AnnouncerCommand.Start());
+                announcerRef.post(AnnouncerCommand.Start.INSTANCE);
                 state().setStatus(StatusType.Started);
                 yield receiveNext(new TorrentNotification.StatusChanged(state().getInfoHash(), StatusType.Started));
             }
@@ -65,8 +65,8 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateLoggin
 
     private NextState handleStopCommand(final Mailbox.Success mailbox, final TorrentCommand.Stop command) {
         return switch (state().getStatus()) {
-            case Started, Running -> {
-                announcerRef.post(new AnnouncerCommand.Stop());
+            case Started -> {
+                announcerRef.post(AnnouncerCommand.Stop.INSTANCE);
                 state().setStatus(StatusType.Stopped);
                 yield receiveNext(new TorrentNotification.StatusChanged(state().getInfoHash(), StatusType.Stopped));
             }
@@ -79,6 +79,7 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateLoggin
     }
 
     private NextState handleTerminateCommand(final Mailbox.Success mailbox, final TorrentCommand.Terminate command) {
+        announcerRef.post(AnnouncerCommand.Terminate.INSTANCE);
         return terminate(new TorrentNotification.Terminated(state().getInfoHash()));
     }
 
@@ -98,8 +99,13 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateLoggin
 
     private NextState handleAnnouncerNotification(final Mailbox.Success mailbox, final AnnouncerNotification notification) {
         logger().info("[{}] Handling announcer notification {}", state().getInfoHash(), notification);
-        state().setStatus(StatusType.Running);
-        return receiveNext(new TorrentNotification.StatusChanged(state().getInfoHash(), StatusType.Running));
+        switch (notification) {
+            case AnnouncerNotification.PeersReceived peersReceived -> { }
+            case AnnouncerNotification.StatusChanged statusChanged -> { }
+            case AnnouncerNotification.Terminated terminated -> { }
+            case AnnouncerNotification.Failure failure -> { }
+        }
+        return receiveNext();
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {

@@ -5,9 +5,15 @@ public sealed interface TorrentCommand permits
         TorrentCommand.Stop,
         TorrentCommand.Terminate {
 
-    record Start() implements TorrentCommand { }
+    record Start() implements TorrentCommand {
+        public static final Start INSTANCE = new Start();
+    }
 
-    record Stop() implements TorrentCommand { }
+    record Stop() implements TorrentCommand {
+        public static final Stop INSTANCE = new Stop();
+    }
 
-    record Terminate() implements TorrentCommand { }
+    record Terminate() implements TorrentCommand {
+        public static final Terminate INSTANCE = new Terminate();
+    }
 }

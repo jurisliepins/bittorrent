@@ -119,7 +119,7 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
     private NextState handleRemoveCommand(final Mailbox.Success mailbox, final ClientCommand.Remove command) {
         switch (state().getTorrents().remove(command.infoHash())) {
             case ClientState.Torrent torrent -> {
-                torrent.getRef().post(new TorrentCommand.Terminate(), mailbox.self());
+                torrent.getRef().post(TorrentCommand.Terminate.INSTANCE, mailbox.self());
                 mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent removed"));
             }
 
@@ -133,7 +133,7 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
             case ClientState.Torrent torrent -> {
                 switch (torrent.getStatus()) {
                     case Stopped -> {
-                        torrent.getRef().post(new TorrentCommand.Start(), mailbox.self());
+                        torrent.getRef().post(TorrentCommand.Start.INSTANCE, mailbox.self());
                         mailbox.reply(new ClientCommandResult.Success(torrent.getInfoHash(), "Torrent started"));
                     }
 
@@ -150,8 +150,8 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
         switch (state().getTorrents().get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 switch (torrent.getStatus()) {
-                    case Started, Running -> {
-                        torrent.getRef().post(new TorrentCommand.Stop(), mailbox.self());
+                    case Started -> {
+                        torrent.getRef().post(TorrentCommand.Stop.INSTANCE, mailbox.self());
                         mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent stopped"));
                     }
 
