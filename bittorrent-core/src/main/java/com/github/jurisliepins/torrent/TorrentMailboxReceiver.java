@@ -6,6 +6,7 @@ import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.announcer.message.AnnouncerCommand;
 import com.github.jurisliepins.announcer.message.AnnouncerNotification;
+import com.github.jurisliepins.config.Config;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.types.StatusType;
@@ -14,13 +15,16 @@ import lombok.NonNull;
 
 public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateLoggingReceiver<TorrentNotification, TorrentState> {
 
+    private final Config config;
     private final ActorRef announcerRef;
 
     public TorrentMailboxReceiver(
+            @NonNull final Config config,
             @NonNull final ActorRef announcerRef,
             @NonNull final ActorRef notifiedRef,
             @NonNull final TorrentState state) {
         super(notifiedRef, state);
+        this.config = config;
         this.announcerRef = announcerRef;
     }
 

@@ -6,7 +6,7 @@ import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.announcer.message.AnnouncerCommand;
 import com.github.jurisliepins.announcer.message.AnnouncerNotification;
-import com.github.jurisliepins.tracker.TrackerClient;
+import com.github.jurisliepins.config.Config;
 import com.github.jurisliepins.tracker.TrackerEventType;
 import com.github.jurisliepins.tracker.TrackerRequest;
 import com.github.jurisliepins.tracker.TrackerRequestBuilder;
@@ -16,10 +16,14 @@ import lombok.NonNull;
 
 public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateLoggingReceiver<AnnouncerNotification, AnnouncerState> {
 
-    private final TrackerClient client = new TrackerClient();
+    private final Config config;
 
-    public AnnouncerMailboxReceiver(@NonNull final ActorRef notifiedRef, @NonNull final AnnouncerState state) {
+    public AnnouncerMailboxReceiver(
+            @NonNull final Config config,
+            @NonNull final ActorRef notifiedRef,
+            @NonNull final AnnouncerState state) {
         super(notifiedRef, state);
+        this.config = config;
     }
 
     @Override
@@ -48,49 +52,44 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateLogg
 
     private NextState handleAnnounceCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Announce command) {
         logger().info("[{}] Announcing '{}' on '{}'", state().getInfoHash(), command.eventType(), state().getAnnounce());
-        try {
-            var response = client.announce(
-                    new TrackerRequestBuilder(state().getAnnounce())
-                            .parameter(TrackerRequest.INFO_HASH, state().getInfoHash().toByteArray())
-                            .parameter(TrackerRequest.PEER_ID, state().getSelfPeerId().toString())
-                            .parameter(TrackerRequest.PORT, state().getPort())
-                            .parameter(TrackerRequest.DOWNLOADED, state().getDownloaded())
-                            .parameter(TrackerRequest.UPLOADED, state().getUploaded())
-                            .parameter(TrackerRequest.LEFT, state().getLeft())
-                            .parameter(TrackerRequest.EVENT, command.eventType().toString())
-                            .parameter(TrackerRequest.COMPACT, 1)
-                            .parameter(TrackerRequest.NO_PEER_ID, 1)
-                            .parameter(TrackerRequest.NUM_WANT, 30)
-                            .toQuery());
-            switch (response) {
-                case TrackerResponse.Success success -> {
-                    logger().info("[{}] Announced successfully on '{}' with '{}'", state().getInfoHash(), state().getAnnounce(), success);
-                    switch (state().getStatus()) {
-                        case Started -> {
-                            logger().info("[{}] Scheduling re-announce on '{}' in '{}'",
-                                          state().getInfoHash(),
-                                          state().getAnnounce(),
-                                          success.interval());
-                            // TODO: Schedule re-announce!
-                            return receiveNext(new AnnouncerNotification.PeersReceived(state().getInfoHash(), success.peers()));
-                        }
-                        default -> {
-                            logger().info("[{}] Not scheduling re-announce since we're stopped", state().getInfoHash());
-                            return receiveNext();
-                        }
+        var response = config.trackerClient().announce(
+                new TrackerRequestBuilder(state().getAnnounce())
+                        .parameter(TrackerRequest.INFO_HASH, state().getInfoHash().toByteArray())
+                        .parameter(TrackerRequest.PEER_ID, state().getSelfPeerId().toString())
+                        .parameter(TrackerRequest.PORT, state().getPort())
+                        .parameter(TrackerRequest.DOWNLOADED, state().getDownloaded())
+                        .parameter(TrackerRequest.UPLOADED, state().getUploaded())
+                        .parameter(TrackerRequest.LEFT, state().getLeft())
+                        .parameter(TrackerRequest.EVENT, command.eventType().toString())
+                        .parameter(TrackerRequest.COMPACT, 1)
+                        .parameter(TrackerRequest.NO_PEER_ID, 1)
+                        .parameter(TrackerRequest.NUM_WANT, state().getPeerCount())
+                        .toQuery());
+        switch (response) {
+            case TrackerResponse.Success success -> {
+                logger().info("[{}] Announced successfully on '{}' with '{}'", state().getInfoHash(), state().getAnnounce(), success);
+                switch (state().getStatus()) {
+                    case Started -> {
+                        logger().info("[{}] Scheduling re-announce on '{}' in '{}'",
+                                      state().getInfoHash(),
+                                      state().getAnnounce(),
+                                      success.interval());
+                        // TODO: Schedule re-announce!
+                        return receiveNext(new AnnouncerNotification.PeersReceived(state().getInfoHash(), success.peers()));
+                    }
+                    default -> {
+                        logger().info("[{}] Not scheduling re-announce since we're stopped", state().getInfoHash());
+                        return receiveNext();
                     }
                 }
-                case TrackerResponse.Failure failure -> {
-                    logger().error("[{}] Announced with failure response on '{}' with '{}'",
-                                   state().getInfoHash(),
-                                   state().getAnnounce(),
-                                   failure);
-                    return receiveNext();
-                }
             }
-        } catch (Exception ex) {
-            logger().error("[{}] Failed to announce", state().getInfoHash(), ex);
-            return receiveNext(new AnnouncerNotification.Failure(state().getInfoHash(), ex.getCause()));
+            case TrackerResponse.Failure failure -> {
+                logger().error("[{}] Announced with failure response on '{}' with '{}'",
+                               state().getInfoHash(),
+                               state().getAnnounce(),
+                               failure);
+                return receiveNext();
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import com.github.jurisliepins.client.message.ClientCommandResult;
 import com.github.jurisliepins.client.message.ClientRequest;
 import com.github.jurisliepins.client.message.ClientResponse;
 import com.github.jurisliepins.client.ClientState;
+import com.github.jurisliepins.config.Config;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.peer.PeerId;
 import lombok.NonNull;
@@ -13,10 +14,6 @@ import lombok.NonNull;
 import java.util.concurrent.TimeUnit;
 
 public final class BitTorrentClient {
-    public static final String ID = "ZZ";
-    public static final String NAME = "BitTorrent";
-    public static final String VERSION = "0001";
-
     private static final long TIMEOUT_MS = 5_000;
 
     private final ActorSystem actorSystem = new ActorSystem();
@@ -24,14 +21,13 @@ public final class BitTorrentClient {
     private final ActorRef clientRef;
 
     public BitTorrentClient() {
-        clientRef = actorSystem.spawn(new ClientMailboxReceiver(
-                ClientState.builder()
-                        .selfPeerId(PeerId.createSelfPeerId())
-                        .torrents(new ClientState.Torrents())
-                        .peerCount(30)
-                        .port(6881)
+        clientRef = actorSystem.spawn(
+                new ClientMailboxReceiver(Config.defaultConfig(), ClientState.builder()
+                        .selfPeerId(PeerId.selfPeerId())
+                        .torrents(ClientState.Torrents.blankTorrents())
+                        .settings(ClientState.Settings.defaultSettings())
                         .build()
-        ));
+                ));
     }
 
     public ClientResponse get(@NonNull final InfoHash infoHash) {
@@ -61,5 +57,4 @@ public final class BitTorrentClient {
     private <T, U> U postWithReply(@NonNull final T message) {
         return clientRef.postWithReply(message, TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
-
 }

@@ -6,12 +6,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Random;
 
-import static com.github.jurisliepins.BitTorrentClient.ID;
-import static com.github.jurisliepins.BitTorrentClient.VERSION;
+import static com.github.jurisliepins.config.Config.ID;
+import static com.github.jurisliepins.config.Config.VERSION;
 
 public final class PeerId {
     private static final int BYTES_LENGTH = 20;
     private static final int STRING_LENGTH = 20;
+
+    public static final PeerId BLANK = new PeerId();
 
     private final byte[] bytes;
     private final String string;
@@ -32,6 +34,12 @@ public final class PeerId {
         }
         this.string = string;
         this.bytes = string.getBytes(StandardCharsets.US_ASCII);
+        this.hashCode = Arrays.hashCode(bytes);
+    }
+
+    private PeerId() {
+        this.string = "";
+        this.bytes = new byte[]{};
         this.hashCode = Arrays.hashCode(bytes);
     }
 
@@ -57,7 +65,7 @@ public final class PeerId {
         };
     }
 
-    public static PeerId createSelfPeerId() {
+    public static PeerId selfPeerId() {
         return new PeerId("-%s%s-%012d".formatted(ID, VERSION, new Random().nextLong(0, 1_000_000_000_000L)));
     }
 }

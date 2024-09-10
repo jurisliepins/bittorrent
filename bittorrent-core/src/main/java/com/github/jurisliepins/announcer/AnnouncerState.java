@@ -18,7 +18,8 @@ public final class AnnouncerState {
     private PeerId selfPeerId;
     @NonNull
     private String announce;
-    private int peerCount;
+    @NonNull
+    private Integer peerCount;
     private int port;
     private long downloaded;
     private long uploaded;

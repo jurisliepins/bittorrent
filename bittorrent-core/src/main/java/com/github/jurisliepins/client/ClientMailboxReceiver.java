@@ -11,6 +11,7 @@ import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientCommandResult;
 import com.github.jurisliepins.client.message.ClientRequest;
 import com.github.jurisliepins.client.message.ClientResponse;
+import com.github.jurisliepins.config.Config;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.info.MetaInfo;
 import com.github.jurisliepins.torrent.TorrentMailboxReceiver;
@@ -23,8 +24,13 @@ import lombok.NonNull;
 import java.util.List;
 
 public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver<ClientState> {
-    public ClientMailboxReceiver(@NonNull final ClientState state) {
+    private final Config config;
+
+    public ClientMailboxReceiver(
+            @NonNull final Config config,
+            @NonNull final ClientState state) {
         super(state);
+        this.config = config;
     }
 
     @Override
@@ -63,19 +69,19 @@ public final class ClientMailboxReceiver extends CoreMailboxStateLoggingReceiver
 
                     case null -> {
                         var announcerRef = mailbox.system()
-                                .spawn(new AnnouncerMailboxReceiver(mailbox.self(), AnnouncerState.builder()
+                                .spawn(new AnnouncerMailboxReceiver(config, mailbox.self(), AnnouncerState.builder()
                                         .status(StatusType.Stopped)
                                         .infoHash(metaInfo.info().hash())
                                         .selfPeerId(state().getSelfPeerId())
                                         .announce(metaInfo.announce())
-                                        .peerCount(state().getPeerCount())
-                                        .port(state().getPort())
+                                        .peerCount(state().getSettings().getPeerCount())
+                                        .port(state().getSettings().getPort())
                                         .downloaded(0L)
                                         .uploaded(0L)
                                         .left(metaInfo.info().length())
                                         .build()));
                         var torrentRef = mailbox.system()
-                                .spawn(new TorrentMailboxReceiver(announcerRef, mailbox.self(), TorrentState.builder()
+                                .spawn(new TorrentMailboxReceiver(config, announcerRef, mailbox.self(), TorrentState.builder()
                                         .status(StatusType.Stopped)
                                         .infoHash(metaInfo.info().hash())
                                         .selfPeerId(state().getSelfPeerId())
