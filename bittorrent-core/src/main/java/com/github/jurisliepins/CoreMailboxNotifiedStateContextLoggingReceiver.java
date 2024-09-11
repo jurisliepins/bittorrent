@@ -22,6 +22,7 @@ public abstract class CoreMailboxNotifiedStateContextLoggingReceiver<T extends S
         return receiveNext();
     }
 
+    @SafeVarargs
     protected final NextState receiveNext(final StatusType status, @NonNull final U... notifications) {
         notify(notifications);
         return receiveNext(status);

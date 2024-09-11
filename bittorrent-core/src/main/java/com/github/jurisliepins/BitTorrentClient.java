@@ -17,12 +17,12 @@ import java.util.concurrent.TimeUnit;
 public final class BitTorrentClient {
     private static final long TIMEOUT_MS = 5_000;
 
-    private final ActorSystem actorSystem = new ActorSystem();
+    private final ActorSystem system = new ActorSystem();
 
     private final ActorRef clientRef;
 
     public BitTorrentClient() {
-        clientRef = actorSystem.spawn(
+        clientRef = system.spawn(
                 new ClientMailboxReceiver(Context.defaultConfig(), ClientState.builder()
                         .status(StatusType.Started)
                         .selfPeerId(PeerId.selfPeerId())
@@ -53,7 +53,7 @@ public final class BitTorrentClient {
     }
 
     public void shutdown() {
-        actorSystem.shutdown();
+        system.shutdown();
     }
 
     private <T, U> U postWithReply(@NonNull final T message) {
