@@ -22,14 +22,13 @@ public final class BitTorrentClient {
     private final ActorRef clientRef;
 
     public BitTorrentClient() {
-        clientRef = system.spawn(
-                new ClientMailboxReceiver(Context.defaultConfig(), ClientState.builder()
-                        .status(StatusType.Started)
-                        .selfPeerId(PeerId.selfPeerId())
-                        .torrents(ClientState.Torrents.blankTorrents())
-                        .settings(ClientState.Settings.defaultSettings())
-                        .build()
-                ));
+        clientRef = system.spawn(new ClientMailboxReceiver(Context.defaultConfig(), ClientState.builder()
+                .status(StatusType.Started)
+                .selfPeerId(PeerId.selfPeerId())
+                .torrents(ClientState.Torrents.blankTorrents())
+                .settings(ClientState.Settings.defaultSettings())
+                .build()
+        ));
     }
 
     public ClientResponse get(@NonNull final InfoHash infoHash) {

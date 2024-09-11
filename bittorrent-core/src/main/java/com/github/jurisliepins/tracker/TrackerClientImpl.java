@@ -19,7 +19,7 @@ public final class TrackerClientImpl implements TrackerClient, Closeable {
             var request = HttpRequest.newBuilder()
                     .uri(new URI(query))
                     .GET()
-                    .header("User-Agent", "%s/%s".formatted(Context.NAME, Context.VERSION))
+                    .header("User-Agent", "%s/%s".formatted(Context.CLIENT_NAME, Context.CLIENT_VERSION))
                     .header("Accept", "*/*")
                     .build();
             var bytes = httpClient

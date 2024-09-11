@@ -6,8 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Random;
 
-import static com.github.jurisliepins.context.Context.ID;
-import static com.github.jurisliepins.context.Context.VERSION;
+import static com.github.jurisliepins.context.Context.CLIENT_ID;
+import static com.github.jurisliepins.context.Context.CLIENT_VERSION;
 
 public final class PeerId {
     private static final int BYTES_LENGTH = 20;
@@ -66,6 +66,6 @@ public final class PeerId {
     }
 
     public static PeerId selfPeerId() {
-        return new PeerId("-%s%s-%012d".formatted(ID, VERSION, new Random().nextLong(0, 1_000_000_000_000L)));
+        return new PeerId("-%s%s-%012d".formatted(CLIENT_ID, CLIENT_VERSION, new Random().nextLong(0, 1_000_000_000_000L)));
     }
 }
