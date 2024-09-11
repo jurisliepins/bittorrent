@@ -11,8 +11,8 @@ public final class NotificationAwaiter<T> implements MailboxReceiver {
     private final CountDownLatch latch;
 
     public NotificationAwaiter(final int count) {
-        this.notifications = new ArrayList<>(count);
-        this.latch = new CountDownLatch(count);
+        notifications = new ArrayList<>(count);
+        latch = new CountDownLatch(count);
     }
 
     @SuppressWarnings("unchecked")
@@ -20,7 +20,7 @@ public final class NotificationAwaiter<T> implements MailboxReceiver {
     public NextState receive(final Mailbox mailbox) {
         return switch (mailbox) {
             case Mailbox.Success success -> {
-                this.notifications.add((T) success.message());
+                notifications.add((T) success.message());
                 latch.countDown();
                 yield NextState.Receive;
             }

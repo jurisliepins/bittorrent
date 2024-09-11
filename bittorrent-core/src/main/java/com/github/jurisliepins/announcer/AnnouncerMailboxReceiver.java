@@ -14,7 +14,12 @@ import com.github.jurisliepins.tracker.TrackerResponse;
 import com.github.jurisliepins.types.StatusType;
 import lombok.NonNull;
 
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
 public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateContextLoggingReceiver<AnnouncerState, AnnouncerNotification> {
+
+    private static final int DEFAULT_INTERVAL_SECONDS = 60;
 
     public AnnouncerMailboxReceiver(
             @NonNull final Context context,
@@ -48,7 +53,7 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
     }
 
     private NextState handleAnnounceCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Announce command) {
-        logger().info("[{}] Announcing '{}' on '{}'", state().getInfoHash(), command.eventType(), state().getAnnounce());
+        logger().info("[{}] Announcing '{}' on '{}'", state().getInfoHash(), command.eventTypeOpt(), state().getAnnounce());
         var response = context().trackerClient().announce(
                 new TrackerRequestBuilder(state().getAnnounce())
                         .parameter(TrackerRequest.INFO_HASH, state().getInfoHash().toByteArray())
@@ -57,7 +62,9 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
                         .parameter(TrackerRequest.DOWNLOADED, state().getDownloaded())
                         .parameter(TrackerRequest.UPLOADED, state().getUploaded())
                         .parameter(TrackerRequest.LEFT, state().getLeft())
-                        .parameter(TrackerRequest.EVENT, command.eventType().toString())
+                        .parameter(TrackerRequest.EVENT, command.eventTypeOpt()
+                                .map(TrackerEventType::toString)
+                                .orElse(null))
                         .parameter(TrackerRequest.COMPACT, 1)
                         .parameter(TrackerRequest.NO_PEER_ID, 1)
                         .parameter(TrackerRequest.NUM_WANT, state().getPeerCount())
@@ -67,19 +74,25 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
                 logger().info("[{}] Announced successfully on '{}' with '{}'", state().getInfoHash(), state().getAnnounce(), success);
                 switch (state().getStatus()) {
                     case Started -> {
-                        logger().info("[{}] Scheduling re-announce on '{}' in '{}'",
+                        logger().info("[{}] Scheduling re-announce on '{}' in {}s",
                                       state().getInfoHash(),
                                       state().getAnnounce(),
-                                      success.interval());
-                        // TODO: Schedule re-announce!
+                                      Math.max(success.interval(), DEFAULT_INTERVAL_SECONDS));
+                        mailbox.system()
+                                .schedulePostOnce(
+                                        Math.max(success.interval(), DEFAULT_INTERVAL_SECONDS),
+                                        TimeUnit.SECONDS,
+                                        mailbox.self(),
+                                        new AnnouncerCommand.Announce(Optional.empty()));
                         return receiveNext(new AnnouncerNotification.PeersReceived(state().getInfoHash(), success.peers()));
                     }
                     default -> {
-                        logger().info("[{}] Not scheduling re-announce since we're stopped", state().getInfoHash());
+                        logger().info("[{}] Not scheduling re-announce since we're no longer running", state().getInfoHash());
                         return receiveNext();
                     }
                 }
             }
+
             case TrackerResponse.Failure failure -> {
                 logger().error("[{}] Announced with failure response on '{}' with '{}'",
                                state().getInfoHash(),
@@ -93,9 +106,8 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
     private NextState handleStartCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Start command) {
         return switch (state().getStatus()) {
             case Stopped -> {
-                state().setStatus(StatusType.Started);
-                mailbox.self().post(new AnnouncerCommand.Announce(TrackerEventType.Started), mailbox.self());
-                yield receiveNext(new AnnouncerNotification.StatusChanged(state().getInfoHash(), StatusType.Started));
+                mailbox.self().post(new AnnouncerCommand.Announce(Optional.of(TrackerEventType.Started)), mailbox.self());
+                yield receiveNext(StatusType.Started, new AnnouncerNotification.StatusChanged(state().getInfoHash(), StatusType.Started));
             }
 
             default -> {
@@ -108,9 +120,8 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
     private NextState handleStopCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Stop command) {
         return switch (state().getStatus()) {
             case Started -> {
-                state().setStatus(StatusType.Stopped);
-                mailbox.self().post(new AnnouncerCommand.Announce(TrackerEventType.Stopped), mailbox.self());
-                yield receiveNext(new AnnouncerNotification.StatusChanged(state().getInfoHash(), StatusType.Stopped));
+                mailbox.self().post(new AnnouncerCommand.Announce(Optional.of(TrackerEventType.Stopped)), mailbox.self());
+                yield receiveNext(StatusType.Stopped, new AnnouncerNotification.StatusChanged(state().getInfoHash(), StatusType.Stopped));
             }
 
             default -> {

@@ -24,16 +24,25 @@ public final class TrackerRequestBuilder {
         return this;
     }
 
-    public TrackerRequestBuilder parameter(@NonNull final String name, final byte @NonNull [] value) {
-        return parameter(new BinaryNamedParameterValue(name, value));
+    public TrackerRequestBuilder parameter(@NonNull final String name, final byte[] value) {
+        if (value != null) {
+            return parameter(new BinaryNamedParameterValue(name, value));
+        }
+        return this;
     }
 
-    public TrackerRequestBuilder parameter(@NonNull final String name, @NonNull final Number value) {
-        return parameter(new NumberNamedParameterValue(name, value));
+    public TrackerRequestBuilder parameter(@NonNull final String name, final Number value) {
+        if (value != null) {
+            return parameter(new NumberNamedParameterValue(name, value));
+        }
+        return this;
     }
 
-    public TrackerRequestBuilder parameter(@NonNull final String name, @NonNull final String value) {
-        return parameter(new StringNamedParameterValue(name, value));
+    public TrackerRequestBuilder parameter(@NonNull final String name, final String value) {
+        if (value != null) {
+            return parameter(new StringNamedParameterValue(name, value));
+        }
+        return this;
     }
 
     public String toQuery() {
