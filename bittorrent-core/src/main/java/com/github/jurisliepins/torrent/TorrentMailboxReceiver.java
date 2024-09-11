@@ -92,7 +92,7 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateContex
 
             default -> {
                 logger().error("[{}] Failed", state().getInfoHash(), mailbox.cause());
-                yield receiveNext();
+                yield receiveNext(new TorrentNotification.Failure(state().getInfoHash(), mailbox.cause()));
             }
         };
     }

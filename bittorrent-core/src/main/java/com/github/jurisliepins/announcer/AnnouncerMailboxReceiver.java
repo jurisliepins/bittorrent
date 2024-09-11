@@ -142,7 +142,7 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
 
             default -> {
                 logger().error("[{}] Failed", state().getInfoHash(), mailbox.cause());
-                yield receiveNext();
+                yield receiveNext(new AnnouncerNotification.Failure(state().getInfoHash(), mailbox.cause()));
             }
         };
     }
