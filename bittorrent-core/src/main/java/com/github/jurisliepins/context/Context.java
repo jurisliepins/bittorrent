@@ -13,7 +13,7 @@ public record Context(@NonNull TrackerClient trackerClient) {
     public static final int DEFAULT_PORT = 6881;
     public static final int DEFAULT_INTERVAL_SECONDS = 60;
 
-    public static Context defaultConfig() {
+    public static Context defaultContext() {
         return new Context(new TrackerClientImpl());
     }
 }

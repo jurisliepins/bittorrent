@@ -22,7 +22,7 @@ public final class BitTorrentClient {
     private final ActorRef clientRef;
 
     public BitTorrentClient() {
-        clientRef = system.spawn(new ClientMailboxReceiver(Context.defaultConfig(), ClientState.builder()
+        clientRef = system.spawn(new ClientMailboxReceiver(Context.defaultContext(), ClientState.builder()
                 .status(StatusType.Started)
                 .selfPeerId(PeerId.selfPeerId())
                 .torrents(ClientState.Torrents.blankTorrents())
