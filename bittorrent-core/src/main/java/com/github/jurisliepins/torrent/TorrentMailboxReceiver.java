@@ -100,10 +100,13 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateContex
     private NextState handleAnnouncerNotification(final Mailbox.Success mailbox, final AnnouncerNotification notification) {
         logger().info("[{}] Handling announcer notification {}", state().getInfoHash(), notification);
         switch (notification) {
-            case AnnouncerNotification.PeersReceived peersReceived -> { }
-            case AnnouncerNotification.StatusChanged statusChanged -> { }
-            case AnnouncerNotification.Terminated terminated -> { }
-            case AnnouncerNotification.Failure failure -> { }
+            case AnnouncerNotification.PeersReceived peersReceived -> {
+                logger().info("[{}] Received peers {}", state().getInfoHash(), peersReceived.peers());
+                // TODO: !
+            }
+            case AnnouncerNotification.StatusChanged statusChanged -> { /* Ignored. */ }
+            case AnnouncerNotification.Terminated terminated -> { /* Ignored. */ }
+            case AnnouncerNotification.Failure failure -> { /* Ignored. */ }
         }
         return receiveNext();
     }

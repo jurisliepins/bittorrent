@@ -14,14 +14,13 @@ import com.github.jurisliepins.client.message.ClientResponse;
 import com.github.jurisliepins.context.Context;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.info.MetaInfo;
+import com.github.jurisliepins.piece.Piece;
 import com.github.jurisliepins.torrent.TorrentMailboxReceiver;
 import com.github.jurisliepins.torrent.TorrentState;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.types.StatusType;
 import lombok.NonNull;
-
-import java.util.List;
 
 public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingReceiver<ClientState> {
     public ClientMailboxReceiver(
@@ -89,8 +88,6 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
                                                 .infoHash(metaInfo.info().hash())
                                                 .selfPeerId(state().getSelfPeerId())
                                                 .bitfield(new Bitfield())
-                                                .pieces(List.of())
-                                                .files(List.of())
                                                 .name(metaInfo.info().name())
                                                 .announce(metaInfo.announce())
                                                 .pieceLength(metaInfo.info().pieceLength())

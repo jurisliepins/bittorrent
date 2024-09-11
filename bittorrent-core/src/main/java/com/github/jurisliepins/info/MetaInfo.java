@@ -53,7 +53,7 @@ public record MetaInfo(
             return new MetaInfo(
                     new Info.MultiFileInfo(
                             metaInfo.info().pieceLength(),
-                            metaInfo.info().pieces(),
+                            chunkPieces(metaInfo.info().pieces()),
                             metaInfo.info().isPrivate(),
                             metaInfo.info().name(),
                             Arrays.stream(metaInfo.info().files())
@@ -72,7 +72,7 @@ public record MetaInfo(
         return new MetaInfo(
                 new Info.UniFileInfo(
                         metaInfo.info().pieceLength(),
-                        metaInfo.info().pieces(),
+                        chunkPieces(metaInfo.info().pieces()),
                         metaInfo.info().isPrivate(),
                         metaInfo.info().name(),
                         metaInfo.info().length(),
@@ -84,6 +84,15 @@ public record MetaInfo(
                 metaInfo.comment(),
                 metaInfo.createdBy(),
                 metaInfo.encoding());
+    }
+
+    private static byte[][] chunkPieces(final byte @NonNull [] pieces) {
+        var length = 20;
+        var chunks = new byte[pieces.length / length][];
+        for (int i = 0; i < chunks.length; i++) {
+            chunks[i] = Arrays.copyOfRange(pieces, i * length, (i + 1) * length);
+        }
+        return chunks;
     }
 
     private static InfoHash hash(@NonNull final InfoBObject info) {

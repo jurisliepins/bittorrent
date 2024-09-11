@@ -3,6 +3,7 @@ package com.github.jurisliepins.client.message;
 import com.github.jurisliepins.bitfield.ImmutableBitfield;
 import com.github.jurisliepins.client.ClientState;
 import com.github.jurisliepins.info.InfoHash;
+import com.github.jurisliepins.peer.PeerId;
 import com.github.jurisliepins.types.StatusType;
 import lombok.Builder;
 import lombok.NonNull;
@@ -15,7 +16,7 @@ public sealed interface ClientResponse permits
     record Torrent(
             @NonNull StatusType status,
             @NonNull InfoHash infoHash,
-            @NonNull Object peerId,
+            @NonNull PeerId selfPeerId,
             @NonNull ImmutableBitfield bitfield,
             @NonNull String name,
             long length,
@@ -26,10 +27,10 @@ public sealed interface ClientResponse permits
             double uploadRate
     ) {
         public static Torrent of(final ClientState.Torrent torrent) {
-            return ClientResponse.Torrent.builder()
+            return Torrent.builder()
                     .status(torrent.getStatus())
                     .infoHash(torrent.getInfoHash())
-                    .peerId(torrent.getSelfPeerId())
+                    .selfPeerId(torrent.getSelfPeerId())
                     .bitfield(torrent.getBitfield())
                     .name(torrent.getName())
                     .length(torrent.getLength())

@@ -9,8 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
-import java.util.List;
-
 @Data
 @Builder
 public final class TorrentState implements State {
@@ -22,10 +20,6 @@ public final class TorrentState implements State {
     private PeerId selfPeerId;
     @NonNull
     private Bitfield bitfield;
-    @NonNull
-    private List<Object> pieces;
-    @NonNull
-    private List<Object> files;
     @NonNull
     private String name;
     @NonNull

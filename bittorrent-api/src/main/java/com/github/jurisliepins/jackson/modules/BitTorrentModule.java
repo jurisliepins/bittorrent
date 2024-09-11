@@ -8,6 +8,8 @@ import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.jackson.deserializers.InfoHashDeserializer;
 import com.github.jurisliepins.jackson.serializers.BitfieldSerializer;
 import com.github.jurisliepins.jackson.serializers.InfoHashSerializer;
+import com.github.jurisliepins.jackson.serializers.PeerIdSerializer;
+import com.github.jurisliepins.peer.PeerId;
 
 public class BitTorrentModule extends SimpleModule {
 
@@ -19,6 +21,7 @@ public class BitTorrentModule extends SimpleModule {
     public void setupModule(final SetupContext context) {
         var serializers = new SimpleSerializers();
         serializers.addSerializer(InfoHash.class, new InfoHashSerializer(InfoHash.class));
+        serializers.addSerializer(PeerId.class, new PeerIdSerializer(PeerId.class));
         serializers.addSerializer(Bitfield.class, new BitfieldSerializer(Bitfield.class));
         context.addSerializers(serializers);
 

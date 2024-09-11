@@ -10,15 +10,15 @@ public final class Bitfield implements ImmutableBitfield {
     private final BitSet bits;
 
     public Bitfield() {
-        this.bits = new BitSet(0);
+        bits = new BitSet(0);
     }
 
     public Bitfield(final int capacity) {
-        this.bits = new BitSet(capacity);
+        bits = new BitSet(capacity);
     }
 
     public Bitfield(final byte @NonNull [] array) {
-        this.bits = BitSet.valueOf(ByteBuffer.wrap(reverse(array)));
+        bits = BitSet.valueOf(ByteBuffer.wrap(reverse(array)));
     }
 
     @Override
