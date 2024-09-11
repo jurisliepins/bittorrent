@@ -3,6 +3,7 @@ package com.github.jurisliepins.torrent;
 import com.github.jurisliepins.bitfield.Bitfield;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.peer.PeerId;
+import com.github.jurisliepins.types.State;
 import com.github.jurisliepins.types.StatusType;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Data
 @Builder
-public final class TorrentState {
+public final class TorrentState implements State {
     @NonNull
     private StatusType status;
     @NonNull

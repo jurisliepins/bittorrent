@@ -6,9 +6,10 @@ import com.github.jurisliepins.client.message.ClientCommandResult;
 import com.github.jurisliepins.client.message.ClientRequest;
 import com.github.jurisliepins.client.message.ClientResponse;
 import com.github.jurisliepins.client.ClientState;
-import com.github.jurisliepins.config.Config;
+import com.github.jurisliepins.context.Context;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.peer.PeerId;
+import com.github.jurisliepins.types.StatusType;
 import lombok.NonNull;
 
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,8 @@ public final class BitTorrentClient {
 
     public BitTorrentClient() {
         clientRef = actorSystem.spawn(
-                new ClientMailboxReceiver(Config.defaultConfig(), ClientState.builder()
+                new ClientMailboxReceiver(Context.defaultConfig(), ClientState.builder()
+                        .status(StatusType.Started)
                         .selfPeerId(PeerId.selfPeerId())
                         .torrents(ClientState.Torrents.blankTorrents())
                         .settings(ClientState.Settings.defaultSettings())

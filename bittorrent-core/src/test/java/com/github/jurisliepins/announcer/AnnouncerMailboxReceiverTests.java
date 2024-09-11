@@ -5,7 +5,7 @@ import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.NotificationAwaiter;
 import com.github.jurisliepins.announcer.message.AnnouncerCommand;
 import com.github.jurisliepins.announcer.message.AnnouncerNotification;
-import com.github.jurisliepins.config.Config;
+import com.github.jurisliepins.context.Context;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.peer.PeerId;
 import com.github.jurisliepins.tracker.TrackerClient;
@@ -26,12 +26,12 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
     @Test
     @DisplayName("Should announcer start succeed")
     public void shouldAnnouncerStartSucceed() {
-        var config = successConfig();
+        var context = successContext();
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(2);
         var notifiedRef = system.spawn(awaiter);
         var state = blankState();
 
-        var ref = system.spawn(new AnnouncerMailboxReceiver(config, notifiedRef, state));
+        var ref = system.spawn(new AnnouncerMailboxReceiver(context, state, notifiedRef));
         ref.post(AnnouncerCommand.Start.INSTANCE);
 
         var notifications = awaiter.awaitResult(TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -45,12 +45,12 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
     @Test
     @DisplayName("Should announcer start fail")
     public void shouldAnnouncerStartFail() {
-        var config = failureConfig();
+        var context = failureContext();
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(2);
         var notifiedRef = system.spawn(awaiter);
         var state = blankState();
 
-        var ref = system.spawn(new AnnouncerMailboxReceiver(config, notifiedRef, state));
+        var ref = system.spawn(new AnnouncerMailboxReceiver(context, state, notifiedRef));
         ref.post(AnnouncerCommand.Start.INSTANCE);
 
         var notifications = awaiter.awaitResult(TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -64,12 +64,12 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
     @Test
     @DisplayName("Should announcer not start again when already started")
     public void shouldAnnouncerNotStartAgainWhenAlreadyStarted() {
-        var config = successConfig();
+        var context = successContext();
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(2);
         var notifiedRef = system.spawn(awaiter);
         var state = blankState();
 
-        var ref = system.spawn(new AnnouncerMailboxReceiver(config, notifiedRef, state));
+        var ref = system.spawn(new AnnouncerMailboxReceiver(context, state, notifiedRef));
         ref.post(AnnouncerCommand.Start.INSTANCE);
         ref.post(AnnouncerCommand.Start.INSTANCE);
 
@@ -84,12 +84,12 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
     @Test
     @DisplayName("Should announcer stop succeed")
     public void shouldAnnouncerStopSucceed() {
-        var config = successConfig();
+        var context = successContext();
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(2);
         var notifiedRef = system.spawn(awaiter);
         var state = blankState();
 
-        var ref = system.spawn(new AnnouncerMailboxReceiver(config, notifiedRef, state));
+        var ref = system.spawn(new AnnouncerMailboxReceiver(context, state, notifiedRef));
         ref.post(AnnouncerCommand.Start.INSTANCE);
         ref.post(AnnouncerCommand.Stop.INSTANCE);
 
@@ -104,12 +104,12 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
     @Test
     @DisplayName("Should announcer stop fail")
     public void shouldAnnouncerStopFail() {
-        var config = failureConfig();
+        var context = failureContext();
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(3);
         var notifiedRef = system.spawn(awaiter);
         var state = blankState();
 
-        var ref = system.spawn(new AnnouncerMailboxReceiver(config, notifiedRef, state));
+        var ref = system.spawn(new AnnouncerMailboxReceiver(context, state, notifiedRef));
         ref.post(AnnouncerCommand.Start.INSTANCE);
         ref.post(AnnouncerCommand.Stop.INSTANCE);
 
@@ -126,12 +126,12 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
     @Test
     @DisplayName("Should announcer not stop again when already stopped")
     public void shouldAnnouncerNotStopAgainWhenAlreadyStopped() {
-        var config = successConfig();
+        var context = successContext();
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(2);
         var notifiedRef = system.spawn(awaiter);
         var state = blankState();
 
-        var ref = system.spawn(new AnnouncerMailboxReceiver(config, notifiedRef, state));
+        var ref = system.spawn(new AnnouncerMailboxReceiver(context, state, notifiedRef));
         ref.post(AnnouncerCommand.Start.INSTANCE);
         ref.post(AnnouncerCommand.Stop.INSTANCE);
         ref.post(AnnouncerCommand.Stop.INSTANCE);
@@ -147,12 +147,12 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
     @Test
     @DisplayName("Should announcer terminate")
     public void shouldAnnouncerTerminate() {
-        var config = blankConfig();
+        var context = blankContext();
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(1);
         var notifiedRef = system.spawn(awaiter);
         var state = blankState();
 
-        var ref = system.spawn(new AnnouncerMailboxReceiver(config, notifiedRef, state));
+        var ref = system.spawn(new AnnouncerMailboxReceiver(context, state, notifiedRef));
         ref.post(AnnouncerCommand.Terminate.INSTANCE);
 
         var notifications = awaiter.awaitResult(TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -160,8 +160,8 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
         assertEquals(InfoHash.BLANK, ((AnnouncerNotification.Terminated) notifications.get(0)).infoHash());
     }
 
-    private Config successConfig() {
-        return new Config(new TrackerClient() {
+    private Context successContext() {
+        return new Context(new TrackerClient() {
             @Override
             public TrackerResponse announce(@NonNull final String query) {
                 return new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "");
@@ -169,8 +169,8 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
         });
     }
 
-    private Config failureConfig() {
-        return new Config(new TrackerClient() {
+    private Context failureContext() {
+        return new Context(new TrackerClient() {
             @Override
             public TrackerResponse announce(@NonNull final String query) {
                 throw new CoreException("Failed to call tracker!");
@@ -178,8 +178,8 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
         });
     }
 
-    private Config blankConfig() {
-        return new Config(new TrackerClient() {
+    private Context blankContext() {
+        return new Context(new TrackerClient() {
             @Override
             public TrackerResponse announce(@NonNull final String query) {
                 return null;

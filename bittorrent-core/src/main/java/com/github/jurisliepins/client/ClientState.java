@@ -2,9 +2,10 @@ package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.bitfield.Bitfield;
-import com.github.jurisliepins.config.Config;
+import com.github.jurisliepins.context.Context;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.peer.PeerId;
+import com.github.jurisliepins.types.State;
 import com.github.jurisliepins.types.StatusType;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +16,10 @@ import java.util.Map;
 
 @Data
 @Builder
-public final class ClientState {
+public final class ClientState implements State {
 
+    @NonNull
+    private StatusType status;
     @NonNull
     private PeerId selfPeerId;
     @NonNull
@@ -76,8 +79,8 @@ public final class ClientState {
 
         public static Settings defaultSettings() {
             return Settings.builder()
-                    .peerCount(Config.DEFAULT_PEER_COUNT)
-                    .port(Config.DEFAULT_PORT)
+                    .peerCount(Context.DEFAULT_PEER_COUNT)
+                    .port(Context.DEFAULT_PORT)
                     .build();
         }
     }

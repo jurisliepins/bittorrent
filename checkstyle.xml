@@ -38,7 +38,7 @@
     <!--
     If you set the basedir property below, then all reported file
     names will be relative to the specified directory. See
-    https://checkstyle.org/config.html#Checker
+    https://checkstyle.org/context.html#Checker
 
     <property name="basedir" value="${basedir}"/>
     -->
@@ -54,7 +54,7 @@
 
     <!-- https://checkstyle.org/filters/suppressionfilter.html -->
     <module name="SuppressionFilter">
-        <property name="file" value="${org.checkstyle.sun.suppressionfilter.config}"
+        <property name="file" value="${org.checkstyle.sun.suppressionfilter.context}"
                   default="checkstyle-suppressions.xml" />
         <property name="optional" value="true"/>
     </module>
@@ -187,7 +187,7 @@
 
         <!-- https://checkstyle.org/filters/suppressionxpathfilter.html -->
         <module name="SuppressionXpathFilter">
-            <property name="file" value="${org.checkstyle.sun.suppressionxpathfilter.config}"
+            <property name="file" value="${org.checkstyle.sun.suppressionxpathfilter.context}"
                       default="checkstyle-xpath-suppressions.xml" />
             <property name="optional" value="true"/>
         </module>

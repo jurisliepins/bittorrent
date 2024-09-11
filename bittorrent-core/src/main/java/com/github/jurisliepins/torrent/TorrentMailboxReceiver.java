@@ -1,30 +1,28 @@
 package com.github.jurisliepins.torrent;
 
 import com.github.jurisliepins.ActorRef;
-import com.github.jurisliepins.CoreMailboxNotifiedStateLoggingReceiver;
+import com.github.jurisliepins.CoreMailboxNotifiedStateContextLoggingReceiver;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.announcer.message.AnnouncerCommand;
 import com.github.jurisliepins.announcer.message.AnnouncerNotification;
-import com.github.jurisliepins.config.Config;
+import com.github.jurisliepins.context.Context;
 import com.github.jurisliepins.torrent.message.TorrentCommand;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.types.StatusType;
 
 import lombok.NonNull;
 
-public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateLoggingReceiver<TorrentNotification, TorrentState> {
+public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateContextLoggingReceiver<TorrentState, TorrentNotification> {
 
-    private final Config config;
     private final ActorRef announcerRef;
 
     public TorrentMailboxReceiver(
-            @NonNull final Config config,
-            @NonNull final ActorRef announcerRef,
+            @NonNull final Context context,
+            @NonNull final TorrentState state,
             @NonNull final ActorRef notifiedRef,
-            @NonNull final TorrentState state) {
-        super(notifiedRef, state);
-        this.config = config;
+            @NonNull final ActorRef announcerRef) {
+        super(context, state, notifiedRef);
         this.announcerRef = announcerRef;
     }
 
@@ -56,8 +54,7 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateLoggin
         return switch (state().getStatus()) {
             case Stopped -> {
                 announcerRef.post(AnnouncerCommand.Start.INSTANCE);
-                state().setStatus(StatusType.Started);
-                yield receiveNext(new TorrentNotification.StatusChanged(state().getInfoHash(), StatusType.Started));
+                yield receiveNext(StatusType.Started, new TorrentNotification.StatusChanged(state().getInfoHash(), StatusType.Started));
             }
 
             default -> {
@@ -71,8 +68,7 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateLoggin
         return switch (state().getStatus()) {
             case Started -> {
                 announcerRef.post(AnnouncerCommand.Stop.INSTANCE);
-                state().setStatus(StatusType.Stopped);
-                yield receiveNext(new TorrentNotification.StatusChanged(state().getInfoHash(), StatusType.Stopped));
+                yield receiveNext(StatusType.Stopped, new TorrentNotification.StatusChanged(state().getInfoHash(), StatusType.Stopped));
             }
 
             default -> {

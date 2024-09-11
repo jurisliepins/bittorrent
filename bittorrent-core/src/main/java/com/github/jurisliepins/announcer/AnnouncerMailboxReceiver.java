@@ -1,12 +1,12 @@
 package com.github.jurisliepins.announcer;
 
 import com.github.jurisliepins.ActorRef;
-import com.github.jurisliepins.CoreMailboxNotifiedStateLoggingReceiver;
+import com.github.jurisliepins.CoreMailboxNotifiedStateContextLoggingReceiver;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.announcer.message.AnnouncerCommand;
 import com.github.jurisliepins.announcer.message.AnnouncerNotification;
-import com.github.jurisliepins.config.Config;
+import com.github.jurisliepins.context.Context;
 import com.github.jurisliepins.tracker.TrackerEventType;
 import com.github.jurisliepins.tracker.TrackerRequest;
 import com.github.jurisliepins.tracker.TrackerRequestBuilder;
@@ -14,16 +14,13 @@ import com.github.jurisliepins.tracker.TrackerResponse;
 import com.github.jurisliepins.types.StatusType;
 import lombok.NonNull;
 
-public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateLoggingReceiver<AnnouncerNotification, AnnouncerState> {
-
-    private final Config config;
+public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateContextLoggingReceiver<AnnouncerState, AnnouncerNotification> {
 
     public AnnouncerMailboxReceiver(
-            @NonNull final Config config,
-            @NonNull final ActorRef notifiedRef,
-            @NonNull final AnnouncerState state) {
-        super(notifiedRef, state);
-        this.config = config;
+            @NonNull final Context context,
+            @NonNull final AnnouncerState state,
+            @NonNull final ActorRef notifiedRef) {
+        super(context, state, notifiedRef);
     }
 
     @Override
@@ -52,7 +49,7 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateLogg
 
     private NextState handleAnnounceCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Announce command) {
         logger().info("[{}] Announcing '{}' on '{}'", state().getInfoHash(), command.eventType(), state().getAnnounce());
-        var response = config.trackerClient().announce(
+        var response = context().trackerClient().announce(
                 new TrackerRequestBuilder(state().getAnnounce())
                         .parameter(TrackerRequest.INFO_HASH, state().getInfoHash().toByteArray())
                         .parameter(TrackerRequest.PEER_ID, state().getSelfPeerId().toString())

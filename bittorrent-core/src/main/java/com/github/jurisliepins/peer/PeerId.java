@@ -6,8 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Random;
 
-import static com.github.jurisliepins.config.Config.ID;
-import static com.github.jurisliepins.config.Config.VERSION;
+import static com.github.jurisliepins.context.Context.ID;
+import static com.github.jurisliepins.context.Context.VERSION;
 
 public final class PeerId {
     private static final int BYTES_LENGTH = 20;
