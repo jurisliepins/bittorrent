@@ -76,11 +76,13 @@ public final class ClientState implements State {
     public static final class Settings {
         private int peerCount;
         private int port;
+        private int intervalSeconds;
 
         public static Settings defaultSettings() {
             return Settings.builder()
                     .peerCount(Context.DEFAULT_PEER_COUNT)
                     .port(Context.DEFAULT_PORT)
+                    .intervalSeconds(Context.DEFAULT_INTERVAL_SECONDS)
                     .build();
         }
     }

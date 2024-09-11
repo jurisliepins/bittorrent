@@ -19,8 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateContextLoggingReceiver<AnnouncerState, AnnouncerNotification> {
 
-    private static final int DEFAULT_INTERVAL_SECONDS = 60;
-
     public AnnouncerMailboxReceiver(
             @NonNull final Context context,
             @NonNull final AnnouncerState state,
@@ -77,10 +75,10 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
                         logger().info("[{}] Scheduling re-announce on '{}' in {}s",
                                       state().getInfoHash(),
                                       state().getAnnounce(),
-                                      Math.max(success.interval(), DEFAULT_INTERVAL_SECONDS));
+                                      Math.max(success.interval(), state().getIntervalSeconds()));
                         mailbox.system()
                                 .schedulePostOnce(
-                                        Math.max(success.interval(), DEFAULT_INTERVAL_SECONDS),
+                                        Math.max(success.interval(), state().getIntervalSeconds()),
                                         TimeUnit.SECONDS,
                                         mailbox.self(),
                                         new AnnouncerCommand.Announce(Optional.empty()));

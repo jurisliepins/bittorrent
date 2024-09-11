@@ -75,6 +75,7 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
                                                 .announce(metaInfo.announce())
                                                 .peerCount(state().getSettings().getPeerCount())
                                                 .port(state().getSettings().getPort())
+                                                .intervalSeconds(state().getSettings().getIntervalSeconds())
                                                 .downloaded(0L)
                                                 .uploaded(0L)
                                                 .left(metaInfo.info().length())

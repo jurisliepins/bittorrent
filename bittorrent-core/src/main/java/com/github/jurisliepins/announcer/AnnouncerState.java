@@ -19,9 +19,9 @@ public final class AnnouncerState implements State {
     private PeerId selfPeerId;
     @NonNull
     private String announce;
-    @NonNull
-    private Integer peerCount;
+    private int peerCount;
     private int port;
+    private int intervalSeconds;
     private long downloaded;
     private long uploaded;
     private long left;

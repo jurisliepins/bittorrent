@@ -160,6 +160,27 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
         assertEquals(InfoHash.BLANK, ((AnnouncerNotification.Terminated) notifications.get(0)).infoHash());
     }
 
+    @Test
+    @DisplayName("Should announcer schedule re-announce")
+    public void shouldAnnouncerScheduleReAnnounce() {
+        var context = successContext();
+        var awaiter = new NotificationAwaiter<AnnouncerNotification>(3);
+        var notifiedRef = system.spawn(awaiter);
+        var state = blankState();
+
+        var ref = system.spawn(new AnnouncerMailboxReceiver(context, state, notifiedRef));
+        ref.post(AnnouncerCommand.Start.INSTANCE);
+
+        var notifications = awaiter.awaitResult(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertEquals(3, notifications.size());
+        assertEquals(InfoHash.BLANK, ((AnnouncerNotification.StatusChanged) notifications.get(0)).infoHash());
+        assertEquals(StatusType.Started, ((AnnouncerNotification.StatusChanged) notifications.get(0)).status());
+        assertEquals(InfoHash.BLANK, ((AnnouncerNotification.PeersReceived) notifications.get(1)).infoHash());
+        assertEquals(List.of(), ((AnnouncerNotification.PeersReceived) notifications.get(1)).peers());
+        assertEquals(InfoHash.BLANK, ((AnnouncerNotification.PeersReceived) notifications.get(2)).infoHash());
+        assertEquals(List.of(), ((AnnouncerNotification.PeersReceived) notifications.get(2)).peers());
+    }
+
     private Context successContext() {
         return new Context(new TrackerClient() {
             @Override
@@ -194,6 +215,7 @@ public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiver
                 .selfPeerId(PeerId.BLANK)
                 .announce("")
                 .peerCount(0)
+                .intervalSeconds(1)
                 .port(0)
                 .downloaded(0L)
                 .uploaded(0L)

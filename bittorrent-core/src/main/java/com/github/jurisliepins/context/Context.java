@@ -11,6 +11,7 @@ public record Context(@NonNull TrackerClient trackerClient) {
 
     public static final int DEFAULT_PEER_COUNT = 30;
     public static final int DEFAULT_PORT = 6881;
+    public static final int DEFAULT_INTERVAL_SECONDS = 60;
 
     public static Context defaultConfig() {
         return new Context(new TrackerClientImpl());
