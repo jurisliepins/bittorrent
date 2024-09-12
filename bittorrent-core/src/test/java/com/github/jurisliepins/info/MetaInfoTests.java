@@ -19,26 +19,24 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class MetaInfoTests {
 
     private static final String UNI_FILE_TORRENT = "uni_file.torrent";
-
     private static final String MULTI_FILE_TORRENT = "multi_file.torrent";
 
     private static final InfoHash UNI_FILE_INFO_HASH = new InfoHash("aa171ca77f14f55d6ec23d7e9541b7791e6c383c");
-
     private static final InfoHash MULTI_FILE_INFO_HASH = new InfoHash("6e540ebbc92131138746231ff3e44f165fd3b373");
 
     @Test
     @DisplayName("Should decode uni file meta-info")
     public void shouldDecodeUniFileMetaInfo() throws IOException {
         switch (MetaInfo.fromBytes(readFileAsBytes(UNI_FILE_TORRENT))) {
-            case MetaInfo metaInfo -> {
-                assertNotNull(metaInfo.info());
-                assertEquals("udp://tracker.openbittorrent.com:6969", metaInfo.announce());
-                assertNull(metaInfo.announceList());
-                assertEquals(OffsetDateTime.parse("2022-02-20T14:46:49Z"), metaInfo.creationDate());
-                assertEquals("Single file torrent", metaInfo.comment());
-                assertEquals("Juris Liepins", metaInfo.createdBy());
-                assertEquals("UTF-8", metaInfo.encoding());
-                switch (metaInfo.info()) {
+            case MetaInfo mi -> {
+                assertNotNull(mi.info());
+                assertEquals("udp://tracker.openbittorrent.com:6969", mi.announce());
+                assertNull(mi.announceList());
+                assertEquals(OffsetDateTime.parse("2022-02-20T14:46:49Z"), mi.creationDate());
+                assertEquals("Single file torrent", mi.comment());
+                assertEquals("Juris Liepins", mi.createdBy());
+                assertEquals("UTF-8", mi.encoding());
+                switch (mi.info()) {
                     case Info.UniFileInfo info -> {
                         assertEquals(32768, info.pieceLength());
                         assertNotNull(info.pieces());
@@ -58,15 +56,15 @@ public class MetaInfoTests {
     @DisplayName("Should decode multi file meta-info")
     public void shouldDecodeMultiFileMetaInfo() throws IOException {
         switch (MetaInfo.fromBytes(readFileAsBytes(MULTI_FILE_TORRENT))) {
-            case MetaInfo metaInfo -> {
-                assertNotNull(metaInfo.info());
-                assertEquals("udp://tracker.openbittorrent.com:6969", metaInfo.announce());
-                assertNull(metaInfo.announceList());
-                assertEquals(OffsetDateTime.parse("2022-02-20T16:04:09Z"), metaInfo.creationDate());
-                assertEquals("Multi file torrent", metaInfo.comment());
-                assertEquals("Juris Liepins", metaInfo.createdBy());
-                assertEquals("UTF-8", metaInfo.encoding());
-                switch (metaInfo.info()) {
+            case MetaInfo mi -> {
+                assertNotNull(mi.info());
+                assertEquals("udp://tracker.openbittorrent.com:6969", mi.announce());
+                assertNull(mi.announceList());
+                assertEquals(OffsetDateTime.parse("2022-02-20T16:04:09Z"), mi.creationDate());
+                assertEquals("Multi file torrent", mi.comment());
+                assertEquals("Juris Liepins", mi.createdBy());
+                assertEquals("UTF-8", mi.encoding());
+                switch (mi.info()) {
                     case Info.MultiFileInfo info -> {
                         assertEquals(32768, info.pieceLength());
                         assertNotNull(info.pieces());
@@ -112,14 +110,14 @@ public class MetaInfoTests {
                 "Пользователь",
                 null);
         switch (MetaInfo.fromBytes(utf8MetaInfo.toBytes())) {
-            case MetaInfo metaInfo -> {
-                assertEquals("", metaInfo.announce());
-                assertNull(metaInfo.announceList());
-                assertEquals(OffsetDateTime.parse("2000-01-01T00:00:00Z"), metaInfo.creationDate());
-                assertEquals("Комментарий", metaInfo.comment());
-                assertEquals("Пользователь", metaInfo.createdBy());
-                assertNull(metaInfo.encoding());
-                switch (metaInfo.info()) {
+            case MetaInfo mi -> {
+                assertEquals("", mi.announce());
+                assertNull(mi.announceList());
+                assertEquals(OffsetDateTime.parse("2000-01-01T00:00:00Z"), mi.creationDate());
+                assertEquals("Комментарий", mi.comment());
+                assertEquals("Пользователь", mi.createdBy());
+                assertNull(mi.encoding());
+                switch (mi.info()) {
                     case Info.UniFileInfo info -> {
                         assertEquals(0, info.pieceLength());
                         assertNotNull(info.pieces());

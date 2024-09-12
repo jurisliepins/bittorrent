@@ -4,9 +4,7 @@ import com.github.jurisliepins.info.Info;
 import lombok.NonNull;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 public record Piece(
@@ -58,7 +56,22 @@ public record Piece(
     }
 
     private static Piece[] createPiecesFromMultiFileInfo(@NonNull final Info.MultiFileInfo info) {
-        var files = new Piece.File[] {};
+        // File offsets are based on preceding file lengths. The offset is calculated as if
+        // all files have been concatenate into 1.
+        var files = new Piece.File[info.files().length];
+        for (var i = 0; i < info.files().length; i++) {
+            if (i == 0) {
+                files[i] = new Piece.File(
+                        Paths.get(info.name(), info.files()[i].path()).toString(),
+                        0L,
+                        info.files()[i].length());
+            } else {
+                files[i] = new Piece.File(
+                        Paths.get(info.name(), info.files()[i].path()).toString(),
+                        files[i - 1].offset() + files[i - 1].length(),
+                        info.files()[i].length());
+            }
+        }
         return IntStream.range(0, info.pieces().length)
                 .mapToObj(index -> new Piece(
                         index,
