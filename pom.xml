@@ -21,6 +21,7 @@
         <junit.version>5.7.2</junit.version>
         <java.source.version>21</java.source.version>
         <java.target.version>21</java.target.version>
+        <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.checkstyle.version>3.5.0</maven.checkstyle.version>
         <slf4j.version>2.0.13</slf4j.version>
         <lombok.version>1.18.34</lombok.version>
@@ -52,9 +53,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <source>${java.source.version}</source>
                     <target>${java.target.version}</target>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 <!--            <plugin>-->
