@@ -36,8 +36,8 @@ public final class BObjectMapperTests {
             put(BByteString.of("empty-string"), BByteString.of(""));
             put(BByteString.of("bytes"), BByteString.of(new byte[]{1, 2}));
         }});
-        var parsed = BObjectReader.read(value, BStringValues.class);
-        var mapped = BObjectWriter.write(parsed);
+        var parsed = BObjectMapper.read(value, BStringValues.class);
+        var mapped = BObjectMapper.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -83,8 +83,8 @@ public final class BObjectMapperTests {
             put(BByteString.of("max-double"), BInteger.of(Double.MAX_VALUE));
             put(BByteString.of("min-double"), BInteger.of(Double.MIN_VALUE));
         }});
-        var parsed = BObjectReader.read(value, BIntegerValues.class);
-        var mapped = BObjectWriter.write(parsed);
+        var parsed = BObjectMapper.read(value, BIntegerValues.class);
+        var mapped = BObjectMapper.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -122,8 +122,8 @@ public final class BObjectMapperTests {
                         put(BByteString.of("value"), BInteger.of(2));
                     }})));
         }});
-        var parsed = BObjectReader.read(value, BListValues.class);
-        var mapped = BObjectWriter.write(parsed);
+        var parsed = BObjectMapper.read(value, BListValues.class);
+        var mapped = BObjectMapper.write(parsed);
         assertEquals(value, mapped);
     }
 
@@ -176,8 +176,8 @@ public final class BObjectMapperTests {
             put(BByteString.of("created by"), BByteString.of("Пользователь"));
             put(BByteString.of("encoding"), BByteString.of("utf8"));
         }});
-        var parsed = BObjectReader.read(value, MetaInfo.class);
-        var mapped = BObjectWriter.write(parsed);
+        var parsed = BObjectMapper.read(value, MetaInfo.class);
+        var mapped = BObjectMapper.write(parsed);
         assertEquals(value, mapped);
     }
 }
