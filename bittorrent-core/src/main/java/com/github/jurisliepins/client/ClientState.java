@@ -2,7 +2,6 @@ package com.github.jurisliepins.client;
 
 import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.bitfield.Bitfield;
-import com.github.jurisliepins.context.Context;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.peer.PeerId;
 import com.github.jurisliepins.types.State;
@@ -65,10 +64,6 @@ public final class ClientState implements State {
         public Torrent remove(@NonNull final InfoHash infoHash) {
             return torrents.remove(infoHash);
         }
-
-        public static Torrents blankTorrents() {
-            return new Torrents();
-        }
     }
 
     @Data
@@ -77,13 +72,5 @@ public final class ClientState implements State {
         private int peerCount;
         private int port;
         private int intervalSeconds;
-
-        public static Settings defaultSettings() {
-            return Settings.builder()
-                    .peerCount(Context.DEFAULT_PEER_COUNT)
-                    .port(Context.DEFAULT_PORT)
-                    .intervalSeconds(Context.DEFAULT_INTERVAL_SECONDS)
-                    .build();
-        }
     }
 }

@@ -2,8 +2,10 @@ package com.github.jurisliepins.context;
 
 import com.github.jurisliepins.tracker.TrackerClient;
 import com.github.jurisliepins.tracker.TrackerClientImpl;
+import lombok.Builder;
 import lombok.NonNull;
 
+@Builder
 public record Context(@NonNull TrackerClient trackerClient) {
     public static final String CLIENT_ID = "ZZ";
     public static final String CLIENT_NAME = "BitTorrent";

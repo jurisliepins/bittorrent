@@ -1,6 +1,6 @@
 package com.github.jurisliepins.announcer;
 
-import com.github.jurisliepins.AbstractMailboxReceiverTests;
+import com.github.jurisliepins.MailboxReceiverTests;
 import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.NotificationAwaiter;
 import com.github.jurisliepins.announcer.message.AnnouncerCommand;
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Announcer mailbox receiver tests")
-public final class AnnouncerMailboxReceiverTests extends AbstractMailboxReceiverTests {
+public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
 
     @Test
     @DisplayName("Should announcer start succeed")

@@ -24,9 +24,13 @@ public final class BitTorrentClient {
     public BitTorrentClient() {
         clientRef = system.spawn(new ClientMailboxReceiver(Context.defaultContext(), ClientState.builder()
                 .status(StatusType.Started)
-                .selfPeerId(PeerId.selfPeerId())
-                .torrents(ClientState.Torrents.blankTorrents())
-                .settings(ClientState.Settings.defaultSettings())
+                .selfPeerId(PeerId.self())
+                .torrents(new ClientState.Torrents())
+                .settings(ClientState.Settings.builder()
+                                  .peerCount(Context.DEFAULT_PEER_COUNT)
+                                  .port(Context.DEFAULT_PORT)
+                                  .intervalSeconds(Context.DEFAULT_INTERVAL_SECONDS)
+                                  .build())
                 .build()
         ));
     }

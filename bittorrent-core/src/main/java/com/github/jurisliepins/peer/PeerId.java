@@ -65,7 +65,7 @@ public final class PeerId {
         };
     }
 
-    public static PeerId selfPeerId() {
+    public static PeerId self() {
         return new PeerId("-%s%s-%012d".formatted(CLIENT_ID, CLIENT_VERSION, new Random().nextLong(0, 1_000_000_000_000L)));
     }
 }
