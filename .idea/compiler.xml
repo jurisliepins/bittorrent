@@ -16,7 +16,11 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="bittorrent" options="-parameters" />
+      <module name="bittorrent-actor" options="-parameters" />
       <module name="bittorrent-api" options="-parameters" />
+      <module name="bittorrent-bencode" options="-parameters" />
+      <module name="bittorrent-core" options="-parameters" />
     </option>
   </component>
 </project>

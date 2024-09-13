@@ -33,31 +33,31 @@ public final class ActorTests {
     @Test
     @DisplayName("Should spawn actor")
     public void shouldSpawnActor() {
-        final ActorRef ref = system.spawn(mailbox -> NextState.Terminate);
+        var ref = system.spawn(mailbox -> NextState.Terminate);
         assertNotNull(ref, "Spawned actor should not be null");
     }
 
     @Test
     @DisplayName("Should post message")
     public void shouldPostMessage() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
+        var latch = new CountDownLatch(1);
 
-        final ActorRef ref = system.spawn(mailbox -> {
+        var ref = system.spawn(mailbox -> {
             latch.countDown();
             return NextState.Receive;
         });
         ref.post("Hello, World!");
 
-        final boolean result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        var result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertTrue(result, "Should not have timed out before receiving a message");
     }
 
     @Test
     @DisplayName("Should post message with reply")
     public void shouldPostMessageWithReply() {
-        final String response = "Response!";
+        var response = "Response!";
 
-        final ActorRef ref = system.spawn(mailbox -> {
+        var ref = system.spawn(mailbox -> {
             switch (mailbox) {
                 case Mailbox.Success success -> {
                     success.sender().post(response);
@@ -69,16 +69,16 @@ public final class ActorTests {
             }
         });
 
-        final String result = ref.postWithReply("Hello, World!");
+        var result = ref.postWithReply("Hello, World!");
         assertEquals(response, result, "Should have received %s as response".formatted(response));
     }
 
     @Test
     @DisplayName("Should post message with reply with timeout")
     public void shouldPostMessageWithReplyWithTimeout() {
-        final String response = "Response!";
+        var response = "Response!";
 
-        final ActorRef ref = system.spawn(mailbox -> {
+        var ref = system.spawn(mailbox -> {
             switch (mailbox) {
                 case Mailbox.Success success -> {
                     success.sender().post(response);
@@ -90,19 +90,19 @@ public final class ActorTests {
             }
         });
 
-        final String result = ref.postWithReply("Hello, World!", TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        var result = ref.postWithReply("Hello, World!", TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertEquals(response, result, "Should have received %s as response".formatted(response));
     }
 
     @Test
     @DisplayName("Should ping-pong messages")
     public void shouldPingPongMessages() throws InterruptedException {
-        final int messageCount = 10;
+        var messageCount = 10;
 
-        final CountDownLatch latch1 = new CountDownLatch(messageCount);
-        final CountDownLatch latch2 = new CountDownLatch(messageCount);
+        var latch1 = new CountDownLatch(messageCount);
+        var latch2 = new CountDownLatch(messageCount);
 
-        final ActorRef ref1 = system.spawn(mailbox -> {
+        var ref1 = system.spawn(mailbox -> {
             switch (mailbox) {
                 case Mailbox.Success success -> {
                     success.sender().post(success.message(), success.self());
@@ -114,7 +114,7 @@ public final class ActorTests {
                 }
             }
         });
-        final ActorRef ref2 = system.spawn(mailbox -> {
+        var ref2 = system.spawn(mailbox -> {
             switch (mailbox) {
                 case Mailbox.Success success -> {
                     success.sender().post(success.message(), success.self());
@@ -128,8 +128,8 @@ public final class ActorTests {
         });
         ref1.post("Hello, World!", ref2);
 
-        final boolean result1 = latch1.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        final boolean result2 = latch2.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        var result1 = latch1.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        var result2 = latch2.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertTrue(result1, "Actor 1 should have received %d messages".formatted(messageCount));
         assertTrue(result2, "Actor 2 should have received %d messages".formatted(messageCount));
     }
@@ -137,11 +137,11 @@ public final class ActorTests {
     @Test
     @DisplayName("Should transition states")
     public void shouldTransitionStates() throws InterruptedException {
-        final int messageCount = 10;
+        var messageCount = 10;
 
-        final CountDownLatch latch = new CountDownLatch(messageCount);
+        var latch = new CountDownLatch(messageCount);
 
-        final ActorRef ref = system.spawn(mailbox -> switch (mailbox) {
+        var ref = system.spawn(mailbox -> switch (mailbox) {
             case Mailbox.Success success -> switch (success.message()) {
                 case String command -> {
                     if ("receive".equals(command)) {
@@ -174,10 +174,40 @@ public final class ActorTests {
         ref.post("receive");
         ref.post("receive");
 
-        final boolean result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        var result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         assertFalse(result, "Actor should have stopped processing messages");
 
-        final int count = (int) latch.getCount();
+        var count = (int) latch.getCount();
         assertEquals(messageCount / 2, count, "Actor should have processed only %d messages".formatted(messageCount / 2));
+    }
+
+    @Test
+    @DisplayName("Should schedule post message once")
+    public void shouldSchedulePostMessageOnce() throws InterruptedException {
+        var latch = new CountDownLatch(1);
+
+        var ref = system.spawn(mailbox -> {
+            latch.countDown();
+            return NextState.Receive;
+        });
+        system.schedulePostOnce(0, TimeUnit.MILLISECONDS, ref, "Hello, World!");
+
+        var result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertTrue(result, "Should not have timed out before receiving a message");
+    }
+
+    @Test
+    @DisplayName("Should schedule post message repeating")
+    public void shouldSchedulePostMessageRepeating() throws InterruptedException {
+        var latch = new CountDownLatch(4);
+
+        var ref = system.spawn(mailbox -> {
+            latch.countDown();
+            return NextState.Receive;
+        });
+        system.schedulePostRepeating(0, 500, TimeUnit.MILLISECONDS, ref, "Hello, World!");
+
+        var result = latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        assertTrue(result, "Should not have timed out before receiving messages");
     }
 }

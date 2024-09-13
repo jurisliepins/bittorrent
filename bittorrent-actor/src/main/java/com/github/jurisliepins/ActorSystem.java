@@ -1,5 +1,6 @@
 package com.github.jurisliepins;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,12 +20,20 @@ public class ActorSystem {
                     .factory());
 
     public ActorRef spawn(final MailboxReceiver receiver) {
+        Objects.requireNonNull(receiver, "receiver is null");
         final Actor.BlockingQueue actor = new Actor.BlockingQueue(this, receiver);
         executorService.execute(actor);
         return actor;
     }
 
-    public void schedulePostOnce(final long delay, final TimeUnit unit, final ActorRef receiverRef, final Object message) {
+    public void schedulePostOnce(
+            final long delay,
+            final TimeUnit unit,
+            final ActorRef receiverRef,
+            final Object message) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(receiverRef, "receiverRef is null");
+        Objects.requireNonNull(message, "message is null");
         scheduledExecutorService.schedule(() -> receiverRef.post(message), delay, unit);
     }
 
@@ -34,6 +43,9 @@ public class ActorSystem {
             final TimeUnit unit,
             final ActorRef receiverRef,
             final Object message) {
+        Objects.requireNonNull(unit, "unit is null");
+        Objects.requireNonNull(receiverRef, "receiverRef is null");
+        Objects.requireNonNull(message, "message is null");
         scheduledExecutorService.scheduleAtFixedRate(() -> receiverRef.post(message), initialDelay, period, unit);
     }
 
