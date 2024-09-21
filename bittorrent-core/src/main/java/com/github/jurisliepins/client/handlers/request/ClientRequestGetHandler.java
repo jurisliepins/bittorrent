@@ -1,13 +1,15 @@
 package com.github.jurisliepins.client.handlers.request;
 
-import com.github.jurisliepins.CoreContextSuccessHandler;
+import com.github.jurisliepins.handler.CoreContextSuccessHandler;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.client.ClientState;
 import com.github.jurisliepins.client.message.ClientRequest;
 import com.github.jurisliepins.client.message.ClientResponse;
 import com.github.jurisliepins.context.Context;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public final class ClientRequestGetHandler implements CoreContextSuccessHandler<ClientState, ClientRequest.Get> {
 
     @Override
@@ -38,9 +40,7 @@ public final class ClientRequestGetHandler implements CoreContextSuccessHandler<
                         .build();
                 mailbox.reply(new ClientResponse.Get(replyTorrent));
             }
-            case null -> {
-                mailbox.reply(new ClientResponse.Failure(message.infoHash(), "Torrent doesn't exist"));
-            }
+            case null -> mailbox.reply(new ClientResponse.Failure(message.infoHash(), "Torrent doesn't exist"));
         }
         return NextState.Receive;
     }

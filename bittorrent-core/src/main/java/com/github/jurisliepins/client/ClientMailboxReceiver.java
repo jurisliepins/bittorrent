@@ -9,7 +9,9 @@ import com.github.jurisliepins.client.message.ClientRequest;
 import com.github.jurisliepins.context.Context;
 import com.github.jurisliepins.torrent.message.TorrentNotification;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
     private final ClientState state;
 
@@ -39,9 +41,6 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
     }
 
     private NextState handle(final Mailbox.Success mailbox, final ClientCommand command) {
-        context().log()
-                .client()
-                .info("Handling command {}", command);
         return switch (command) {
             case ClientCommand.Add add -> handle(mailbox, add);
             case ClientCommand.Remove remove -> handle(mailbox, remove);
@@ -83,9 +82,6 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
     }
 
     private NextState handle(final Mailbox.Success mailbox, final ClientRequest request) {
-        context().log()
-                .client()
-                .info("Handling request {}", request);
         return switch (request) {
             case ClientRequest.Get get -> handle(mailbox, get);
         };
@@ -100,9 +96,6 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
     }
 
     private NextState handle(final Mailbox.Success mailbox, final TorrentNotification notification) {
-        context().log()
-                .client()
-                .info("Handling torrent notification {}", notification);
         return switch (notification) {
             case TorrentNotification.StatusChanged statusChanged -> handle(mailbox, statusChanged);
             case TorrentNotification.Terminated terminated -> handle(mailbox, terminated);
@@ -138,9 +131,6 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
     }
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerNotification notification) {
-        context().log()
-                .client()
-                .info("Handling announcer notification {}", notification);
         return switch (notification) {
             case AnnouncerNotification.PeersReceived peersReceived -> handle(mailbox, peersReceived);
             case AnnouncerNotification.StatusChanged statusChanged -> handle(mailbox, statusChanged);
@@ -193,9 +183,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {
-        context().log()
-                .client()
-                .error("Unhandled message {}", mailbox.message());
+        log.error("Unhandled message {}", mailbox.message());
         return NextState.Receive;
     }
 }

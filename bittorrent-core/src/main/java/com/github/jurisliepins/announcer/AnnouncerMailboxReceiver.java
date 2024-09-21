@@ -6,7 +6,9 @@ import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.announcer.message.AnnouncerCommand;
 import com.github.jurisliepins.context.Context;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public final class AnnouncerMailboxReceiver extends CoreContextMailboxReceiver {
     private final AnnouncerState state;
 
@@ -81,9 +83,7 @@ public final class AnnouncerMailboxReceiver extends CoreContextMailboxReceiver {
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {
-        context().log()
-                .announcer()
-                .error("[{}] Unhandled message {}", state.getInfoHash(), mailbox.message());
+        log.error("[{}] Unhandled message {}", state.getInfoHash(), mailbox.message());
         return NextState.Receive;
     }
 }

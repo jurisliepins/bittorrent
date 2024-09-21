@@ -1,7 +1,7 @@
 package com.github.jurisliepins.context;
 
-import com.github.jurisliepins.CoreContextFailureHandler;
-import com.github.jurisliepins.CoreContextSuccessHandler;
+import com.github.jurisliepins.handler.CoreContextFailureHandler;
+import com.github.jurisliepins.handler.CoreContextSuccessHandler;
 import com.github.jurisliepins.announcer.AnnouncerMailboxReceiver;
 import com.github.jurisliepins.announcer.AnnouncerState;
 import com.github.jurisliepins.announcer.handlers.AnnouncerFailureHandler;
@@ -47,16 +47,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record Context(
-        @NonNull Log log,
         @NonNull IO io,
         @NonNull Handlers handlers
 ) {
-    public record Log(
-            @NonNull Logger announcer,
-            @NonNull Logger torrent,
-            @NonNull Logger client
-    ) { }
-
     public record IO(
             @NonNull TrackerClient trackerClient
     ) { }
@@ -140,11 +133,6 @@ public record Context(
 
     public static Context defaultContext() {
         return new Context(
-                new Log(
-                        LoggerFactory.getLogger(AnnouncerMailboxReceiver.class),
-                        LoggerFactory.getLogger(TorrentMailboxReceiver.class),
-                        LoggerFactory.getLogger(ClientMailboxReceiver.class)
-                ),
                 new IO(
                         new TrackerClientImpl()
                 ),

@@ -38,9 +38,6 @@ public final class TorrentMailboxReceiver extends CoreContextMailboxReceiver {
     }
 
     private NextState handle(final Mailbox.Success mailbox, final TorrentCommand command) {
-        context().log()
-                .torrent()
-                .info("Handling command {}", command);
         return switch (command) {
             case TorrentCommand.Start start -> handle(mailbox, start);
             case TorrentCommand.Stop stop -> handle(mailbox, stop);
@@ -73,9 +70,6 @@ public final class TorrentMailboxReceiver extends CoreContextMailboxReceiver {
     }
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerNotification notification) {
-        context().log()
-                .torrent()
-                .info("Handling announcer notification {}", notification);
         return switch (notification) {
             case AnnouncerNotification.PeersReceived peersReceived -> handle(mailbox, peersReceived);
             case AnnouncerNotification.StatusChanged statusChanged -> handle(mailbox, statusChanged);
@@ -128,9 +122,7 @@ public final class TorrentMailboxReceiver extends CoreContextMailboxReceiver {
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {
-        context().log()
-                .torrent()
-                .error("[{}] Unhandled message {}", state.getInfoHash(), mailbox.message());
+        log.error("[{}] Unhandled message {}", state.getInfoHash(), mailbox.message());
         return NextState.Receive;
     }
 }
