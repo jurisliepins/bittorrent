@@ -4,7 +4,6 @@ import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.bitfield.Bitfield;
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.peer.PeerId;
-import com.github.jurisliepins.types.State;
 import com.github.jurisliepins.types.StatusType;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.Map;
 
 @Data
 @Builder
-public final class ClientState implements State {
+public final class ClientState {
 
     @NonNull
     private StatusType status;

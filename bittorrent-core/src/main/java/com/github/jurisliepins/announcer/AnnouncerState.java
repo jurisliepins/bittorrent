@@ -2,7 +2,6 @@ package com.github.jurisliepins.announcer;
 
 import com.github.jurisliepins.info.InfoHash;
 import com.github.jurisliepins.peer.PeerId;
-import com.github.jurisliepins.types.State;
 import com.github.jurisliepins.types.StatusType;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,7 @@ import lombok.NonNull;
 
 @Data
 @Builder
-public final class AnnouncerState implements State {
+public final class AnnouncerState {
     @NonNull
     private StatusType status;
     @NonNull

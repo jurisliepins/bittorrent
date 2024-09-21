@@ -19,4 +19,7 @@ public final class TrackerRequest {
     public static final String KEY = "key";
     public static final String TRACKER_ID = "trackerid";
 
+    public static TrackerRequestBuilder builder(final String url) {
+        return new TrackerRequestBuilder(url);
+    }
 }

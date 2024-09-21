@@ -1,7 +1,7 @@
 package com.github.jurisliepins.client;
 
-import com.github.jurisliepins.CoreMailboxStateContextLoggingReceiver;
 import com.github.jurisliepins.Mailbox;
+import com.github.jurisliepins.MailboxReceiver;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.announcer.AnnouncerMailboxReceiver;
 import com.github.jurisliepins.announcer.AnnouncerState;
@@ -23,32 +23,36 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingReceiver<ClientState> {
+public final class ClientMailboxReceiver implements MailboxReceiver {
+    private final Context context;
+    private final ClientState state;
+
     public ClientMailboxReceiver(
             @NonNull final Context context,
             @NonNull final ClientState state) {
-        super(context, state);
+        this.context = context;
+        this.state = state;
     }
 
     @Override
     public NextState receive(final Mailbox mailbox) {
         return switch (mailbox) {
-            case Mailbox.Success mailboxSuccess -> handleSuccess(mailboxSuccess);
-            case Mailbox.Failure mailboxFailure -> handleFailure(mailboxFailure);
+            case Mailbox.Success m -> handle(m);
+            case Mailbox.Failure m -> handle(m);
         };
     }
 
-    private NextState handleSuccess(final Mailbox.Success mailbox) {
+    private NextState handle(final Mailbox.Success mailbox) {
         return switch (mailbox.message()) {
-            case ClientCommand command -> handleCommand(mailbox, command);
-            case ClientRequest request -> handleRequest(mailbox, request);
-            case TorrentNotification notification -> handleTorrentNotification(mailbox, notification);
-            case AnnouncerNotification notification -> handleAnnouncerNotification(mailbox, notification);
+            case ClientCommand command -> handle(mailbox, command);
+            case ClientRequest request -> handle(mailbox, request);
+            case TorrentNotification notification -> handle(mailbox, notification);
+            case AnnouncerNotification notification -> handle(mailbox, notification);
             default -> unhandled(mailbox);
         };
     }
 
-    private NextState handleCommand(final Mailbox.Success mailbox, final ClientCommand command) {
+    private NextState handle(final Mailbox.Success mailbox, final ClientCommand command) {
         return switch (command) {
             case ClientCommand.Add add -> handleAddCommand(mailbox, add);
             case ClientCommand.Remove remove -> handleRemoveCommand(mailbox, remove);
@@ -60,22 +64,22 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
     private NextState handleAddCommand(final Mailbox.Success mailbox, final ClientCommand.Add command) {
         switch (MetaInfo.fromBytes(command.metaInfo())) {
             case MetaInfo metaInfo -> {
-                switch (state().getTorrents().get(metaInfo.info().hash())) {
+                switch (state.getTorrents().get(metaInfo.info().hash())) {
                     case ClientState.Torrent ignored ->
                             mailbox.reply(new ClientCommandResult.Failure(metaInfo.info().hash(), "Torrent already exists"));
 
                     case null -> {
                         var announcerRef = mailbox.system()
                                 .spawn(new AnnouncerMailboxReceiver(
-                                        context(),
+                                        context,
                                         AnnouncerState.builder()
                                                 .status(StatusType.Stopped)
                                                 .infoHash(metaInfo.info().hash())
-                                                .selfPeerId(state().getSelfPeerId())
+                                                .selfPeerId(state.getSelfPeerId())
                                                 .announce(metaInfo.announce())
-                                                .peerCount(state().getSettings().getPeerCount())
-                                                .port(state().getSettings().getPort())
-                                                .intervalSeconds(state().getSettings().getIntervalSeconds())
+                                                .peerCount(state.getSettings().getPeerCount())
+                                                .port(state.getSettings().getPort())
+                                                .intervalSeconds(state.getSettings().getIntervalSeconds())
                                                 .downloaded(0L)
                                                 .uploaded(0L)
                                                 .left(metaInfo.info().length())
@@ -83,11 +87,11 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
                                         mailbox.self()));
                         var torrentRef = mailbox.system()
                                 .spawn(new TorrentMailboxReceiver(
-                                        context(),
+                                        context,
                                         TorrentState.builder()
                                                 .status(StatusType.Stopped)
                                                 .infoHash(metaInfo.info().hash())
-                                                .selfPeerId(state().getSelfPeerId())
+                                                .selfPeerId(state.getSelfPeerId())
                                                 .bitfield(new Bitfield())
                                                 .name(metaInfo.info().name())
                                                 .announce(metaInfo.announce())
@@ -101,12 +105,12 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
                                                 .build(),
                                         mailbox.self(),
                                         announcerRef));
-                        state().getTorrents()
+                        state.getTorrents()
                                 .add(ClientState.Torrent.builder()
                                              .ref(torrentRef)
                                              .status(StatusType.Stopped)
                                              .infoHash(metaInfo.info().hash())
-                                             .selfPeerId(state().getSelfPeerId())
+                                             .selfPeerId(state.getSelfPeerId())
                                              .bitfield(new Bitfield())
                                              .pieceLength(metaInfo.info().pieceLength())
                                              .name(metaInfo.info().name())
@@ -122,11 +126,11 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
                 }
             }
         }
-        return receiveNext();
+        return NextState.Receive;
     }
 
     private NextState handleRemoveCommand(final Mailbox.Success mailbox, final ClientCommand.Remove command) {
-        switch (state().getTorrents().remove(command.infoHash())) {
+        switch (state.getTorrents().remove(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 torrent.getRef().post(TorrentCommand.Terminate.INSTANCE, mailbox.self());
                 mailbox.reply(new ClientCommandResult.Success(command.infoHash(), "Torrent removed"));
@@ -134,11 +138,11 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
 
             case null -> mailbox.reply(new ClientCommandResult.Failure(command.infoHash(), "Torrent doesn't exist"));
         }
-        return receiveNext();
+        return NextState.Receive;
     }
 
     private NextState handleStartCommand(final Mailbox.Success mailbox, final ClientCommand.Start command) {
-        switch (state().getTorrents().get(command.infoHash())) {
+        switch (state.getTorrents().get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 switch (torrent.getStatus()) {
                     case Stopped -> {
@@ -152,11 +156,11 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
 
             case null -> mailbox.reply(new ClientCommandResult.Failure(command.infoHash(), "Torrent doesn't exist"));
         }
-        return receiveNext();
+        return NextState.Receive;
     }
 
     private NextState handleStopCommand(final Mailbox.Success mailbox, final ClientCommand.Stop command) {
-        switch (state().getTorrents().get(command.infoHash())) {
+        switch (state.getTorrents().get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 switch (torrent.getStatus()) {
                     case Started -> {
@@ -170,25 +174,25 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
 
             case null -> mailbox.reply(new ClientCommandResult.Failure(command.infoHash(), "Torrent doesn't exist"));
         }
-        return receiveNext();
+        return NextState.Receive;
     }
 
-    private NextState handleRequest(final Mailbox.Success mailbox, final ClientRequest request) {
+    private NextState handle(final Mailbox.Success mailbox, final ClientRequest request) {
         return switch (request) {
             case ClientRequest.Get get -> handleGetRequest(mailbox, get);
         };
     }
 
     private NextState handleGetRequest(final Mailbox.Success mailbox, final ClientRequest.Get request) {
-        switch (state().getTorrents().get(request.infoHash())) {
+        switch (state.getTorrents().get(request.infoHash())) {
             case ClientState.Torrent torrent -> mailbox.reply(new ClientResponse.Get(ClientResponse.Torrent.of(torrent)));
 
             case null -> mailbox.reply(new ClientResponse.Failure(request.infoHash(), "Torrent doesn't exist"));
         }
-        return receiveNext();
+        return NextState.Receive;
     }
 
-    private NextState handleTorrentNotification(final Mailbox.Success mailbox, final TorrentNotification notification) {
+    private NextState handle(final Mailbox.Success mailbox, final TorrentNotification notification) {
         return switch (notification) {
             case TorrentNotification.StatusChanged statusChanged -> handleStatusChangedTorrentNotification(mailbox, statusChanged);
             case TorrentNotification.Terminated terminated -> handleTerminatedTorrentNotification(mailbox, terminated);
@@ -199,42 +203,42 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
     private NextState handleStatusChangedTorrentNotification(
             final Mailbox.Success mailbox,
             final TorrentNotification.StatusChanged notification) {
-        switch (state().getTorrents().get(notification.infoHash())) {
+        switch (state.getTorrents().get(notification.infoHash())) {
             case ClientState.Torrent torrent -> torrent.setStatus(notification.status());
 
             case null -> log.error("Torrent notification for non-existent torrent '{}'", notification.infoHash());
         }
-        return receiveNext();
+        return NextState.Receive;
     }
 
     private NextState handleTerminatedTorrentNotification(
             final Mailbox.Success mailbox,
             final TorrentNotification.Terminated notification) {
-        switch (state().getTorrents().remove(notification.infoHash())) {
+        switch (state.getTorrents().remove(notification.infoHash())) {
             case ClientState.Torrent torrent -> { /* Ignored. */ }
 
             case null -> log.error("Torrent notification for non-existent torrent '{}'", notification.infoHash());
         }
-        return receiveNext();
+        return NextState.Receive;
     }
 
     private NextState handleFailureTorrentNotification(
             final Mailbox mailbox,
             final TorrentNotification.Failure failure) {
         log.error("Torrent {} failed", failure.infoHash(), failure.cause());
-        return receiveNext();
+        return NextState.Receive;
     }
 
-    private NextState handleAnnouncerNotification(final Mailbox.Success mailbox, final AnnouncerNotification notification) {
-        switch (state().getTorrents().get(notification.infoHash())) {
+    private NextState handle(final Mailbox.Success mailbox, final AnnouncerNotification notification) {
+        switch (state.getTorrents().get(notification.infoHash())) {
             case ClientState.Torrent torrent -> torrent.getRef().post(notification, mailbox.sender());
 
             case null -> { /* Ignored. */ }
         }
-        return receiveNext();
+        return NextState.Receive;
     }
 
-    private NextState handleFailure(final Mailbox.Failure mailbox) {
+    private NextState handle(final Mailbox.Failure mailbox) {
         switch (mailbox.message()) {
             case ClientCommand command -> {
                 log.error("Failed to handle command", mailbox.cause());
@@ -254,11 +258,11 @@ public final class ClientMailboxReceiver extends CoreMailboxStateContextLoggingR
 
             default -> log.error("Failed", mailbox.cause());
         }
-        return receiveNext();
+        return NextState.Receive;
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {
         log.error("Unhandled message {}", mailbox.message());
-        return receiveNext();
+        return NextState.Receive;
     }
 }
