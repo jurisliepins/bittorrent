@@ -18,7 +18,18 @@ public final class Bitfield implements ImmutableBitfield {
     }
 
     public Bitfield(final byte @NonNull [] array) {
-        bits = BitSet.valueOf(ByteBuffer.wrap(reverse(array)));
+        var reversed = new byte[array.length];
+        for (var i = 0; i < array.length; i++) {
+            byte x = 0;
+            byte y = array[i];
+            for (var j = 0; j < 8; ++j) {
+                x <<= 1;
+                x |= (byte) (y & 1);
+                y >>= 1;
+            }
+            reversed[i] = x;
+        }
+        bits = BitSet.valueOf(ByteBuffer.wrap(reversed));
     }
 
     @Override
@@ -51,24 +62,5 @@ public final class Bitfield implements ImmutableBitfield {
             case Bitfield that -> bits.equals(that.bits);
             default -> false;
         };
-    }
-
-    private static byte[] reverse(final byte[] array) {
-        var reversed = new byte[array.length];
-        for (var i = 0; i < array.length; i++) {
-            reversed[i] = reverse(array[i]);
-        }
-        return reversed;
-    }
-
-    private static byte reverse(final byte value) {
-        byte b = 0;
-        byte y = value;
-        for (int i = 0; i < 8; ++i) {
-            b <<= 1;
-            b |= (byte) (y & 1);
-            y >>= 1;
-        }
-        return b;
     }
 }
