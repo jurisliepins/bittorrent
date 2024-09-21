@@ -1,14 +1,14 @@
 package com.github.jurisliepins.definitions.response;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 public record Result<T>(
         StatusType status,
         T data
 ) {
     public Result {
-        Objects.requireNonNull(status, "status is null");
-        Objects.requireNonNull(data, "data is null");
+        requireNonNull(status, "status is null");
+        requireNonNull(data, "data is null");
     }
 
     public static <T> Result<T> success(final T data) {
