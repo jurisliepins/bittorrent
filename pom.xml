@@ -19,8 +19,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <junit.version>5.7.2</junit.version>
-        <java.source.version>21</java.source.version>
-        <java.target.version>21</java.target.version>
+        <java.source.version>23</java.source.version>
+        <java.target.version>23</java.target.version>
         <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.checkstyle.version>3.5.0</maven.checkstyle.version>
         <slf4j.version>2.0.13</slf4j.version>
