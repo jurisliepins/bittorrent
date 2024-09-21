@@ -1,8 +1,9 @@
 package com.github.jurisliepins;
 
-import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+
+import static java.util.Objects.requireNonNull;
 
 public interface Actor {
     class DeadLetter implements ActorRef {
@@ -35,36 +36,36 @@ public interface Actor {
         private final MailboxReceiver receiver;
 
         public BlockingQueue(final ActorSystem system, final MailboxReceiver receiver) {
-            this.system = Objects.requireNonNull(system, "system is null");
-            this.receiver = Objects.requireNonNull(receiver, "receiver is null");
+            this.system = requireNonNull(system, "system is null");
+            this.receiver = requireNonNull(receiver, "receiver is null");
         }
 
         public <T> ActorRef post(final T message, final ActorRef sender) {
-            Objects.requireNonNull(message, "message is null");
+            requireNonNull(message, "message is null");
             letters.add(new Letter(message, system, this, sender));
             return this;
         }
 
         public <T> ActorRef post(final T message) {
-            Objects.requireNonNull(message, "message is null");
+            requireNonNull(message, "message is null");
             letters.add(new Letter(message, system, this, DeadLetter.INSTANCE));
             return this;
         }
 
         @Override
         public <T, U> U postWithReply(final T message) {
-            Objects.requireNonNull(message, "message is null");
-            final Awaiter<U> awaiter = new Awaiter<>();
-            final ActorRef awaiterRef = system.spawn(awaiter);
+            requireNonNull(message, "message is null");
+            var awaiter = new Awaiter<U>();
+            var awaiterRef = system.spawn(awaiter);
             post(message, awaiterRef);
             return awaiter.awaitResult();
         }
 
         @Override
         public <T, U> U postWithReply(final T message, final long timeout, final TimeUnit unit) {
-            Objects.requireNonNull(message, "message is null");
-            final Awaiter<U> awaiter = new Awaiter<>();
-            final ActorRef awaiterRef = system.spawn(awaiter);
+            requireNonNull(message, "message is null");
+            var awaiter = new Awaiter<U>();
+            var awaiterRef = system.spawn(awaiter);
             post(message, awaiterRef);
             return awaiter.awaitResult(timeout, unit);
         }
@@ -85,12 +86,14 @@ public interface Actor {
             NextState nextState;
             do {
                 try {
-                    final Letter letter = letters.take();
+                    var letter = letters.take();
                     try {
-                        nextState = receiver.receive(successMailboxFromLetter(letter));
+                        var mailbox = new Mailbox.Success(letter.message(), letter.system(), letter.self(), letter.sender());
+                        nextState = receiver.receive(mailbox);
                     } catch (Throwable cause) {
                         try {
-                            nextState = receiver.receive(failureMailboxFromLetter(letter, cause));
+                            var mailbox = new Mailbox.Failure(letter.message(), letter.system(), letter.self(), letter.sender(), cause);
+                            nextState = receiver.receive(mailbox);
                         } catch (Throwable ignored) {
                             // If actor throws while handling an exception then we can fall into an infinite loop so we simply return.
                             return;
@@ -101,14 +104,6 @@ public interface Actor {
                     return;
                 }
             } while (nextState == NextState.Receive);
-        }
-
-        private static Mailbox.Success successMailboxFromLetter(final Letter letter) {
-            return new Mailbox.Success(letter.message(), letter.system(), letter.self(), letter.sender());
-        }
-
-        public static Mailbox.Failure failureMailboxFromLetter(final Letter letter, final Throwable cause) {
-            return new Mailbox.Failure(letter.message(), letter.system(), letter.self(), letter.sender(), cause);
         }
     }
 }

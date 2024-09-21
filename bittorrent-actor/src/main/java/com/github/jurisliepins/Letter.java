@@ -1,12 +1,12 @@
 package com.github.jurisliepins;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 public record Letter(Object message, ActorSystem system, ActorRef self, ActorRef sender) {
     public Letter {
-        Objects.requireNonNull(message, "message must not be null");
-        Objects.requireNonNull(system, "system must not be null");
-        Objects.requireNonNull(self, "self must not be null");
-        Objects.requireNonNull(sender, "sender must not be null");
+        requireNonNull(message, "message must not be null");
+        requireNonNull(system, "system must not be null");
+        requireNonNull(self, "self must not be null");
+        requireNonNull(sender, "sender must not be null");
     }
 }
