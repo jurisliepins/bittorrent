@@ -1,6 +1,6 @@
 package com.github.jurisliepins.value;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 public record BInteger(long value) implements BValue {
     @Override
@@ -18,7 +18,7 @@ public record BInteger(long value) implements BValue {
 
     @Override
     public int compareTo(final BValue other) {
-        return Long.compare(value, Objects.requireNonNull(other, "other is null").toLong());
+        return Long.compare(value, requireNonNull(other, "other is null").toLong());
     }
 
     @Override

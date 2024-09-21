@@ -2,11 +2,12 @@ package com.github.jurisliepins.value;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 public record BByteString(byte[] value) implements BValue {
     public BByteString {
-        Objects.requireNonNull(value, "value is null");
+        requireNonNull(value, "value is null");
     }
 
     @Override
@@ -24,7 +25,7 @@ public record BByteString(byte[] value) implements BValue {
 
     @Override
     public int compareTo(final BValue other) {
-        return Arrays.compare(value, Objects.requireNonNull(other, "other is null").toBytes());
+        return Arrays.compare(value, requireNonNull(other, "other is null").toBytes());
     }
 
     @Override
@@ -33,10 +34,10 @@ public record BByteString(byte[] value) implements BValue {
     }
 
     public static BByteString of(final byte[] value) {
-        return new BByteString(Objects.requireNonNull(value, "value is null"));
+        return new BByteString(requireNonNull(value, "value is null"));
     }
 
     public static BByteString of(final String value) {
-        return of(Objects.requireNonNull(value, "value is null").getBytes(StandardCharsets.UTF_8));
+        return of(requireNonNull(value, "value is null").getBytes(StandardCharsets.UTF_8));
     }
 }

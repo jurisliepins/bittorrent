@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
-import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("BObjectMapper tests")
@@ -22,9 +22,9 @@ public final class BObjectMapperTests {
             @BProperty("bytes") byte[] bytes
     ) {
         public BStringValues {
-            Objects.requireNonNull(utf8String);
-            Objects.requireNonNull(emptyString);
-            Objects.requireNonNull(bytes);
+            requireNonNull(utf8String);
+            requireNonNull(emptyString);
+            requireNonNull(bytes);
         }
     }
 

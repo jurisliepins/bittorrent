@@ -4,11 +4,13 @@ import com.github.jurisliepins.BException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
 
 public record BDictionary(Map<BValue, BValue> value) implements BValue {
     public BDictionary {
-        Objects.requireNonNull(value, "value is null");
+        requireNonNull(value, "value is null");
     }
 
     @Override
@@ -31,7 +33,13 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
 
     @Override
     public String toString() {
-        return "BDictionary[value=\"\"]";
+        return "BDictionary[value=[%s]]".formatted(
+                value.entrySet()
+                        .stream()
+                        .map(entry -> "(%s, %s)".formatted(
+                                entry.getKey(),
+                                entry.getValue()))
+                        .collect(Collectors.joining(", ")));
     }
 
     public static BDictionary of() {
@@ -39,7 +47,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
     }
 
     public static BDictionary of(final Map<BValue, BValue> values) {
-        return new BDictionary(Objects.requireNonNull(values, "values is null"));
+        return new BDictionary(requireNonNull(values, "values is null"));
     }
 
     public static BDictionary of(final BValue k, final BValue v) {

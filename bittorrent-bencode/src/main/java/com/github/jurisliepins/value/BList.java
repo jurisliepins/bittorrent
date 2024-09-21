@@ -5,10 +5,13 @@ import com.github.jurisliepins.BException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
 
 public record BList(List<BValue> value) implements BValue {
     public BList {
-        Objects.requireNonNull(value, "value is null");
+        requireNonNull(value, "value is null");
     }
 
     @Override
@@ -31,7 +34,10 @@ public record BList(List<BValue> value) implements BValue {
 
     @Override
     public String toString() {
-        return "BList[value=\"\"]";
+        return "BList[value=[%s]]".formatted(
+                value.stream()
+                        .map(Objects::toString)
+                        .collect(Collectors.joining(", ")));
     }
 
     public static BList of() {
@@ -39,10 +45,10 @@ public record BList(List<BValue> value) implements BValue {
     }
 
     public static BList of(final BValue... values) {
-        return new BList(List.of(Objects.requireNonNull(values, "values is null")));
+        return new BList(List.of(requireNonNull(values, "values is null")));
     }
 
     public static BList of(final List<BValue> values) {
-        return new BList(Objects.requireNonNull(values, "values is null"));
+        return new BList(requireNonNull(values, "values is null"));
     }
 }
