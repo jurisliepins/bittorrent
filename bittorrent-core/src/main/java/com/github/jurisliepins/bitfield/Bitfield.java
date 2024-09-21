@@ -22,7 +22,7 @@ public final class Bitfield implements ImmutableBitfield {
         for (var i = 0; i < array.length; i++) {
             byte x = 0;
             byte y = array[i];
-            for (var j = 0; j < 8; ++j) {
+            for (var j = 0; j < Byte.SIZE; ++j) {
                 x <<= 1;
                 x |= (byte) (y & 1);
                 y >>= 1;

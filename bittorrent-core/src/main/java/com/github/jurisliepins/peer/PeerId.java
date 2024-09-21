@@ -9,6 +9,12 @@ import static com.github.jurisliepins.context.Context.CLIENT_ID;
 import static com.github.jurisliepins.context.Context.CLIENT_VERSION;
 
 public final class PeerId {
+    private static final int ID_BYTES_LENGTH = 20;
+    private static final int ID_STRING_LENGTH = 20;
+
+    private static final long MIN_ID_VALUE = 0;
+    private static final long MAX_ID_VALUE = 1_000_000_000_000L;
+
     public static final PeerId BLANK = new PeerId();
 
     private final String value;
@@ -48,20 +54,23 @@ public final class PeerId {
     }
 
     private static byte[] requireValid(final byte @NonNull [] bytes) {
-        if (bytes.length != 20) {
+        if (bytes.length != ID_BYTES_LENGTH) {
             throw new IllegalArgumentException("Bytes length must be 20 characters");
         }
         return bytes;
     }
 
     private static String requireValid(@NonNull final String string) {
-        if (string.length() != 20) {
+        if (string.length() != ID_STRING_LENGTH) {
             throw new IllegalArgumentException("String length must be 20 characters");
         }
         return string;
     }
 
     public static PeerId self() {
-        return new PeerId("-%s%s-%012d".formatted(CLIENT_ID, CLIENT_VERSION, new Random().nextLong(0, 1_000_000_000_000L)));
+        return new PeerId("-%s%s-%012d".formatted(
+                CLIENT_ID,
+                CLIENT_VERSION,
+                new Random().nextLong(MIN_ID_VALUE, MAX_ID_VALUE)));
     }
 }

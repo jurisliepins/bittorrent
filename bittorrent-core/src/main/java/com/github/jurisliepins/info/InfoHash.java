@@ -5,6 +5,9 @@ import lombok.NonNull;
 import java.util.HexFormat;
 
 public final class InfoHash {
+    private static final int HASH_BYTES_LENGTH = 20;
+    private static final int HASH_STRING_LENGTH = 40;
+
     public static final InfoHash BLANK = new InfoHash();
 
     private final String value;
@@ -44,14 +47,14 @@ public final class InfoHash {
     }
 
     private static byte[] requireValid(final byte @NonNull [] bytes) {
-        if (bytes.length != 20) {
+        if (bytes.length != HASH_BYTES_LENGTH) {
             throw new IllegalArgumentException("Bytes length must be 20 characters");
         }
         return bytes;
     }
 
     private static String requireValid(@NonNull final String string) {
-        if (string.length() != 40) {
+        if (string.length() != HASH_STRING_LENGTH) {
             throw new IllegalArgumentException("String length must be 40 characters");
         }
         return string;

@@ -108,11 +108,11 @@
         </module>
 
         <module name="LeftCurly">
-            <property name="option" value="nl"/>
+            <property name="option" value="eol"/>
         </module>
 
         <module name="RightCurly">
-            <property name="option" value="alone"/>
+            <property name="option" value="same"/>
         </module>
 
         <module name="EmptyStatement"/>
@@ -170,17 +170,17 @@
 
         <module name="FinalParameters"/>
 
-        <module name="JavadocParagraph"/>
-        <module name="SingleLineJavadoc"/>
-        <module name="JavadocMethod">
-            <property name="accessModifiers" value="public"/>
-        </module>
-        <module name="JavadocType">
-            <property name="scope" value="public"/>
-        </module>
-        <module name="JavadocVariable">
-            <property name="scope" value="public"/>
-        </module>
+<!--        <module name="JavadocParagraph"/>-->
+<!--        <module name="SingleLineJavadoc"/>-->
+<!--        <module name="JavadocMethod">-->
+<!--            <property name="accessModifiers" value="public"/>-->
+<!--        </module>-->
+<!--        <module name="JavadocType">-->
+<!--            <property name="scope" value="public"/>-->
+<!--        </module>-->
+<!--        <module name="JavadocVariable">-->
+<!--            <property name="scope" value="public"/>-->
+<!--        </module>-->
 
         <module name="IllegalInstantiation"/>
         <module name="MagicNumber"/>

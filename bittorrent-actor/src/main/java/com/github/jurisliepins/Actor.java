@@ -95,8 +95,8 @@ public interface Actor {
                             var mailbox = new Mailbox.Failure(letter.message(), letter.system(), letter.self(), letter.sender(), cause);
                             nextState = receiver.receive(mailbox);
                         } catch (Throwable ignored) {
-                            // If actor throws while handling an exception then we can fall into an infinite loop so we simply return.
-                            return;
+                            // If actor throws while handling an exception then we can fall into an infinite loop so we simply terminate.
+                            nextState = NextState.Terminate;
                         }
                     }
                 } catch (InterruptedException ignored) {

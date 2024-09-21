@@ -70,6 +70,8 @@ public final class BDecoder {
     }
 
     private static BValue decodeInteger(final BInputStream stream) {
+        final var multiplier = 10L;
+
         var sign = 1L;
         var result = 0L;
 
@@ -78,7 +80,7 @@ public final class BDecoder {
                 sign = -1L;
             } else {
                 if (value >= '0' && value <= '9') {
-                    result *= 10L;
+                    result *= multiplier;
                     result += value - (byte) '0';
                 } else {
                     throw new BException("Unexpected char '%c' when reading %s".formatted((char) value, BValueType.BIntegerType));
@@ -90,11 +92,13 @@ public final class BDecoder {
     }
 
     private static BValue decodeByteString(final BInputStream stream) throws IOException {
+        final var multiplier = 10L;
+
         var length = 0;
 
         for (var value = stream.readByte(); value != (byte) ':'; value = stream.readByte()) {
             if (value >= '0' && value <= '9') {
-                length *= 10;
+                length *= multiplier;
                 length += value - (byte) '0';
             } else {
                 throw new BException("Unexpected char '%c' when reading %s".formatted((char) value, BValueType.BByteStringType));
