@@ -13,10 +13,12 @@ import com.github.jurisliepins.tracker.TrackerRequestBuilder;
 import com.github.jurisliepins.tracker.TrackerResponse;
 import com.github.jurisliepins.types.StatusType;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateContextLoggingReceiver<AnnouncerState, AnnouncerNotification> {
 
     public AnnouncerMailboxReceiver(
@@ -51,7 +53,7 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
     }
 
     private NextState handleAnnounceCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Announce command) {
-        logger().info("[{}] Announcing '{}' on '{}'", state().getInfoHash(), command.eventTypeOpt(), state().getAnnounce());
+        log.info("[{}] Announcing '{}' on '{}'", state().getInfoHash(), command.eventTypeOpt(), state().getAnnounce());
         var response = context().trackerClient().announce(
                 new TrackerRequestBuilder(state().getAnnounce())
                         .parameter(TrackerRequest.INFO_HASH, state().getInfoHash().toByteArray())
@@ -69,10 +71,10 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
                         .toQuery());
         switch (response) {
             case TrackerResponse.Success success -> {
-                logger().info("[{}] Announced successfully on '{}' with '{}'", state().getInfoHash(), state().getAnnounce(), success);
+                log.info("[{}] Announced successfully on '{}' with '{}'", state().getInfoHash(), state().getAnnounce(), success);
                 switch (state().getStatus()) {
                     case Started -> {
-                        logger().info("[{}] Scheduling re-announce on '{}' in {}s",
+                        log.info("[{}] Scheduling re-announce on '{}' in {}s",
                                       state().getInfoHash(),
                                       state().getAnnounce(),
                                       Math.max(success.interval(), state().getIntervalSeconds()));
@@ -85,14 +87,14 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
                         return receiveNext(new AnnouncerNotification.PeersReceived(state().getInfoHash(), success.peers()));
                     }
                     default -> {
-                        logger().info("[{}] Not scheduling re-announce since we're no longer running", state().getInfoHash());
+                        log.info("[{}] Not scheduling re-announce since we're no longer running", state().getInfoHash());
                         return receiveNext();
                     }
                 }
             }
 
             case TrackerResponse.Failure failure -> {
-                logger().error("[{}] Announced with failure response on '{}' with '{}'",
+                log.error("[{}] Announced with failure response on '{}' with '{}'",
                                state().getInfoHash(),
                                state().getAnnounce(),
                                failure);
@@ -109,7 +111,7 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
             }
 
             default -> {
-                logger().info("[{}] Announcer already started", state().getInfoHash());
+                log.info("[{}] Announcer already started", state().getInfoHash());
                 yield receiveNext();
             }
         };
@@ -123,7 +125,7 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
             }
 
             default -> {
-                logger().info("[{}] Announcer already stopped", state().getInfoHash());
+                log.info("[{}] Announcer already stopped", state().getInfoHash());
                 yield receiveNext();
             }
         };
@@ -136,19 +138,19 @@ public final class AnnouncerMailboxReceiver extends CoreMailboxNotifiedStateCont
     private NextState handleFailure(final Mailbox.Failure mailbox) {
         return switch (mailbox.message()) {
             case AnnouncerCommand command -> {
-                logger().error("[{}] Failed to handle command", state().getInfoHash(), mailbox.cause());
+                log.error("[{}] Failed to handle command", state().getInfoHash(), mailbox.cause());
                 yield receiveNext(new AnnouncerNotification.Failure(state().getInfoHash(), mailbox.cause()));
             }
 
             default -> {
-                logger().error("[{}] Failed", state().getInfoHash(), mailbox.cause());
+                log.error("[{}] Failed", state().getInfoHash(), mailbox.cause());
                 yield receiveNext(new AnnouncerNotification.Failure(state().getInfoHash(), mailbox.cause()));
             }
         };
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {
-        logger().error("[{}] Unhandled message {}", state().getInfoHash(), mailbox.message());
+        log.error("[{}] Unhandled message {}", state().getInfoHash(), mailbox.message());
         return receiveNext();
     }
 }

@@ -12,7 +12,9 @@ import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.types.StatusType;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateContextLoggingReceiver<TorrentState, TorrentNotification> {
 
     private final ActorRef announcerRef;
@@ -58,7 +60,7 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateContex
             }
 
             default -> {
-                logger().info("[{}] Torrent already started", state().getInfoHash());
+                log.info("[{}] Torrent already started", state().getInfoHash());
                 yield receiveNext();
             }
         };
@@ -72,7 +74,7 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateContex
             }
 
             default -> {
-                logger().info("[{}] Torrent already stopped", state().getInfoHash());
+                log.info("[{}] Torrent already stopped", state().getInfoHash());
                 yield receiveNext();
             }
         };
@@ -86,22 +88,22 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateContex
     private NextState handleFailure(final Mailbox.Failure mailbox) {
         return switch (mailbox.message()) {
             case TorrentCommand command -> {
-                logger().error("[{}] Failed to handle command", state().getInfoHash(), mailbox.cause());
+                log.error("[{}] Failed to handle command", state().getInfoHash(), mailbox.cause());
                 yield receiveNext(new TorrentNotification.Failure(state().getInfoHash(), mailbox.cause()));
             }
 
             default -> {
-                logger().error("[{}] Failed", state().getInfoHash(), mailbox.cause());
+                log.error("[{}] Failed", state().getInfoHash(), mailbox.cause());
                 yield receiveNext(new TorrentNotification.Failure(state().getInfoHash(), mailbox.cause()));
             }
         };
     }
 
     private NextState handleAnnouncerNotification(final Mailbox.Success mailbox, final AnnouncerNotification notification) {
-        logger().info("[{}] Handling announcer notification {}", state().getInfoHash(), notification);
+        log.info("[{}] Handling announcer notification {}", state().getInfoHash(), notification);
         switch (notification) {
             case AnnouncerNotification.PeersReceived peersReceived -> {
-                logger().info("[{}] Received peers {}", state().getInfoHash(), peersReceived.peers());
+                log.info("[{}] Received peers {}", state().getInfoHash(), peersReceived.peers());
                 // TODO: !
             }
             case AnnouncerNotification.StatusChanged statusChanged -> { /* Ignored. */ }
@@ -112,7 +114,7 @@ public final class TorrentMailboxReceiver extends CoreMailboxNotifiedStateContex
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {
-        logger().error("[{}] Unhandled message {}", state().getInfoHash(), mailbox.message());
+        log.error("[{}] Unhandled message {}", state().getInfoHash(), mailbox.message());
         return receiveNext();
     }
 }
