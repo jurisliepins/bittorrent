@@ -49,14 +49,14 @@ public final class AnnouncerMailboxReceiver implements MailboxReceiver {
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerCommand command) {
         return switch (command) {
-            case AnnouncerCommand.Announce announce -> handleAnnounceCommand(mailbox, announce);
-            case AnnouncerCommand.Start start -> handleStartCommand(mailbox, start);
-            case AnnouncerCommand.Stop stop -> handleStopCommand(mailbox, stop);
-            case AnnouncerCommand.Terminate terminate -> handleTerminateCommand(mailbox, terminate);
+            case AnnouncerCommand.Announce announce -> handle(mailbox, announce);
+            case AnnouncerCommand.Start start -> handle(mailbox, start);
+            case AnnouncerCommand.Stop stop -> handle(mailbox, stop);
+            case AnnouncerCommand.Terminate terminate -> handle(mailbox, terminate);
         };
     }
 
-    private NextState handleAnnounceCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Announce command) {
+    private NextState handle(final Mailbox.Success mailbox, final AnnouncerCommand.Announce command) {
         log.info("[{}] Announcing '{}' on '{}'", state.getInfoHash(), command.eventTypeOpt(), state.getAnnounce());
         var response = context.trackerClient().announce(
                 TrackerRequest.builder(state.getAnnounce())
@@ -108,7 +108,7 @@ public final class AnnouncerMailboxReceiver implements MailboxReceiver {
         }
     }
 
-    private NextState handleStartCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Start command) {
+    private NextState handle(final Mailbox.Success mailbox, final AnnouncerCommand.Start command) {
         return switch (state.getStatus()) {
             case Stopped -> {
                 mailbox.self().post(new AnnouncerCommand.Announce(Optional.of(TrackerEventType.Started)), mailbox.self());
@@ -124,7 +124,7 @@ public final class AnnouncerMailboxReceiver implements MailboxReceiver {
         };
     }
 
-    private NextState handleStopCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Stop command) {
+    private NextState handle(final Mailbox.Success mailbox, final AnnouncerCommand.Stop command) {
         return switch (state.getStatus()) {
             case Started -> {
                 mailbox.self().post(new AnnouncerCommand.Announce(Optional.of(TrackerEventType.Stopped)), mailbox.self());
@@ -140,7 +140,7 @@ public final class AnnouncerMailboxReceiver implements MailboxReceiver {
         };
     }
 
-    private NextState handleTerminateCommand(final Mailbox.Success mailbox, final AnnouncerCommand.Terminate command) {
+    private NextState handle(final Mailbox.Success mailbox, final AnnouncerCommand.Terminate command) {
         notifiedRef.post(new AnnouncerNotification.Terminated(state.getInfoHash()), mailbox.self());
         return NextState.Terminate;
     }

@@ -54,14 +54,14 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
 
     private NextState handle(final Mailbox.Success mailbox, final ClientCommand command) {
         return switch (command) {
-            case ClientCommand.Add add -> handleAddCommand(mailbox, add);
-            case ClientCommand.Remove remove -> handleRemoveCommand(mailbox, remove);
-            case ClientCommand.Start start -> handleStartCommand(mailbox, start);
-            case ClientCommand.Stop stop -> handleStopCommand(mailbox, stop);
+            case ClientCommand.Add add -> handle(mailbox, add);
+            case ClientCommand.Remove remove -> handle(mailbox, remove);
+            case ClientCommand.Start start -> handle(mailbox, start);
+            case ClientCommand.Stop stop -> handle(mailbox, stop);
         };
     }
 
-    private NextState handleAddCommand(final Mailbox.Success mailbox, final ClientCommand.Add command) {
+    private NextState handle(final Mailbox.Success mailbox, final ClientCommand.Add command) {
         switch (MetaInfo.fromBytes(command.metaInfo())) {
             case MetaInfo metaInfo -> {
                 switch (state.getTorrents().get(metaInfo.info().hash())) {
@@ -129,7 +129,7 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleRemoveCommand(final Mailbox.Success mailbox, final ClientCommand.Remove command) {
+    private NextState handle(final Mailbox.Success mailbox, final ClientCommand.Remove command) {
         switch (state.getTorrents().remove(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 torrent.getRef().post(TorrentCommand.Terminate.INSTANCE, mailbox.self());
@@ -141,7 +141,7 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleStartCommand(final Mailbox.Success mailbox, final ClientCommand.Start command) {
+    private NextState handle(final Mailbox.Success mailbox, final ClientCommand.Start command) {
         switch (state.getTorrents().get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 switch (torrent.getStatus()) {
@@ -159,7 +159,7 @@ public final class ClientMailboxReceiver implements MailboxReceiver {
         return NextState.Receive;
     }
 
-    private NextState handleStopCommand(final Mailbox.Success mailbox, final ClientCommand.Stop command) {
+    private NextState handle(final Mailbox.Success mailbox, final ClientCommand.Stop command) {
         switch (state.getTorrents().get(command.infoHash())) {
             case ClientState.Torrent torrent -> {
                 switch (torrent.getStatus()) {
