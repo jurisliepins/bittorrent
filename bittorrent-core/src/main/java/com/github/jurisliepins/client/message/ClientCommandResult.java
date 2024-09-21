@@ -1,6 +1,6 @@
 package com.github.jurisliepins.client.message;
 
-import com.github.jurisliepins.info.InfoHash;
+import com.github.jurisliepins.info.Hash;
 import lombok.NonNull;
 
 public sealed interface ClientCommandResult permits
@@ -8,12 +8,12 @@ public sealed interface ClientCommandResult permits
         ClientCommandResult.Failure {
 
     record Success(
-            @NonNull InfoHash infoHash,
+            @NonNull Hash infoHash,
             @NonNull String message
     ) implements ClientCommandResult { }
 
     record Failure(
-            @NonNull InfoHash infoHash,
+            @NonNull Hash infoHash,
             @NonNull String message
     ) implements ClientCommandResult { }
 }

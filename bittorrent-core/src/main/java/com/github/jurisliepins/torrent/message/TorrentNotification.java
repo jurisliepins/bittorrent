@@ -1,7 +1,7 @@
 package com.github.jurisliepins.torrent.message;
 
-import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.types.StatusType;
+import com.github.jurisliepins.info.Hash;
+import com.github.jurisliepins.common.StatusType;
 import lombok.NonNull;
 
 public sealed interface TorrentNotification permits
@@ -10,22 +10,14 @@ public sealed interface TorrentNotification permits
         TorrentNotification.Failure {
 
     record StatusChanged(
-            @NonNull InfoHash infoHash,
+            @NonNull Hash infoHash,
             @NonNull StatusType status
     ) implements TorrentNotification { }
 
-    record Terminated(@NonNull InfoHash infoHash) implements TorrentNotification { }
+    record Terminated(@NonNull Hash infoHash) implements TorrentNotification { }
 
     record Failure(
-            @NonNull InfoHash infoHash,
+            @NonNull Hash infoHash,
             @NonNull Throwable cause
     ) implements TorrentNotification { }
-
-    default InfoHash infoHash() {
-        return switch (this) {
-            case TorrentNotification.StatusChanged notification -> notification.infoHash();
-            case TorrentNotification.Terminated notification -> notification.infoHash();
-            case TorrentNotification.Failure notification -> notification.infoHash();
-        };
-    }
 }

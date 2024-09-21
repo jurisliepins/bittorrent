@@ -1,14 +1,17 @@
 package com.github.jurisliepins.client;
 
+import com.github.jurisliepins.Actor;
 import com.github.jurisliepins.ActorRef;
 import com.github.jurisliepins.bitfield.Bitfield;
-import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.peer.PeerId;
-import com.github.jurisliepins.types.StatusType;
+import com.github.jurisliepins.bitfield.ImmutableBitfield;
+import com.github.jurisliepins.common.StatusType;
+import com.github.jurisliepins.info.Hash;
+import com.github.jurisliepins.peer.Id;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,59 +20,93 @@ import java.util.Map;
 public final class ClientState {
 
     @NonNull
-    private StatusType status;
-    @NonNull
-    private PeerId selfPeerId;
-    @NonNull
-    private Torrents torrents;
-    @NonNull
-    private Settings settings;
+    @Builder.Default
+    private Torrents torrents = new Torrents();
 
     @Data
     @Builder
     public static final class Torrent {
         @NonNull
-        private ActorRef ref;
+        @Builder.Default
+        private ActorRef ref = Actor.DeadLetter.INSTANCE;
+
         @NonNull
-        private StatusType status;
+        @Builder.Default
+        private StatusType status = StatusType.Stopped;
+
         @NonNull
-        private InfoHash infoHash;
+        @Builder.Default
+        private Hash infoHash = Hash.BLANK;
+
         @NonNull
-        private PeerId selfPeerId;
+        @Builder.Default
+        private Id selfId = Id.BLANK;
+
         @NonNull
-        private Bitfield bitfield;
+        @Builder.Default
+        private ImmutableBitfield bitfield = Bitfield.BLANK;
+
         @NonNull
-        private String name;
-        private int pieceLength;
-        private long length;
-        private long downloaded;
-        private long uploaded;
-        private long left;
-        private double downloadRate;
-        private double uploadRate;
+        @Builder.Default
+        private String name = "";
+
+        @NonNull
+        @Builder.Default
+        private Integer pieceLength = 0;
+
+        @NonNull
+        @Builder.Default
+        private Long length = 0L;
+
+        @NonNull
+        @Builder.Default
+        private String announce = "";
+
+        @Builder.Default
+        private String[][] announceList = new String[][]{};
+
+        @Builder.Default
+        private OffsetDateTime creationDate = OffsetDateTime.MIN;
+
+        @Builder.Default
+        private String comment = "";
+
+        @Builder.Default
+        private String createdBy = "";
+
+        @Builder.Default
+        private String encoding = "";
+
+        @NonNull
+        @Builder.Default
+        private Long downloaded = 0L;
+
+        @NonNull
+        @Builder.Default
+        private Long uploaded = 0L;
+
+        @NonNull
+        @Builder.Default
+        private Long left = 0L;
     }
 
     public static final class Torrents {
-        private final Map<InfoHash, Torrent> torrents = new HashMap<>();
+        private final Map<Hash, Torrent> torrents = new HashMap<>();
 
-        public Torrent get(@NonNull final InfoHash infoHash) {
+        public Torrent get(final Hash infoHash) {
             return torrents.get(infoHash);
         }
 
-        public void add(@NonNull final Torrent torrent) {
-            torrents.put(torrent.getInfoHash(), torrent);
+        public Torrent add(final Torrent torrent) {
+            return torrents.put(torrent.getInfoHash(), torrent);
         }
 
-        public Torrent remove(@NonNull final InfoHash infoHash) {
+        public Torrent remove(final Hash infoHash) {
             return torrents.remove(infoHash);
         }
     }
 
-    @Data
-    @Builder
-    public static final class Settings {
-        private int peerCount;
-        private int port;
-        private int intervalSeconds;
+    public static ClientState emptyState() {
+        return ClientState.builder().build();
     }
 }

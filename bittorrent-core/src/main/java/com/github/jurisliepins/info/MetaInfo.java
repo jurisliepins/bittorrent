@@ -95,9 +95,9 @@ public record MetaInfo(
         return chunks;
     }
 
-    private static InfoHash hash(@NonNull final InfoBObject info) {
+    private static Hash hash(@NonNull final InfoBObject info) {
         try {
-            return new InfoHash(MessageDigest.getInstance("SHA-1").digest(info.toBytes()));
+            return new Hash(MessageDigest.getInstance("SHA-1").digest(info.toBytes()));
         } catch (NoSuchAlgorithmException e) {
             throw new CoreException("Failed to generate hash", e);
         }

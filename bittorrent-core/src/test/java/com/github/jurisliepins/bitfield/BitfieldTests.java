@@ -14,13 +14,13 @@ public final class BitfieldTests {
     @Test
     @DisplayName("Should bitfield get/set")
     public void shouldBitfieldGetSet() {
-        final byte[] bytes = new byte[]{
+        var bytes = new byte[]{
                 Byte.parseByte("00000001", 2),
                 Byte.parseByte("00000010", 2),
                 Byte.parseByte("00000011", 2),
                 Byte.parseByte("00000100", 2),
         };
-        final Bitfield bitfield = new Bitfield(bytes);
+        var bitfield = new Bitfield(bytes);
         // Starting with a bitfield that looks like 00000001 00000010 00000011 00000100.
         assertTrue(bitfield.getBit(7));
         assertTrue(bitfield.getBit(14));
@@ -76,7 +76,7 @@ public final class BitfieldTests {
     @Test
     @DisplayName("Should bitfield get bit count")
     public void shouldBitfieldGetBitCount() {
-        final Bitfield bitfield = new Bitfield(Byte.SIZE * 4);
+        var bitfield = new Bitfield(Byte.SIZE * 4);
         assertEquals(0, bitfield.count());
         bitfield.setBit(0, true);
         assertEquals(1, bitfield.count());
@@ -116,7 +116,7 @@ public final class BitfieldTests {
     @Test
     @DisplayName("Should bitfield get is empty")
     public void shouldBitfieldGetIsEmpty() {
-        final Bitfield bitfield = new Bitfield(2);
+        var bitfield = new Bitfield(2);
         bitfield.setBit(0, true);
         bitfield.setBit(1, true);
         assertFalse(bitfield.isEmpty());
@@ -128,12 +128,12 @@ public final class BitfieldTests {
     @Test
     @DisplayName("Should bitfield equals")
     public void shouldBitfieldEquals() {
-        final byte[] bytes = new byte[]{
+        var bytes = new byte[]{
                 Byte.parseByte("01010101", 2),
                 Byte.parseByte("01010101", 2),
         };
-        final Bitfield bitfield1 = new Bitfield(bytes);
-        final Bitfield bitfield2 = new Bitfield(Byte.SIZE * bytes.length);
+        var bitfield1 = new Bitfield(bytes);
+        var bitfield2 = new Bitfield(Byte.SIZE * bytes.length);
         bitfield2.setBit(1, true);
         bitfield2.setBit(3, true);
         bitfield2.setBit(5, true);
@@ -151,12 +151,12 @@ public final class BitfieldTests {
     @Test
     @DisplayName("Should bitfield hash code")
     public void shouldBitfieldHashCode() {
-        final byte[] bytes = new byte[]{
+        var bytes = new byte[]{
                 Byte.parseByte("01010101", 2),
                 Byte.parseByte("01010101", 2),
         };
-        final Bitfield bitfield1 = new Bitfield(bytes);
-        final Bitfield bitfield2 = new Bitfield(Byte.SIZE * bytes.length);
+        var bitfield1 = new Bitfield(bytes);
+        var bitfield2 = new Bitfield(Byte.SIZE * bytes.length);
         bitfield2.setBit(1, true);
         bitfield2.setBit(3, true);
         bitfield2.setBit(5, true);

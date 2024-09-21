@@ -1,12 +1,13 @@
 package com.github.jurisliepins.client.message;
 
 import com.github.jurisliepins.bitfield.ImmutableBitfield;
-import com.github.jurisliepins.client.ClientState;
-import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.peer.PeerId;
-import com.github.jurisliepins.types.StatusType;
+import com.github.jurisliepins.common.StatusType;
+import com.github.jurisliepins.info.Hash;
+import com.github.jurisliepins.peer.Id;
 import lombok.Builder;
 import lombok.NonNull;
+
+import java.time.OffsetDateTime;
 
 public sealed interface ClientResponse permits
         ClientResponse.Get,
@@ -15,38 +16,29 @@ public sealed interface ClientResponse permits
     @Builder
     record Torrent(
             @NonNull StatusType status,
-            @NonNull InfoHash infoHash,
-            @NonNull PeerId selfPeerId,
+            @NonNull Hash infoHash,
+            @NonNull Id selfId,
             @NonNull ImmutableBitfield bitfield,
             @NonNull String name,
-            long length,
-            long downloaded,
-            long uploaded,
-            long left,
-            double downloadRate,
-            double uploadRate
-    ) {
-        public static Torrent of(final ClientState.Torrent torrent) {
-            return Torrent.builder()
-                    .status(torrent.getStatus())
-                    .infoHash(torrent.getInfoHash())
-                    .selfPeerId(torrent.getSelfPeerId())
-                    .bitfield(torrent.getBitfield())
-                    .name(torrent.getName())
-                    .length(torrent.getLength())
-                    .downloaded(torrent.getDownloaded())
-                    .uploaded(torrent.getUploaded())
-                    .left(torrent.getLeft())
-                    .downloadRate(torrent.getDownloadRate())
-                    .uploadRate(torrent.getUploadRate())
-                    .build();
-        }
-    }
+            @NonNull Integer pieceLength,
+            @NonNull Long length,
+            @NonNull String announce,
+            String[][] announceList,
+            OffsetDateTime creationDate,
+            String comment,
+            String createdBy,
+            String encoding,
+            @NonNull Long downloaded,
+            @NonNull Long uploaded,
+            @NonNull Long left
+    ) { }
 
-    record Get(@NonNull Torrent torrent) implements ClientResponse { }
+    record Get(
+            @NonNull Torrent torrent
+    ) implements ClientResponse { }
 
     record Failure(
-            @NonNull InfoHash infoHash,
-            @NonNull String resultMessage
+            @NonNull Hash infoHash,
+            @NonNull String message
     ) implements ClientResponse { }
 }

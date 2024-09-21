@@ -3,20 +3,20 @@ package com.github.jurisliepins.jackson.serializers;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.github.jurisliepins.peer.PeerId;
+import com.github.jurisliepins.peer.Id;
 
 import java.io.IOException;
 
-public class PeerIdSerializer  extends StdSerializer<PeerId> {
-    public PeerIdSerializer(final Class<PeerId> t) {
+public class IdSerializer extends StdSerializer<Id> {
+    public IdSerializer(final Class<Id> t) {
         super(t);
     }
 
     @Override
     public void serialize(
-            final PeerId peerId,
+            final Id id,
             final JsonGenerator jsonGenerator,
             final SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeString(peerId.toString());
+        jsonGenerator.writeString(id.toString());
     }
 }

@@ -1,7 +1,7 @@
 package com.github.jurisliepins.tracker;
 
+import com.github.jurisliepins.BitTorrentClient;
 import com.github.jurisliepins.CoreException;
-import com.github.jurisliepins.context.Context;
 import lombok.NonNull;
 
 import java.io.Closeable;
@@ -19,7 +19,7 @@ public final class TrackerClientImpl implements TrackerClient, Closeable {
             var request = HttpRequest.newBuilder()
                     .uri(new URI(query))
                     .GET()
-                    .header("User-Agent", "%s/%s".formatted(Context.CLIENT_NAME, Context.CLIENT_VERSION))
+                    .header("User-Agent", "%s/%s".formatted(BitTorrentClient.CLIENT_NAME, BitTorrentClient.CLIENT_VERSION))
                     .header("Accept", "*/*")
                     .build();
             var bytes = httpClient

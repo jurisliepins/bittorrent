@@ -21,8 +21,8 @@ public class MetaInfoTests {
     private static final String UNI_FILE_TORRENT = "uni_file.torrent";
     private static final String MULTI_FILE_TORRENT = "multi_file.torrent";
 
-    private static final InfoHash UNI_FILE_INFO_HASH = new InfoHash("aa171ca77f14f55d6ec23d7e9541b7791e6c383c");
-    private static final InfoHash MULTI_FILE_INFO_HASH = new InfoHash("6e540ebbc92131138746231ff3e44f165fd3b373");
+    private static final Hash UNI_FILE_INFO_HASH = new Hash("aa171ca77f14f55d6ec23d7e9541b7791e6c383c");
+    private static final Hash MULTI_FILE_INFO_HASH = new Hash("6e540ebbc92131138746231ff3e44f165fd3b373");
 
     @Test
     @DisplayName("Should decode uni file meta-info")
@@ -125,7 +125,7 @@ public class MetaInfoTests {
                         assertEquals("Название", info.name());
                         assertEquals(0L, info.length());
                         assertNull(info.md5sum());
-                        assertEquals(new InfoHash("779e8f96663028f7654364721377d283bc80ea61"), info.hash());
+                        assertEquals(new Hash("779e8f96663028f7654364721377d283bc80ea61"), info.hash());
                     }
                     default -> throw new RuntimeException("Should not have reached this code");
                 }

@@ -7,6 +7,8 @@ import java.util.BitSet;
 
 public final class Bitfield implements ImmutableBitfield {
 
+    public static final Bitfield BLANK = new Bitfield(0);
+
     private final BitSet bits;
 
     public Bitfield() {

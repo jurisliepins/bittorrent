@@ -1,20 +1,22 @@
 package com.github.jurisliepins;
 
 import com.github.jurisliepins.client.ClientMailboxReceiver;
+import com.github.jurisliepins.client.ClientState;
 import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientCommandResult;
 import com.github.jurisliepins.client.message.ClientRequest;
 import com.github.jurisliepins.client.message.ClientResponse;
-import com.github.jurisliepins.client.ClientState;
 import com.github.jurisliepins.context.Context;
-import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.peer.PeerId;
-import com.github.jurisliepins.types.StatusType;
+import com.github.jurisliepins.info.Hash;
 import lombok.NonNull;
 
 import java.util.concurrent.TimeUnit;
 
 public final class BitTorrentClient {
+    public static final String CLIENT_ID = "BT";
+    public static final String CLIENT_NAME = "BitTorrent";
+    public static final String CLIENT_VERSION = "0001";
+
     private static final long TIMEOUT_MS = 5_000;
 
     private final ActorSystem system = new ActorSystem();
@@ -22,20 +24,14 @@ public final class BitTorrentClient {
     private final ActorRef clientRef;
 
     public BitTorrentClient() {
-        clientRef = system.spawn(new ClientMailboxReceiver(Context.defaultContext(), ClientState.builder()
-                .status(StatusType.Started)
-                .selfPeerId(PeerId.self())
-                .torrents(new ClientState.Torrents())
-                .settings(ClientState.Settings.builder()
-                                  .peerCount(Context.DEFAULT_PEER_COUNT)
-                                  .port(Context.DEFAULT_PORT)
-                                  .intervalSeconds(Context.DEFAULT_INTERVAL_SECONDS)
-                                  .build())
-                .build()
-        ));
+        this(Context.defaultContext());
     }
 
-    public ClientResponse get(@NonNull final InfoHash infoHash) {
+    public BitTorrentClient(final Context context) {
+        clientRef = system.spawn(new ClientMailboxReceiver(context, ClientState.emptyState()));
+    }
+
+    public ClientResponse get(@NonNull final Hash infoHash) {
         return postWithReply(new ClientRequest.Get(infoHash));
     }
 
@@ -43,15 +39,15 @@ public final class BitTorrentClient {
         return postWithReply(new ClientCommand.Add(metaInfo));
     }
 
-    public ClientCommandResult remove(@NonNull final InfoHash infoHash) {
+    public ClientCommandResult remove(@NonNull final Hash infoHash) {
         return postWithReply(new ClientCommand.Remove(infoHash));
     }
 
-    public ClientCommandResult start(@NonNull final InfoHash infoHash) {
+    public ClientCommandResult start(@NonNull final Hash infoHash) {
         return postWithReply(new ClientCommand.Start(infoHash));
     }
 
-    public ClientCommandResult stop(@NonNull final InfoHash infoHash) {
+    public ClientCommandResult stop(@NonNull final Hash infoHash) {
         return postWithReply(new ClientCommand.Stop(infoHash));
     }
 

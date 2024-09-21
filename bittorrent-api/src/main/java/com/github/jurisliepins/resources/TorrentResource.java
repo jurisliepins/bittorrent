@@ -4,7 +4,7 @@ import com.github.jurisliepins.BitTorrentClient;
 import com.github.jurisliepins.client.message.ClientCommandResult;
 import com.github.jurisliepins.client.message.ClientResponse;
 import com.github.jurisliepins.definitions.response.Result;
-import com.github.jurisliepins.info.InfoHash;
+import com.github.jurisliepins.info.Hash;
 import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -28,7 +28,7 @@ public class TorrentResource {
     @GET
     @Path("/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<ClientResponse> get(final @PathParam("infoHash") InfoHash infoHash) {
+    public Result<ClientResponse> get(final @PathParam("infoHash") Hash infoHash) {
         Log.info("Getting torrent '%s'".formatted(infoHash));
         return Result.success(bitTorrentClient.get(infoHash));
     }
@@ -52,7 +52,7 @@ public class TorrentResource {
     @POST
     @Path("/remove/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<ClientCommandResult> remove(final @PathParam("infoHash") InfoHash infoHash) {
+    public Result<ClientCommandResult> remove(final @PathParam("infoHash") Hash infoHash) {
         Log.info("Removing torrent '%s'".formatted(infoHash));
         return Result.success(bitTorrentClient.remove(infoHash));
     }
@@ -60,7 +60,7 @@ public class TorrentResource {
     @POST
     @Path("/start/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<ClientCommandResult> start(final @PathParam("infoHash") InfoHash infoHash) {
+    public Result<ClientCommandResult> start(final @PathParam("infoHash") Hash infoHash) {
         Log.info("Starting torrent '%s'".formatted(infoHash));
         return Result.success(bitTorrentClient.start(infoHash));
     }
@@ -68,7 +68,7 @@ public class TorrentResource {
     @POST
     @Path("/stop/{infoHash}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result<ClientCommandResult> stop(final @PathParam("infoHash") InfoHash infoHash) {
+    public Result<ClientCommandResult> stop(final @PathParam("infoHash") Hash infoHash) {
         Log.info("Stopping torrent '%s'".formatted(infoHash));
         return Result.success(bitTorrentClient.stop(infoHash));
     }

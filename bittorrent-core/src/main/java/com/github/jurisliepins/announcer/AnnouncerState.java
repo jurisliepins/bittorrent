@@ -1,8 +1,9 @@
 package com.github.jurisliepins.announcer;
 
-import com.github.jurisliepins.info.InfoHash;
-import com.github.jurisliepins.peer.PeerId;
-import com.github.jurisliepins.types.StatusType;
+import com.github.jurisliepins.ActorRef;
+import com.github.jurisliepins.common.StatusType;
+import com.github.jurisliepins.info.Hash;
+import com.github.jurisliepins.peer.Id;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -12,16 +13,36 @@ import lombok.NonNull;
 public final class AnnouncerState {
     @NonNull
     private StatusType status;
+
     @NonNull
-    private InfoHash infoHash;
+    private Hash infoHash;
+
     @NonNull
-    private PeerId selfPeerId;
+    private Id selfId;
+
     @NonNull
     private String announce;
-    private int peerCount;
-    private int port;
-    private int intervalSeconds;
-    private long downloaded;
-    private long uploaded;
-    private long left;
+
+    private String[][] announceList;
+
+    @NonNull
+    private Integer peerCount;
+
+    @NonNull
+    private Integer port;
+
+    @NonNull
+    private Integer intervalSeconds;
+
+    @NonNull
+    private Long downloaded;
+
+    @NonNull
+    private Long uploaded;
+
+    @NonNull
+    private Long left;
+
+    @NonNull
+    private ActorRef notifiedRef;
 }

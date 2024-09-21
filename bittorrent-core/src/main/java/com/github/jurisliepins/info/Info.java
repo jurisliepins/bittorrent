@@ -14,7 +14,7 @@ public sealed interface Info permits Info.UniFileInfo, Info.MultiFileInfo {
             @NonNull String name,
             Long length,
             String md5sum,
-            InfoHash hash
+            Hash hash
     ) implements Info { }
 
     record MultiFileInfo(
@@ -23,7 +23,7 @@ public sealed interface Info permits Info.UniFileInfo, Info.MultiFileInfo {
             Boolean isPrivate,
             @NonNull String name,
             File[] files,
-            InfoHash hash
+            Hash hash
     ) implements Info { }
 
     default int pieceLength() {
@@ -75,7 +75,7 @@ public sealed interface Info permits Info.UniFileInfo, Info.MultiFileInfo {
         };
     }
 
-    default InfoHash hash() {
+    default Hash hash() {
         return switch (this) {
             case UniFileInfo info -> info.hash();
             case MultiFileInfo info -> info.hash();
