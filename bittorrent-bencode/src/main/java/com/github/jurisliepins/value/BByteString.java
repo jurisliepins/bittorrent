@@ -33,11 +33,11 @@ public record BByteString(byte[] value) implements BValue {
         return "BByteString[value=\"%s\"]".formatted(new String(value, StandardCharsets.UTF_8));
     }
 
-    public static BByteString of(final byte[] value) {
+    public static BByteString bstr(final byte[] value) {
         return new BByteString(requireNonNull(value, "value is null"));
     }
 
-    public static BByteString of(final String value) {
-        return of(requireNonNull(value, "value is null").getBytes(StandardCharsets.UTF_8));
+    public static BByteString bstr(final String value) {
+        return bstr(requireNonNull(value, "value is null").getBytes(StandardCharsets.UTF_8));
     }
 }

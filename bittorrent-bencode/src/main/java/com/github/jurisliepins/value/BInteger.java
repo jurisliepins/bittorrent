@@ -26,35 +26,35 @@ public record BInteger(long value) implements BValue {
         return "BInteger[value=\"%d\"]".formatted(value);
     }
 
-    public static BInteger of(final boolean value) {
-        return of(value ? 1L : 0L);
+    public static BInteger bint(final boolean value) {
+        return bint(value ? 1L : 0L);
     }
 
-    public static BInteger of(final char value) {
-        return of((byte) value);
+    public static BInteger bint(final char value) {
+        return bint((byte) value);
     }
 
-    public static BInteger of(final byte value) {
-        return of((short) value);
+    public static BInteger bint(final byte value) {
+        return bint((short) value);
     }
 
-    public static BInteger of(final short value) {
-        return of((int) value);
+    public static BInteger bint(final short value) {
+        return bint((int) value);
     }
 
-    public static BInteger of(final int value) {
-        return of((long) value);
+    public static BInteger bint(final int value) {
+        return bint((long) value);
     }
 
-    public static BInteger of(final long value) {
+    public static BInteger bint(final long value) {
         return new BInteger(value);
     }
 
-    public static BInteger of(final float value) {
-        return of((int) value);
+    public static BInteger bint(final float value) {
+        return bint((int) value);
     }
 
-    public static BInteger of(final double value) {
-        return of((long) value);
+    public static BInteger bint(final double value) {
+        return bint((long) value);
     }
 }

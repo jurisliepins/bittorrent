@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.github.jurisliepins.value.BByteString.bstr;
+
 public final class TrackerResponseParser {
     private TrackerResponseParser() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
@@ -28,34 +30,34 @@ public final class TrackerResponseParser {
     public static TrackerResponse fromStream(@NonNull final BInputStream stream) throws IOException {
         return switch (BDecoder.fromStream(stream)) {
             case BDictionary dictionary -> {
-                var failureReason = dictionary.value().get(BByteString.of("failure reason"));
+                var failureReason = dictionary.value().get(bstr("failure reason"));
                 if (failureReason == null) {
                     yield new TrackerResponse.Success(
-                            Optional.ofNullable(dictionary.value().get(BByteString.of("complete")))
+                            Optional.ofNullable(dictionary.value().get(bstr("complete")))
                                     .map(TrackerResponseParser::parseNumber)
                                     .orElse(null),
 
-                            Optional.ofNullable(dictionary.value().get(BByteString.of("incomplete")))
+                            Optional.ofNullable(dictionary.value().get(bstr("incomplete")))
                                     .map(TrackerResponseParser::parseNumber)
                                     .orElse(null),
 
-                            Optional.ofNullable(dictionary.value().get(BByteString.of("interval")))
+                            Optional.ofNullable(dictionary.value().get(bstr("interval")))
                                     .map(TrackerResponseParser::parseNumber)
                                     .orElseThrow(),
 
-                            Optional.ofNullable(dictionary.value().get(BByteString.of("min interval")))
+                            Optional.ofNullable(dictionary.value().get(bstr("min interval")))
                                     .map(TrackerResponseParser::parseNumber)
                                     .orElse(null),
 
-                            Optional.ofNullable(dictionary.value().get(BByteString.of("peers")))
+                            Optional.ofNullable(dictionary.value().get(bstr("peers")))
                                     .map(TrackerResponseParser::parsePeers)
                                     .orElseThrow(),
 
-                            Optional.ofNullable(dictionary.value().get(BByteString.of("tracker id")))
+                            Optional.ofNullable(dictionary.value().get(bstr("tracker id")))
                                     .map(TrackerResponseParser::parseString)
                                     .orElse(null),
 
-                            Optional.ofNullable(dictionary.value().get(BByteString.of("warning message")))
+                            Optional.ofNullable(dictionary.value().get(bstr("warning message")))
                                     .map(TrackerResponseParser::parseString)
                                     .orElse(null)
                     );
@@ -112,8 +114,8 @@ public final class TrackerResponseParser {
                 .stream()
                 .map(peer -> {
                     var dict = peer.toBDictionary().value();
-                    var addr = dict.get(BByteString.of("ip"));
-                    var port = dict.get(BByteString.of("port"));
+                    var addr = dict.get(bstr("ip"));
+                    var port = dict.get(bstr("port"));
                     try {
                         return new InetSocketAddress(InetAddress.getByName(addr.toString(StandardCharsets.UTF_8)), port.toInteger());
                     } catch (Exception e) {

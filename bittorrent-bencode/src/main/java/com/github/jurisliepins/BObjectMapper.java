@@ -18,6 +18,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.github.jurisliepins.value.BByteString.bstr;
+import static com.github.jurisliepins.value.BDictionary.bdict;
+import static com.github.jurisliepins.value.BInteger.bint;
+import static com.github.jurisliepins.value.BList.blist;
+
 public final class BObjectMapper {
     private BObjectMapper() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
@@ -91,7 +96,7 @@ public final class BObjectMapper {
                 .map(field -> {
                     var property = field.getAnnotation(BProperty.class);
                     if (property != null) {
-                        var val = value.value().get(BByteString.of(property.value()));
+                        var val = value.value().get(bstr(property.value()));
                         if (val != null) {
                             return read(val, field.getType());
                         }
@@ -269,99 +274,99 @@ public final class BObjectMapper {
     }
 
     public static BByteString writeBytes(final byte[] value) {
-        return BByteString.of(value);
+        return bstr(value);
     }
 
     public static BByteString writeString(final String value) {
-        return BByteString.of(value);
+        return bstr(value);
     }
 
     public static BInteger writeBoolean(final boolean value) {
-        return BInteger.of(value);
+        return bint(value);
     }
 
     public static BInteger writeCharacter(final char value) {
-        return BInteger.of(value);
+        return bint(value);
     }
 
     public static BInteger writeByte(final byte value) {
-        return BInteger.of(value);
+        return bint(value);
     }
 
     public static BInteger writeShort(final short value) {
-        return BInteger.of(value);
+        return bint(value);
     }
 
     public static BInteger writeInteger(final int value) {
-        return BInteger.of(value);
+        return bint(value);
     }
 
     public static BInteger writeLong(final long value) {
-        return BInteger.of(value);
+        return bint(value);
     }
 
     public static BInteger writeFloat(final float value) {
-        return BInteger.of(value);
+        return bint(value);
     }
 
     public static BInteger writeDouble(final double value) {
-        return BInteger.of(value);
+        return bint(value);
     }
 
     public static BList writeBooleans(final boolean[] value) {
         var array = new BValue[value.length];
         for (var idx = 0; idx < value.length; idx++) {
-            array[idx] = BInteger.of(value[idx]);
+            array[idx] = bint(value[idx]);
         }
-        return BList.of(array);
+        return blist(array);
     }
 
     public static BList writeCharacters(final char[] value) {
         var array = new BValue[value.length];
         for (var idx = 0; idx < value.length; idx++) {
-            array[idx] = BInteger.of(value[idx]);
+            array[idx] = bint(value[idx]);
         }
-        return BList.of(array);
+        return blist(array);
     }
 
     public static BList writeShorts(final short[] value) {
         var array = new BValue[value.length];
         for (var idx = 0; idx < value.length; idx++) {
-            array[idx] = BInteger.of(value[idx]);
+            array[idx] = bint(value[idx]);
         }
-        return BList.of(array);
+        return blist(array);
     }
 
     public static BList writeIntegers(final int[] value) {
         var array = new BValue[value.length];
         for (var idx = 0; idx < value.length; idx++) {
-            array[idx] = BInteger.of(value[idx]);
+            array[idx] = bint(value[idx]);
         }
-        return BList.of(array);
+        return blist(array);
     }
 
     public static BList writeLongs(final long[] value) {
         var array = new BValue[value.length];
         for (var idx = 0; idx < value.length; idx++) {
-            array[idx] = BInteger.of(value[idx]);
+            array[idx] = bint(value[idx]);
         }
-        return BList.of(array);
+        return blist(array);
     }
 
     public static BList writeFloats(final float[] value) {
         var array = new BValue[value.length];
         for (var idx = 0; idx < value.length; idx++) {
-            array[idx] = BInteger.of(value[idx]);
+            array[idx] = bint(value[idx]);
         }
-        return BList.of(array);
+        return blist(array);
     }
 
     public static BList writeDoubles(final double[] value) {
         var array = new BValue[value.length];
         for (var idx = 0; idx < value.length; idx++) {
-            array[idx] = BInteger.of(value[idx]);
+            array[idx] = bint(value[idx]);
         }
-        return BList.of(array);
+        return blist(array);
     }
 
     public static <T> BList writeObjects(final T[] value) {
@@ -369,7 +374,7 @@ public final class BObjectMapper {
         for (var idx = 0; idx < value.length; idx++) {
             array[idx] = write(value[idx]);
         }
-        return BList.of(array);
+        return blist(array);
     }
 
     public static <T> BDictionary writeObject(final T value) {
@@ -381,7 +386,7 @@ public final class BObjectMapper {
                             if (field.trySetAccessible()) {
                                 var fieldValue = field.get(value);
                                 if (fieldValue != null) {
-                                    var key = BByteString.of(property.value());
+                                    var key = bstr(property.value());
                                     var val = write(fieldValue);
                                     return new AbstractMap.SimpleEntry<BValue, BValue>(key, val);
                                 }
@@ -396,6 +401,6 @@ public final class BObjectMapper {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        return BDictionary.of(values);
+        return bdict(values);
     }
 }

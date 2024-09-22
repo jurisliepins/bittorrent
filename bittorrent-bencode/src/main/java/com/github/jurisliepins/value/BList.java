@@ -40,15 +40,15 @@ public record BList(List<BValue> value) implements BValue {
                         .collect(Collectors.joining(", ")));
     }
 
-    public static BList of() {
+    public static BList blist() {
         return new BList(new ArrayList<>());
     }
 
-    public static BList of(final BValue... values) {
+    public static BList blist(final BValue... values) {
         return new BList(List.of(requireNonNull(values, "values is null")));
     }
 
-    public static BList of(final List<BValue> values) {
+    public static BList blist(final List<BValue> values) {
         return new BList(requireNonNull(values, "values is null"));
     }
 }

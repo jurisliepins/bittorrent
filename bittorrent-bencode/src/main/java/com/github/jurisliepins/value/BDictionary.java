@@ -42,21 +42,21 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
                         .collect(Collectors.joining(", ")));
     }
 
-    public static BDictionary of() {
+    public static BDictionary bdict() {
         return new BDictionary(new HashMap<>());
     }
 
-    public static BDictionary of(final Map<BValue, BValue> values) {
+    public static BDictionary bdict(final Map<BValue, BValue> values) {
         return new BDictionary(requireNonNull(values, "values is null"));
     }
 
-    public static BDictionary of(final BValue k, final BValue v) {
+    public static BDictionary bdict(final BValue k, final BValue v) {
         var map = new HashMap<BValue, BValue>();
         map.put(k, v);
         return new BDictionary(map);
     }
 
-    public static BDictionary of(
+    public static BDictionary bdict(
             final BValue k1, final BValue v1,
             final BValue k2, final BValue v2) {
         var map = new HashMap<BValue, BValue>();
@@ -65,7 +65,7 @@ public record BDictionary(Map<BValue, BValue> value) implements BValue {
         return new BDictionary(map);
     }
 
-    public static BDictionary of(
+    public static BDictionary bdict(
             final BValue k1, final BValue v1,
             final BValue k2, final BValue v2,
             final BValue k3, final BValue v3) {

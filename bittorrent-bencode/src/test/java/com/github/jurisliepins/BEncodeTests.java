@@ -1,16 +1,16 @@
 package com.github.jurisliepins;
 
 import com.github.jurisliepins.value.BValue;
-import com.github.jurisliepins.value.BInteger;
-import com.github.jurisliepins.value.BByteString;
-import com.github.jurisliepins.value.BList;
-import com.github.jurisliepins.value.BDictionary;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static com.github.jurisliepins.value.BByteString.bstr;
+import static com.github.jurisliepins.value.BDictionary.bdict;
+import static com.github.jurisliepins.value.BInteger.bint;
+import static com.github.jurisliepins.value.BList.blist;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -83,21 +83,21 @@ public final class BEncodeTests {
     @Test
     @DisplayName("Should encode/decode string")
     public void shouldEncodeDecodeString() throws IOException {
-        var value = BByteString.of("22:this is my test string");
+        var value = bstr("22:this is my test string");
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode UTF-8 string")
     public void shouldEncodeDecodeUtf8String() throws IOException {
-        var value = BByteString.of("17:ɄɅ ɱ ϴ ЂЃЃ");
+        var value = bstr("17:ɄɅ ɱ ϴ ЂЃЃ");
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode empty string")
     public void shouldEncodeDecodeEmptyString() throws IOException {
-        var value = BByteString.of("0:");
+        var value = bstr("0:");
         shouldEncodeDecode(value);
     }
 
@@ -126,21 +126,21 @@ public final class BEncodeTests {
     @Test
     @DisplayName("Should encode/decode integer")
     public void shouldEncodeDecodeInteger() throws IOException {
-        var value = BInteger.of(12412L);
+        var value = bint(12412L);
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode negative integer")
     public void shouldEncodeDecodeNegativeInteger() throws IOException {
-        var value = BInteger.of(-12412L);
+        var value = bint(-12412L);
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode zero integer")
     public void shouldEncodeDecodeZeroInteger() throws IOException {
-        var value = BInteger.of(0L);
+        var value = bint(0L);
         shouldEncodeDecode(value);
     }
 
@@ -169,30 +169,30 @@ public final class BEncodeTests {
     @Test
     @DisplayName("Should encode/decode list")
     public void shouldEncodeDecodeList() throws IOException {
-        var value = BList.of(
-                BByteString.of("test"),
-                BByteString.of("tests"),
-                BByteString.of("tested"));
+        var value = blist(
+                bstr("test"),
+                bstr("tests"),
+                bstr("tested"));
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode empty list")
     public void shouldEncodeDecodeEmptyList() throws IOException {
-        var value = BList.of();
+        var value = blist();
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode stacked list")
     public void shouldEncodeDecodeStackedList() throws IOException {
-        var value = BList.of(
-                BByteString.of("string"),
-                BList.of(
-                        BByteString.of("strings"),
-                        BList.of(BByteString.of("stringed")),
-                        BInteger.of(23456L)),
-                BInteger.of(12345L));
+        var value = blist(
+                bstr("string"),
+                blist(
+                        bstr("strings"),
+                        blist(bstr("stringed")),
+                        bint(23456L)),
+                bint(12345L));
         shouldEncodeDecode(value);
     }
 
@@ -229,37 +229,37 @@ public final class BEncodeTests {
     @Test
     @DisplayName("Should encode/decode dictionary")
     public void shouldEncodeDecodeDictionary() throws IOException {
-        var value = BDictionary.of(
-                BByteString.of("spam"), BList.of(
-                        BByteString.of("a"),
-                        BByteString.of("b")));
+        var value = bdict(
+                bstr("spam"), blist(
+                        bstr("a"),
+                        bstr("b")));
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode empty dictionary")
     public void shouldEncodeDecodeEmptyDictionary() throws IOException {
-        var value = BDictionary.of();
+        var value = bdict();
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode dictionary")
     public void shouldEncodeDecodeStackedDictionary() throws IOException {
-        var value = BDictionary.of(
-                BByteString.of("test"), BDictionary.of(
-                        BByteString.of("to"), BDictionary.of(BByteString.of("tom"), BInteger.of(12345L)),
-                        BByteString.of("tests"), BList.of(BInteger.of(12345L), BInteger.of(12345L))));
+        var value = bdict(
+                bstr("test"), bdict(
+                        bstr("to"), bdict(bstr("tom"), bint(12345L)),
+                        bstr("tests"), blist(bint(12345L), bint(12345L))));
         shouldEncodeDecode(value);
     }
 
     @Test
     @DisplayName("Should encode/decode sorted dictionary")
     public void shouldEncodeDecodeSortedDictionary() throws IOException {
-        var value = BDictionary.of(
-                BByteString.of("c"), BByteString.of("c"),
-                BByteString.of("b"), BByteString.of("b"),
-                BByteString.of("a"), BByteString.of("a"));
+        var value = bdict(
+                bstr("c"), bstr("c"),
+                bstr("b"), bstr("b"),
+                bstr("a"), bstr("a"));
         var encoded = BEncoder.toString(value, StandardCharsets.UTF_8);
         var decoded = BDecoder.fromString(encoded, StandardCharsets.UTF_8);
         assertEquals(value, decoded);
