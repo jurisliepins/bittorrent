@@ -12,6 +12,10 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map;
@@ -71,6 +75,7 @@ public final class BObjectMapper {
             case "long", "java.lang.Long" -> (T) readLong(value);
             case "float", "java.lang.Float" -> (T) readFloat(value);
             case "double", "java.lang.Double" -> (T) readDouble(value);
+            case "java.time.OffsetDateTime" -> (T) readOffsetDateTime(value);
             default -> throw new BException("Type '%s' is not supported".formatted(type.getName()));
         };
     }
@@ -86,8 +91,12 @@ public final class BObjectMapper {
             case "[J" -> (T) readLongs(value);
             case "[F" -> (T) readFloats(value);
             case "[D" -> (T) readDoubles(value);
-            case String val when type.isArray() -> (T) readArray(value, type.componentType());
-            default -> throw new BException("Type '%s' is not supported".formatted(type.getName()));
+            default -> {
+                if (type.isArray()) {
+                    yield (T) readArray(value, type.componentType());
+                }
+                throw new BException("Type '%s' is not supported".formatted(type.getName()));
+            }
         };
     }
 
@@ -145,6 +154,10 @@ public final class BObjectMapper {
 
     private static Double readDouble(final BInteger value) {
         return value.toDouble();
+    }
+
+    private static OffsetDateTime readOffsetDateTime(final BInteger value) {
+        return OffsetDateTime.ofInstant(Instant.ofEpochSecond(value.value()), ZoneOffset.UTC);
     }
 
     private static boolean[] readBooleans(final BList value) {
@@ -259,6 +272,7 @@ public final class BObjectMapper {
             case "long", "java.lang.Long" -> writeLong((long) value);
             case "float", "java.lang.Float" -> writeFloat((float) value);
             case "double", "java.lang.Double" -> writeDouble((double) value);
+            case "java.time.OffsetDateTime" -> writeOffsetDateTime((OffsetDateTime) value);
 
             case "[Z" -> writeBooleans((boolean[]) value);
             case "[C" -> writeCharacters((char[]) value);
@@ -267,9 +281,12 @@ public final class BObjectMapper {
             case "[J" -> writeLongs((long[]) value);
             case "[F" -> writeFloats((float[]) value);
             case "[D" -> writeDoubles((double[]) value);
-            case String val when value.getClass().isArray() -> writeObjects((Object[]) value);
-
-            default -> writeObject(value);
+            default -> {
+                if (value.getClass().isArray()) {
+                    yield writeObjects((Object[]) value);
+                }
+                yield writeObject(value);
+            }
         };
     }
 
@@ -311,6 +328,10 @@ public final class BObjectMapper {
 
     public static BInteger writeDouble(final double value) {
         return bint(value);
+    }
+
+    public static BInteger writeOffsetDateTime(final OffsetDateTime value) {
+        return bint(value.toEpochSecond());
     }
 
     public static BList writeBooleans(final boolean[] value) {

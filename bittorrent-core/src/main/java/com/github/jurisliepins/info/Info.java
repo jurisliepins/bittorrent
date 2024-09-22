@@ -9,7 +9,7 @@ public sealed interface Info permits Info.UniFileInfo, Info.MultiFileInfo {
 
     record UniFileInfo(
             int pieceLength,
-            byte @NonNull [][] pieces,
+            byte @NonNull [] pieces,
             Boolean isPrivate,
             @NonNull String name,
             Long length,
@@ -19,7 +19,7 @@ public sealed interface Info permits Info.UniFileInfo, Info.MultiFileInfo {
 
     record MultiFileInfo(
             int pieceLength,
-            byte @NonNull [][] pieces,
+            byte @NonNull [] pieces,
             Boolean isPrivate,
             @NonNull String name,
             File[] files,
@@ -33,7 +33,7 @@ public sealed interface Info permits Info.UniFileInfo, Info.MultiFileInfo {
         };
     }
 
-    default byte[][] pieces() {
+    default byte[] pieces() {
         return switch (this) {
             case UniFileInfo info -> info.pieces();
             case MultiFileInfo info -> info.pieces();

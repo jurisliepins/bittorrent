@@ -29,12 +29,10 @@ public final class UrlEncoding {
         return ret.toString();
     }
 
-    private static boolean isSafeChar(final Character value) {
+    private static boolean isSafeChar(final char value) {
         return switch (value) {
-            case Character val when val >= 'A' && val <= 'Z' -> true;
-            case Character val when val >= 'a' && val <= 'z' -> true;
             case '-', '.', '_', '~' -> true;
-            default -> false;
+            default -> (value >= 'A' && value <= 'Z') || (value >= 'a' && value <= 'z');
         };
     }
 }

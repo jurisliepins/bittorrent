@@ -93,12 +93,14 @@ public final class TrackerResponseParser {
     }
 
     private static List<InetSocketAddress> parsePeers(@NonNull final BByteString value) {
+        final var length = 6;
+
         var parsed = new ArrayList<InetSocketAddress>();
 
         var b = value.toBytes();
-        for (var i = 0; i <= b.length - 6; i += 6) {
-            var addr = Arrays.copyOfRange(b, i, i + 4);
-            var port = Arrays.copyOfRange(b, i + 4, i + 6);
+        for (var i = 0; i <= b.length - length; i += length) {
+            var addr = Arrays.copyOfRange(b, i, i + (length - 2));
+            var port = Arrays.copyOfRange(b, i + (length - 2), i + length);
             try {
                 parsed.add(new InetSocketAddress(InetAddress.getByAddress(addr), ByteBuffer.wrap(port).getShort()));
             } catch (Exception e) {

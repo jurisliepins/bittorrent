@@ -1,5 +1,7 @@
 package com.github.jurisliepins.value;
 
+import java.time.OffsetDateTime;
+
 import static java.util.Objects.requireNonNull;
 
 public record BInteger(long value) implements BValue {
@@ -56,5 +58,9 @@ public record BInteger(long value) implements BValue {
 
     public static BInteger bint(final double value) {
         return bint((long) value);
+    }
+
+    public static BInteger bint(final OffsetDateTime value) {
+        return bint(value.toEpochSecond());
     }
 }

@@ -21,7 +21,11 @@ public final class ClientState {
 
     @NonNull
     @Builder.Default
-    private Torrents torrents = new Torrents();
+    private Torrents torrents = Torrents.emptyTorrents();
+
+    @NonNull
+    @Builder.Default
+    private Settings settings = Settings.defaultSettings();
 
     @Data
     @Builder
@@ -103,6 +107,28 @@ public final class ClientState {
 
         public Torrent remove(final Hash infoHash) {
             return torrents.remove(infoHash);
+        }
+
+        public static Torrents emptyTorrents() {
+            return new Torrents();
+        }
+    }
+
+    public record Settings(
+            int peerCount,
+            int port,
+            int intervalSeconds
+    ) {
+        public static final int DEFAULT_PEER_COUNT = 30;
+        public static final int DEFAULT_PORT = 6881;
+        public static final int DEFAULT_INTERVAL_SECONDS = 60;
+
+        public static Settings defaultSettings() {
+            return new Settings(
+                    DEFAULT_PEER_COUNT,
+                    DEFAULT_PORT,
+                    DEFAULT_INTERVAL_SECONDS
+            );
         }
     }
 

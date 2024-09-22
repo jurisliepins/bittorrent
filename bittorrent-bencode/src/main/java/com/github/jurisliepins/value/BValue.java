@@ -3,6 +3,9 @@ package com.github.jurisliepins.value;
 import com.github.jurisliepins.BException;
 
 import java.nio.charset.Charset;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +45,10 @@ public sealed interface BValue extends Comparable<BValue> permits BInteger, BByt
 
     default double toDouble() {
         return (double) toLong();
+    }
+
+    default OffsetDateTime toOffsetDateTime() {
+        return OffsetDateTime.ofInstant(Instant.ofEpochSecond(toLong()), ZoneOffset.UTC);
     }
 
     default BInteger toBInteger() {

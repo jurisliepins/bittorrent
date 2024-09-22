@@ -11,7 +11,7 @@ import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientCommandResult;
 import com.github.jurisliepins.common.StatusType;
 import com.github.jurisliepins.context.Context;
-import com.github.jurisliepins.info.MetaInfo;
+import com.github.jurisliepins.info.MetaInfoMapper;
 import com.github.jurisliepins.peer.Id;
 import com.github.jurisliepins.torrent.TorrentMailboxReceiver;
 import com.github.jurisliepins.torrent.TorrentState;
@@ -26,7 +26,7 @@ public final class ClientCommandAddHandler implements CoreContextSuccessHandler<
             final ClientState state,
             final Mailbox.Success mailbox,
             final ClientCommand.Add message) {
-        var mi = MetaInfo.fromBytes(message.metaInfo());
+        var mi = MetaInfoMapper.fromBytes(message.metaInfo());
 
         switch (state.getTorrents().get(mi.info().hash())) {
             case null -> {
@@ -39,9 +39,9 @@ public final class ClientCommandAddHandler implements CoreContextSuccessHandler<
                                         .selfId(Id.self())
                                         .announce(mi.announce())
                                         .announceList(mi.announceList())
-                                        .peerCount(30)
-                                        .port(6881)
-                                        .intervalSeconds(60)
+                                        .peerCount(state.getSettings().peerCount())
+                                        .port(state.getSettings().port())
+                                        .intervalSeconds(state.getSettings().intervalSeconds())
                                         .downloaded(0L)
                                         .uploaded(0L)
                                         .left(mi.info().length())

@@ -57,7 +57,9 @@ public final class BObjectMapperTests {
             @BProperty("max-float") float maxFloat,
             @BProperty("min-float") float minFloat,
             @BProperty("max-double") double maxDouble,
-            @BProperty("min-double") double minDouble
+            @BProperty("min-double") double minDouble,
+            @BProperty("max-offset-date-time") OffsetDateTime maxOffsetDateTime,
+            @BProperty("min-offset-date-time") OffsetDateTime minOffsetDateTime
     ) {
         //
     }
@@ -82,6 +84,8 @@ public final class BObjectMapperTests {
             put(bstr("min-float"), bint(Float.MIN_VALUE));
             put(bstr("max-double"), bint(Double.MAX_VALUE));
             put(bstr("min-double"), bint(Double.MIN_VALUE));
+            put(bstr("max-offset-date-time"), bint(OffsetDateTime.parse("9999-01-01T00:00:00Z")));
+            put(bstr("min-offset-date-time"), bint(OffsetDateTime.parse("1970-01-01T00:00:00Z")));
         }});
         var parsed = BObjectMapper.read(value, BIntegerValues.class);
         var mapped = BObjectMapper.write(parsed);
