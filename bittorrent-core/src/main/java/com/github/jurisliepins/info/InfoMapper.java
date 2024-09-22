@@ -6,14 +6,12 @@ import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.info.objects.InfoBObject;
 import com.github.jurisliepins.stream.BInputStream;
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 
 import java.util.Arrays;
 
+@UtilityClass
 public final class InfoMapper {
-    private InfoMapper() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
-
     public static Info fromStream(@NonNull final BInputStream stream) {
         try {
             return fromObject(BObjectMapper.fromStream(stream, InfoBObject.class));

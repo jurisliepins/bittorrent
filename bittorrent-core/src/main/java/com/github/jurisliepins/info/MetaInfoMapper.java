@@ -6,12 +6,10 @@ import com.github.jurisliepins.CoreException;
 import com.github.jurisliepins.info.objects.MetaInfoBObject;
 import com.github.jurisliepins.stream.BInputStream;
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public final class MetaInfoMapper {
-    private MetaInfoMapper() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
-
     public static MetaInfo fromStream(@NonNull final BInputStream stream) {
         try {
             return fromObject(BObjectMapper.fromStream(stream, MetaInfoBObject.class));

@@ -1,10 +1,9 @@
 package com.github.jurisliepins.tracker.url;
 
-public final class UrlEncoding {
-    private UrlEncoding() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
+public final class UrlEncoding {
     public static String requireSafe(final String value) {
         for (var c : value.toCharArray()) {
             if (!isSafeChar(c)) {

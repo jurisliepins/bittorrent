@@ -8,6 +8,7 @@ import com.github.jurisliepins.value.BDictionary;
 import com.github.jurisliepins.value.BList;
 import com.github.jurisliepins.value.BValue;
 import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -22,11 +23,8 @@ import java.util.stream.Collectors;
 
 import static com.github.jurisliepins.value.BByteString.bstr;
 
+@UtilityClass
 public final class TrackerResponseParser {
-    private TrackerResponseParser() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
-
     public static TrackerResponse fromStream(@NonNull final BInputStream stream) throws IOException {
         return switch (BDecoder.fromStream(stream)) {
             case BDictionary dictionary -> {

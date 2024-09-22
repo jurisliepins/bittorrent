@@ -1,10 +1,9 @@
 package com.github.jurisliepins.tracker;
 
-public final class TrackerRequest {
-    private TrackerRequest() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
+public final class TrackerRequest {
     public static final String INFO_HASH = "info_hash";
     public static final String PEER_ID = "peer_id";
     public static final String PORT = "port";
