@@ -4,8 +4,8 @@ import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.context.Context;
 
-public interface CoreContextFailureHandler<T> {
+public interface CoreContextFailureHandler<TState> {
 
-    NextState handle(Context context, Mailbox.Failure mailbox, T state);
+    NextState handle(Context context, TState state, Mailbox.Failure mailbox);
 
 }

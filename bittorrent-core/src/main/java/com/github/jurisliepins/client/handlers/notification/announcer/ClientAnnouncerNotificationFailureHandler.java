@@ -15,8 +15,8 @@ public final class ClientAnnouncerNotificationFailureHandler
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final ClientState state,
+            final Mailbox.Success mailbox,
             final AnnouncerNotification.Failure message) {
         switch (state.getTorrents().get(message.infoHash())) {
             case ClientState.Torrent torrent -> torrent.getRef().post(message, mailbox.sender());
@@ -24,5 +24,4 @@ public final class ClientAnnouncerNotificationFailureHandler
         }
         return NextState.Receive;
     }
-
 }

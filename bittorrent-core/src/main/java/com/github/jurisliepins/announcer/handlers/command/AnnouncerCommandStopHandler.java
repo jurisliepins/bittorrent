@@ -9,7 +9,6 @@ import com.github.jurisliepins.announcer.message.AnnouncerNotification;
 import com.github.jurisliepins.common.StatusType;
 import com.github.jurisliepins.context.Context;
 import com.github.jurisliepins.tracker.TrackerEventType;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
@@ -20,8 +19,8 @@ public final class AnnouncerCommandStopHandler implements CoreContextSuccessHand
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final AnnouncerState state,
+            final Mailbox.Success mailbox,
             final AnnouncerCommand.Stop message) {
         switch (state.getStatus()) {
             case Started, Errored -> {
@@ -39,5 +38,4 @@ public final class AnnouncerCommandStopHandler implements CoreContextSuccessHand
         }
         return NextState.Receive;
     }
-
 }

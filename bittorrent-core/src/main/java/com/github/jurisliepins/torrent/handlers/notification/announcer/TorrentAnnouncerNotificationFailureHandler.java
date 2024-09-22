@@ -15,10 +15,9 @@ public final class TorrentAnnouncerNotificationFailureHandler
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final TorrentState state,
+            final Mailbox.Success mailbox,
             final AnnouncerNotification.Failure message) {
         return NextState.Receive;
     }
-
 }

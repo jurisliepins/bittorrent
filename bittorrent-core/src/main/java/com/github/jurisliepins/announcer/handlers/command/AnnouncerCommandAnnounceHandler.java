@@ -20,8 +20,8 @@ public final class AnnouncerCommandAnnounceHandler implements CoreContextSuccess
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final AnnouncerState state,
+            final Mailbox.Success mailbox,
             final AnnouncerCommand.Announce message) {
         log.info("[{}] Announcing '{}' on '{}'", state.getInfoHash(), message.eventTypeOpt(), state.getAnnounce());
 
@@ -75,5 +75,4 @@ public final class AnnouncerCommandAnnounceHandler implements CoreContextSuccess
         }
         return NextState.Receive;
     }
-
 }

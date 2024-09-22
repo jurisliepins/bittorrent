@@ -16,12 +16,11 @@ public final class TorrentCommandTerminateHandler implements CoreContextSuccessH
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final TorrentState state,
+            final Mailbox.Success mailbox,
             final TorrentCommand.Terminate message) {
         state.getAnnouncerRef().post(AnnouncerCommand.Terminate.INSTANCE, mailbox.self());
         state.getNotifiedRef().post(new TorrentNotification.Terminated(state.getInfoHash()), mailbox.self());
         return NextState.Terminate;
     }
-
 }

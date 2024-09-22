@@ -15,11 +15,10 @@ public final class ClientTorrentNotificationFailureHandler
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final ClientState state,
+            final Mailbox.Success mailbox,
             final TorrentNotification.Failure message) {
         log.error("Torrent '{}' failed", message.infoHash());
         return NextState.Receive;
     }
-
 }

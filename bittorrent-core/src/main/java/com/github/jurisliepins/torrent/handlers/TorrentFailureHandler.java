@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class TorrentFailureHandler implements CoreContextFailureHandler<TorrentState> {
 
     @Override
-    public NextState handle(final Context context, final Mailbox.Failure mailbox, final TorrentState state) {
+    public NextState handle(final Context context, final TorrentState state, final Mailbox.Failure mailbox) {
         switch (mailbox.message()) {
             case TorrentCommand ignored -> {
                 log.error("[{}] Failed to handle command", state.getInfoHash(), mailbox.cause());
@@ -26,5 +26,4 @@ public final class TorrentFailureHandler implements CoreContextFailureHandler<To
         }
         return NextState.Receive;
     }
-
 }

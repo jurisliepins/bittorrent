@@ -16,8 +16,8 @@ public final class ClientCommandStopHandler implements CoreContextSuccessHandler
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final ClientState state,
+            final Mailbox.Success mailbox,
             final ClientCommand.Stop message) {
         switch (state.getTorrents().get(message.infoHash())) {
             case ClientState.Torrent torrent -> {
@@ -33,5 +33,4 @@ public final class ClientCommandStopHandler implements CoreContextSuccessHandler
         }
         return NextState.Receive;
     }
-
 }

@@ -13,11 +13,10 @@ public final class AnnouncerCommandTerminateHandler implements CoreContextSucces
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final AnnouncerState state,
+            final Mailbox.Success mailbox,
             final AnnouncerCommand.Terminate message) {
         state.getNotifiedRef().post(new AnnouncerNotification.Terminated(state.getInfoHash()), mailbox.self());
         return NextState.Terminate;
     }
-
 }

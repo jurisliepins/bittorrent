@@ -15,8 +15,8 @@ public final class ClientTorrentNotificationTerminatedHandler
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final ClientState state,
+            final Mailbox.Success mailbox,
             final TorrentNotification.Terminated message) {
         switch (state.getTorrents().remove(message.infoHash())) {
             case ClientState.Torrent ignored -> { /* Ignored. */ }
@@ -24,5 +24,4 @@ public final class ClientTorrentNotificationTerminatedHandler
         }
         return NextState.Receive;
     }
-
 }

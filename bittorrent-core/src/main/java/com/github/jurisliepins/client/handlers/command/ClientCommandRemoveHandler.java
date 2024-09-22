@@ -16,8 +16,8 @@ public final class ClientCommandRemoveHandler implements CoreContextSuccessHandl
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final ClientState state,
+            final Mailbox.Success mailbox,
             final ClientCommand.Remove message) {
         switch (state.getTorrents().remove(message.infoHash())) {
             case ClientState.Torrent torrent -> {
@@ -28,5 +28,4 @@ public final class ClientCommandRemoveHandler implements CoreContextSuccessHandl
         }
         return NextState.Receive;
     }
-
 }

@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class AnnouncerFailureHandler implements CoreContextFailureHandler<AnnouncerState> {
 
     @Override
-    public NextState handle(final Context context, final Mailbox.Failure mailbox, final AnnouncerState state) {
+    public NextState handle(final Context context, final AnnouncerState state, final Mailbox.Failure mailbox) {
         switch (mailbox.message()) {
             case AnnouncerCommand ignored -> {
                 log.error("[{}] Failed to handle command", state.getInfoHash(), mailbox.cause());
@@ -26,5 +26,4 @@ public final class AnnouncerFailureHandler implements CoreContextFailureHandler<
         }
         return NextState.Receive;
     }
-
 }

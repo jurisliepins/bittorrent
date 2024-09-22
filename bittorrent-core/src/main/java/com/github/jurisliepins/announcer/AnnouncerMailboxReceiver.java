@@ -1,6 +1,6 @@
 package com.github.jurisliepins.announcer;
 
-import com.github.jurisliepins.CoreContextMailboxReceiver;
+import com.github.jurisliepins.CoreStateContextMailboxReceiver;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.announcer.message.AnnouncerCommand;
@@ -9,14 +9,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class AnnouncerMailboxReceiver extends CoreContextMailboxReceiver {
-    private final AnnouncerState state;
-
+public final class AnnouncerMailboxReceiver extends CoreStateContextMailboxReceiver<AnnouncerState> {
     public AnnouncerMailboxReceiver(
             @NonNull final Context context,
             @NonNull final AnnouncerState state) {
-        super(context);
-        this.state = state;
+        super(context, state);
     }
 
     @Override
@@ -48,7 +45,7 @@ public final class AnnouncerMailboxReceiver extends CoreContextMailboxReceiver {
                 .announcer()
                 .command()
                 .announce()
-                .handle(context(), mailbox, state, command);
+                .handle(context(), state(), mailbox, command);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerCommand.Start command) {
@@ -56,7 +53,7 @@ public final class AnnouncerMailboxReceiver extends CoreContextMailboxReceiver {
                 .announcer()
                 .command()
                 .start()
-                .handle(context(), mailbox, state, command);
+                .handle(context(), state(), mailbox, command);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerCommand.Stop command) {
@@ -64,7 +61,7 @@ public final class AnnouncerMailboxReceiver extends CoreContextMailboxReceiver {
                 .announcer()
                 .command()
                 .stop()
-                .handle(context(), mailbox, state, command);
+                .handle(context(), state(), mailbox, command);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerCommand.Terminate command) {
@@ -72,18 +69,18 @@ public final class AnnouncerMailboxReceiver extends CoreContextMailboxReceiver {
                 .announcer()
                 .command()
                 .terminate()
-                .handle(context(), mailbox, state, command);
+                .handle(context(), state(), mailbox, command);
     }
 
     private NextState handle(final Mailbox.Failure mailbox) {
         return context().handlers()
                 .announcer()
                 .failure()
-                .handle(context(), mailbox, state);
+                .handle(context(), state(), mailbox);
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {
-        log.error("[{}] Unhandled message {}", state.getInfoHash(), mailbox.message());
+        log.error("[{}] Unhandled message {}", state().getInfoHash(), mailbox.message());
         return NextState.Receive;
     }
 }

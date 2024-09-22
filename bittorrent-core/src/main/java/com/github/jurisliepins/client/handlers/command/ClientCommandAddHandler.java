@@ -23,8 +23,8 @@ public final class ClientCommandAddHandler implements CoreContextSuccessHandler<
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final ClientState state,
+            final Mailbox.Success mailbox,
             final ClientCommand.Add message) {
         var mi = MetaInfo.fromBytes(message.metaInfo());
 
@@ -97,5 +97,4 @@ public final class ClientCommandAddHandler implements CoreContextSuccessHandler<
         }
         return NextState.Receive;
     }
-
 }

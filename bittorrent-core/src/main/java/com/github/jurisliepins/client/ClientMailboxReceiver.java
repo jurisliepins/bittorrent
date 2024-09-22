@@ -1,6 +1,6 @@
 package com.github.jurisliepins.client;
 
-import com.github.jurisliepins.CoreContextMailboxReceiver;
+import com.github.jurisliepins.CoreStateContextMailboxReceiver;
 import com.github.jurisliepins.Mailbox;
 import com.github.jurisliepins.NextState;
 import com.github.jurisliepins.announcer.message.AnnouncerNotification;
@@ -12,14 +12,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
-    private final ClientState state;
-
+public final class ClientMailboxReceiver extends CoreStateContextMailboxReceiver<ClientState> {
     public ClientMailboxReceiver(
             @NonNull final Context context,
             @NonNull final ClientState state) {
-        super(context);
-        this.state = state;
+        super(context, state);
     }
 
     @Override
@@ -54,7 +51,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .client()
                 .command()
                 .add()
-                .handle(context(), mailbox, state, command);
+                .handle(context(), state(), mailbox, command);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final ClientCommand.Remove command) {
@@ -62,7 +59,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .client()
                 .command()
                 .remove()
-                .handle(context(), mailbox, state, command);
+                .handle(context(), state(), mailbox, command);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final ClientCommand.Start command) {
@@ -70,7 +67,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .client()
                 .command()
                 .start()
-                .handle(context(), mailbox, state, command);
+                .handle(context(), state(), mailbox, command);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final ClientCommand.Stop command) {
@@ -78,7 +75,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .client()
                 .command()
                 .stop()
-                .handle(context(), mailbox, state, command);
+                .handle(context(), state(), mailbox, command);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final ClientRequest request) {
@@ -92,7 +89,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .client()
                 .request()
                 .get()
-                .handle(context(), mailbox, state, request);
+                .handle(context(), state(), mailbox, request);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final TorrentNotification notification) {
@@ -109,7 +106,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .notification()
                 .torrent()
                 .statusChanged()
-                .handle(context(), mailbox, state, statusChanged);
+                .handle(context(), state(), mailbox, statusChanged);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final TorrentNotification.Terminated terminated) {
@@ -118,7 +115,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .notification()
                 .torrent()
                 .terminated()
-                .handle(context(), mailbox, state, terminated);
+                .handle(context(), state(), mailbox, terminated);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final TorrentNotification.Failure failure) {
@@ -127,7 +124,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .notification()
                 .torrent()
                 .failure()
-                .handle(context(), mailbox, state, failure);
+                .handle(context(), state(), mailbox, failure);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerNotification notification) {
@@ -145,7 +142,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .notification()
                 .announcer()
                 .peersReceived()
-                .handle(context(), mailbox, state, peersReceived);
+                .handle(context(), state(), mailbox, peersReceived);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerNotification.StatusChanged statusChanged) {
@@ -154,7 +151,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .notification()
                 .announcer()
                 .statusChanged()
-                .handle(context(), mailbox, state, statusChanged);
+                .handle(context(), state(), mailbox, statusChanged);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerNotification.Terminated terminated) {
@@ -163,7 +160,7 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .notification()
                 .announcer()
                 .terminated()
-                .handle(context(), mailbox, state, terminated);
+                .handle(context(), state(), mailbox, terminated);
     }
 
     private NextState handle(final Mailbox.Success mailbox, final AnnouncerNotification.Failure failure) {
@@ -172,14 +169,14 @@ public final class ClientMailboxReceiver extends CoreContextMailboxReceiver {
                 .notification()
                 .announcer()
                 .failure()
-                .handle(context(), mailbox, state, failure);
+                .handle(context(), state(), mailbox, failure);
     }
 
     private NextState handle(final Mailbox.Failure mailbox) {
         return context().handlers()
                 .client()
                 .failure()
-                .handle(context(), mailbox, state);
+                .handle(context(), state(), mailbox);
     }
 
     private NextState unhandled(final Mailbox.Success mailbox) {

@@ -15,8 +15,8 @@ public final class TorrentAnnouncerNotificationStatusChangedHandler
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final TorrentState state,
+            final Mailbox.Success mailbox,
             final AnnouncerNotification.StatusChanged message) {
         return NextState.Receive;
     }

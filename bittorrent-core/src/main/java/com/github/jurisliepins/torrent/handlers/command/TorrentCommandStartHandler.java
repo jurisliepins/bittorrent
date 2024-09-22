@@ -17,8 +17,8 @@ public final class TorrentCommandStartHandler implements CoreContextSuccessHandl
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final TorrentState state,
+            final Mailbox.Success mailbox,
             final TorrentCommand.Start message) {
         switch (state.getStatus()) {
             case Stopped -> {
@@ -33,5 +33,4 @@ public final class TorrentCommandStartHandler implements CoreContextSuccessHandl
         }
         return NextState.Receive;
     }
-
 }

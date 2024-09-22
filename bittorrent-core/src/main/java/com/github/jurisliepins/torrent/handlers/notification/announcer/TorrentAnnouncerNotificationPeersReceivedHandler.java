@@ -15,11 +15,10 @@ public final class TorrentAnnouncerNotificationPeersReceivedHandler
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final TorrentState state,
+            final Mailbox.Success mailbox,
             final AnnouncerNotification.PeersReceived message) {
         log.info("[{}] Received peers {}", state.getInfoHash(), message.peers());
         return NextState.Receive;
     }
-
 }

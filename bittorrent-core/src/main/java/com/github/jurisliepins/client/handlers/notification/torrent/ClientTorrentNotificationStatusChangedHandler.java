@@ -15,8 +15,8 @@ public final class ClientTorrentNotificationStatusChangedHandler
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final ClientState state,
+            final Mailbox.Success mailbox,
             final TorrentNotification.StatusChanged message) {
         switch (state.getTorrents().get(message.infoHash())) {
             case ClientState.Torrent torrent -> torrent.setStatus(message.status());
@@ -24,5 +24,4 @@ public final class ClientTorrentNotificationStatusChangedHandler
         }
         return NextState.Receive;
     }
-
 }

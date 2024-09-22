@@ -11,9 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 public final class ClientFailureHandler implements CoreContextFailureHandler<ClientState> {
 
     @Override
-    public NextState handle(final Context context, final Mailbox.Failure mailbox, final ClientState state) {
+    public NextState handle(final Context context, final ClientState state, final Mailbox.Failure mailbox) {
         log.error("Failure", mailbox.cause());
         return NextState.Receive;
     }
-
 }

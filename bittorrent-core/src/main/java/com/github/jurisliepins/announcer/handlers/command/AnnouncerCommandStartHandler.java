@@ -19,8 +19,8 @@ public final class AnnouncerCommandStartHandler implements CoreContextSuccessHan
     @Override
     public NextState handle(
             final Context context,
-            final Mailbox.Success mailbox,
             final AnnouncerState state,
+            final Mailbox.Success mailbox,
             final AnnouncerCommand.Start message) {
         switch (state.getStatus()) {
             case Stopped -> {
@@ -36,5 +36,4 @@ public final class AnnouncerCommandStartHandler implements CoreContextSuccessHan
         }
         return NextState.Receive;
     }
-
 }
