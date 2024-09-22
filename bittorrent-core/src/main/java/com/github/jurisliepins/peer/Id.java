@@ -19,7 +19,7 @@ public final class Id {
     private final String value;
 
     public Id(final byte @NonNull [] value) {
-        this(new String(value, StandardCharsets.US_ASCII));
+        this(new String(requireNonNull(value), StandardCharsets.US_ASCII));
     }
 
     public Id(@NonNull final String value) {
@@ -33,7 +33,7 @@ public final class Id {
         this.value = "";
     }
 
-    public byte[] toByteArray() {
+    public byte[] toBytes() {
         return value.getBytes(StandardCharsets.US_ASCII);
     }
 

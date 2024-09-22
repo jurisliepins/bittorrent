@@ -14,7 +14,7 @@ public final class Hash {
     private final String value;
 
     public Hash(final byte @NonNull [] value) {
-        this(HexFormat.of().formatHex(value));
+        this(HexFormat.of().formatHex(requireNonNull(value)));
     }
 
     public Hash(@NonNull final String value) {
