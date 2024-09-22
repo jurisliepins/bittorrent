@@ -110,10 +110,9 @@ public final class TrackerRequestBuilder {
         var ret = new StringBuilder();
         ret.append(url);
         ret.append("?");
-        ret.append(
-                parameters.stream()
-                        .map(parameter -> parameter.name() + "=" + parameter.value())
-                        .collect(Collectors.joining("&")));
+        ret.append(parameters.stream()
+                           .map(parameter -> parameter.name() + "=" + parameter.value())
+                           .collect(Collectors.joining("&")));
         return ret.toString();
     }
 }
