@@ -2,14 +2,17 @@ package com.github.jurisliepins.tracker.url;
 
 import lombok.NonNull;
 
+import static com.github.jurisliepins.tracker.url.UrlEncoding.encode;
+import static com.github.jurisliepins.tracker.url.UrlEncoding.requireSafe;
+
 public final class BinaryNamedParameterValue implements NamedParameterValue {
 
     private final String name;
     private final String value;
 
     public BinaryNamedParameterValue(@NonNull final String name, final byte @NonNull [] value) {
-        this.name = UrlEncoding.requireSafe(name);
-        this.value = UrlEncoding.encode(value);
+        this.name = requireSafe(name);
+        this.value = encode(value);
     }
 
     @Override

@@ -32,9 +32,7 @@ public final class AnnouncerCommandStopHandler implements CoreContextSuccessHand
 
                 log.info("[{}] Announcer stopped", state.getInfoHash());
             }
-            default -> {
-                log.info("[{}] Announcer already stopped", state.getInfoHash());
-            }
+            default -> log.info("[{}] Announcer already stopped", state.getInfoHash());
         }
         return NextState.Receive;
     }

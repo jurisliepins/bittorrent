@@ -60,18 +60,12 @@ public final class AnnouncerCommandAnnounceHandler implements CoreContextSuccess
                         state.getNotifiedRef()
                                 .post(new AnnouncerNotification.PeersReceived(state.getInfoHash(), success.peers()), mailbox.self());
                     }
-                    default -> {
-                        log.info("[{}] Not scheduling re-announce since we're no longer running", state.getInfoHash());
-                    }
+                    default -> log.info("[{}] Not scheduling re-announce since we're no longer running", state.getInfoHash());
                 }
             }
 
-            case TrackerResponse.Failure failure -> {
-                log.error("[{}] Announced with failure response on '{}' with '{}'",
-                          state.getInfoHash(),
-                          state.getAnnounce(),
-                          failure);
-            }
+            case TrackerResponse.Failure failure ->
+                    log.error("[{}] Announced with failure response on '{}' with '{}'", state.getInfoHash(), state.getAnnounce(), failure);
         }
         return NextState.Receive;
     }

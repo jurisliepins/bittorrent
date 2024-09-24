@@ -92,8 +92,7 @@ public final class ClientCommandAddHandler implements CoreContextSuccessHandler<
                                      .build());
                 mailbox.reply(new ClientCommandResult.Success(mi.info().hash(), "Torrent added"));
             }
-            case ClientState.Torrent ignored ->
-                    mailbox.reply(new ClientCommandResult.Failure(mi.info().hash(), "Torrent already exists"));
+            case ClientState.Torrent ignored -> mailbox.reply(new ClientCommandResult.Failure(mi.info().hash(), "Torrent already exists"));
         }
         return NextState.Receive;
     }

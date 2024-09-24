@@ -44,9 +44,7 @@ public final class InfoMapper {
                     value.isPrivate(),
                     value.name(),
                     Arrays.stream(value.files())
-                            .map(file -> new File(file.length(),
-                                                  file.md5sum(),
-                                                  file.path()))
+                            .map(FileMapper::fromObject)
                             .toArray(File[]::new),
                     value.hash());
         }

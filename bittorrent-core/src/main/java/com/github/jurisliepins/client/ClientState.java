@@ -7,9 +7,11 @@ import com.github.jurisliepins.bitfield.ImmutableBitfield;
 import com.github.jurisliepins.common.StatusType;
 import com.github.jurisliepins.info.Hash;
 import com.github.jurisliepins.peer.Id;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
+import lombok.Setter;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -21,10 +23,12 @@ public final class ClientState {
 
     @NonNull
     @Builder.Default
+    @Setter(AccessLevel.NONE)
     private Torrents torrents = Torrents.emptyTorrents();
 
     @NonNull
     @Builder.Default
+    @Setter(AccessLevel.NONE)
     private Settings settings = Settings.defaultSettings();
 
     @Data
@@ -32,6 +36,7 @@ public final class ClientState {
     public static final class Torrent {
         @NonNull
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private ActorRef ref = Actor.DeadLetter.INSTANCE;
 
         @NonNull
@@ -40,10 +45,12 @@ public final class ClientState {
 
         @NonNull
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private Hash infoHash = Hash.BLANK;
 
         @NonNull
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private Id selfId = Id.BLANK;
 
         @NonNull
@@ -52,33 +59,42 @@ public final class ClientState {
 
         @NonNull
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private String name = "";
 
         @NonNull
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private Integer pieceLength = 0;
 
         @NonNull
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private Long length = 0L;
 
         @NonNull
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private String announce = "";
 
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private String[][] announceList = new String[][]{};
 
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private OffsetDateTime creationDate = OffsetDateTime.MIN;
 
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private String comment = "";
 
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private String createdBy = "";
 
         @Builder.Default
+        @Setter(AccessLevel.NONE)
         private String encoding = "";
 
         @NonNull
