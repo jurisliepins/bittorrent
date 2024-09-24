@@ -28,39 +28,18 @@ public final class TrackerResponseParser {
     public static TrackerResponse fromStream(@NonNull final BInputStream stream) throws IOException {
         return switch (BDecoder.fromStream(stream)) {
             case BDictionary dictionary -> {
-                var failureReason = dictionary.value().get(bstr("failure reason"));
+                var failureReason = failureReason(dictionary);
                 if (failureReason == null) {
                     yield new TrackerResponse.Success(
-                            Optional.ofNullable(dictionary.value().get(bstr("complete")))
-                                    .map(TrackerResponseParser::parseNumber)
-                                    .orElse(null),
-
-                            Optional.ofNullable(dictionary.value().get(bstr("incomplete")))
-                                    .map(TrackerResponseParser::parseNumber)
-                                    .orElse(null),
-
-                            Optional.ofNullable(dictionary.value().get(bstr("interval")))
-                                    .map(TrackerResponseParser::parseNumber)
-                                    .orElseThrow(),
-
-                            Optional.ofNullable(dictionary.value().get(bstr("min interval")))
-                                    .map(TrackerResponseParser::parseNumber)
-                                    .orElse(null),
-
-                            Optional.ofNullable(dictionary.value().get(bstr("peers")))
-                                    .map(TrackerResponseParser::parsePeers)
-                                    .orElseThrow(),
-
-                            Optional.ofNullable(dictionary.value().get(bstr("tracker id")))
-                                    .map(TrackerResponseParser::parseString)
-                                    .orElse(null),
-
-                            Optional.ofNullable(dictionary.value().get(bstr("warning message")))
-                                    .map(TrackerResponseParser::parseString)
-                                    .orElse(null)
-                    );
+                            complete(dictionary),
+                            incomplete(dictionary),
+                            interval(dictionary),
+                            minInterval(dictionary),
+                            peers(dictionary),
+                            trackerId(dictionary),
+                            warningMessage(dictionary));
                 } else {
-                    yield new TrackerResponse.Failure(failureReason.toString(StandardCharsets.UTF_8));
+                    yield new TrackerResponse.Failure(failureReason);
                 }
             }
 
@@ -76,6 +55,54 @@ public final class TrackerResponseParser {
 
     public static TrackerResponse fromString(@NonNull final String string) throws IOException {
         return fromBytes(string.getBytes(StandardCharsets.ISO_8859_1));
+    }
+
+    private static String failureReason(final BDictionary dictionary) {
+        return Optional.ofNullable(dictionary.value().get(bstr("failure reason")))
+                .map(TrackerResponseParser::parseString)
+                .orElse(null);
+    }
+
+    private static Long complete(final BDictionary dictionary) {
+        return Optional.ofNullable(dictionary.value().get(bstr("complete")))
+                .map(TrackerResponseParser::parseNumber)
+                .orElse(null);
+    }
+
+    private static Long incomplete(final BDictionary dictionary) {
+        return Optional.ofNullable(dictionary.value().get(bstr("incomplete")))
+                .map(TrackerResponseParser::parseNumber)
+                .orElse(null);
+    }
+
+    private static Long interval(final BDictionary dictionary) {
+        return Optional.ofNullable(dictionary.value().get(bstr("interval")))
+                .map(TrackerResponseParser::parseNumber)
+                .orElseThrow();
+    }
+
+    private static Long minInterval(final BDictionary dictionary) {
+        return Optional.ofNullable(dictionary.value().get(bstr("min interval")))
+                .map(TrackerResponseParser::parseNumber)
+                .orElse(null);
+    }
+
+    private static List<InetSocketAddress> peers(final BDictionary dictionary) {
+        return Optional.ofNullable(dictionary.value().get(bstr("peers")))
+                .map(TrackerResponseParser::parsePeers)
+                .orElseThrow();
+    }
+
+    private static String trackerId(final BDictionary dictionary) {
+        return Optional.ofNullable(dictionary.value().get(bstr("tracker id")))
+                .map(TrackerResponseParser::parseString)
+                .orElse(null);
+    }
+
+    private static String warningMessage(final BDictionary dictionary) {
+        return Optional.ofNullable(dictionary.value().get(bstr("warning message")))
+                .map(TrackerResponseParser::parseString)
+                .orElse(null);
     }
 
     private static Long parseNumber(@NonNull final BValue value) {
