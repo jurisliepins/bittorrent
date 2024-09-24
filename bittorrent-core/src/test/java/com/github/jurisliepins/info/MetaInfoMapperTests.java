@@ -1,6 +1,7 @@
 package com.github.jurisliepins.info;
 
 import com.github.jurisliepins.BObjectMapper;
+import com.github.jurisliepins.info.objects.FileBObject;
 import com.github.jurisliepins.info.objects.InfoBObject;
 import com.github.jurisliepins.info.objects.MetaInfoBObject;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
+import static com.github.jurisliepins.utils.InfoUtils.MULTI_FILE_INFO_HASH;
+import static com.github.jurisliepins.utils.InfoUtils.UNI_FILE_INFO_HASH;
 import static com.github.jurisliepins.utils.InfoUtils.readMultiFileTorrent;
 import static com.github.jurisliepins.utils.InfoUtils.readUniFileTorrent;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -20,12 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @DisplayName("Meta-info mapper tests")
 public class MetaInfoMapperTests {
 
-    private static final Hash UNI_FILE_INFO_HASH = new Hash("aa171ca77f14f55d6ec23d7e9541b7791e6c383c");
-    private static final Hash MULTI_FILE_INFO_HASH = new Hash("6e540ebbc92131138746231ff3e44f165fd3b373");
-
     @Test
-    @DisplayName("Should decode uni file meta-info")
-    public void shouldDecodeUniFileMetaInfo() throws IOException {
+    @DisplayName("Should decode uni file meta-info from bytes")
+    public void shouldDecodeUniFileMetaInfoFromBytes() throws IOException {
         var mi = MetaInfoMapper.fromBytes(readUniFileTorrent());
         assertNotNull(mi.info());
         assertEquals("udp://tracker.openbittorrent.com:6969", mi.announce());
@@ -49,8 +49,8 @@ public class MetaInfoMapperTests {
     }
 
     @Test
-    @DisplayName("Should decode multi file meta-info")
-    public void shouldDecodeMultiFileMetaInfo() throws IOException {
+    @DisplayName("Should decode multi file meta-info from bytes")
+    public void shouldDecodeMultiFileMetaInfoFromBytes() throws IOException {
         var mi = MetaInfoMapper.fromBytes(readMultiFileTorrent());
         assertNotNull(mi.info());
         assertEquals("udp://tracker.openbittorrent.com:6969", mi.announce());
@@ -85,8 +85,8 @@ public class MetaInfoMapperTests {
     }
 
     @Test
-    @DisplayName("Should encode/decode UTF-8 strings")
-    public void shouldEncodeDecodeUtf8Strings() throws IOException {
+    @DisplayName("Should decode uni file meta-info UTF-8 strings from bytes")
+    public void shouldDecodeUniFileMetaInfoUtf8StringsFromBytes() throws IOException {
         final MetaInfoBObject utf8MetaInfo = new MetaInfoBObject(
                 new InfoBObject(
                         0,
@@ -120,6 +120,58 @@ public class MetaInfoMapperTests {
                 assertEquals(new Hash("779e8f96663028f7654364721377d283bc80ea61"), info.hash());
             }
             default -> throw new RuntimeException("Should have decoded uni-file info");
+        }
+    }
+
+    @Test
+    @DisplayName("Should decode multi file meta-info UTF-8 strings from bytes")
+    public void shouldDecodeMultiFileMetaInfoUtf8StringsFromBytes() throws IOException {
+        final MetaInfoBObject utf8MetaInfo = new MetaInfoBObject(
+                new InfoBObject(
+                        0,
+                        new byte[]{},
+                        false,
+                        "Название",
+                        null,
+                        null,
+                        new FileBObject[]{
+                                new FileBObject(1, null, new String[]{"file_1.txt"}),
+                                new FileBObject(1, null, new String[]{"file_2.txt"}),
+                                new FileBObject(1, null, new String[]{"file_3.txt"}),
+                        }),
+                "",
+                null,
+                OffsetDateTime.parse("2000-01-01T00:00:00Z"),
+                "Комментарий",
+                "Пользователь",
+                null);
+        var mi = MetaInfoMapper.fromBytes(BObjectMapper.toBytes(utf8MetaInfo));
+        assertEquals("", mi.announce());
+        assertNull(mi.announceList());
+        assertEquals(OffsetDateTime.parse("2000-01-01T00:00:00Z"), mi.creationDate());
+        assertEquals("Комментарий", mi.comment());
+        assertEquals("Пользователь", mi.createdBy());
+        assertNull(mi.encoding());
+        switch (mi.info()) {
+            case Info.MultiFileInfo info -> {
+                assertEquals(0, info.pieceLength());
+                assertNotNull(info.pieces());
+                assertFalse(info.isPrivate());
+                assertEquals("Название", info.name());
+                assertEquals(3, info.length());
+                assertEquals(3, info.files().length);
+                assertEquals(1, info.files()[0].length());
+                assertNull(info.files()[0].md5sum());
+                assertArrayEquals(new String[]{"file_1.txt"}, info.files()[0].path());
+                assertEquals(1, info.files()[1].length());
+                assertNull(info.files()[2].md5sum());
+                assertArrayEquals(new String[]{"file_2.txt"}, info.files()[1].path());
+                assertEquals(1, info.files()[2].length());
+                assertNull(info.files()[2].md5sum());
+                assertArrayEquals(new String[]{"file_3.txt"}, info.files()[2].path());
+                assertEquals(new Hash("4ff3a2a95972e4ffe3819183d56791ab4b235d62"), info.hash());
+            }
+            default -> throw new RuntimeException("Should have decoded multi-file info");
         }
     }
 }
