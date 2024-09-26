@@ -1,13 +1,15 @@
 package com.github.jurisliepins.peer;
 
-import com.github.jurisliepins.BitTorrentClient;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
-import static java.util.Objects.requireNonNull;
+import static com.github.jurisliepins.BitTorrentClient.CLIENT_ID;
+import static com.github.jurisliepins.BitTorrentClient.CLIENT_VERSION;
 
+@EqualsAndHashCode
 public final class Id {
     private static final int ID_LENGTH = 20;
 
@@ -19,11 +21,11 @@ public final class Id {
     private final String value;
 
     public Id(final byte @NonNull [] value) {
-        this(new String(requireNonNull(value), StandardCharsets.US_ASCII));
+        this(new String(value, StandardCharsets.US_ASCII));
     }
 
     public Id(@NonNull final String value) {
-        if (requireNonNull(value).length() != ID_LENGTH) {
+        if (value.length() != ID_LENGTH) {
             throw new IllegalArgumentException("String length must be 20 characters");
         }
         this.value = value;
@@ -42,23 +44,7 @@ public final class Id {
         return value;
     }
 
-    @Override
-    public int hashCode() {
-        return value.hashCode();
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        return switch (other) {
-            case Id that -> value.equals(that.value);
-            default -> false;
-        };
-    }
-
     public static Id self() {
-        return new Id("-%s%s-%012d".formatted(
-                BitTorrentClient.CLIENT_ID,
-                BitTorrentClient.CLIENT_VERSION,
-                new Random().nextLong(MIN_ID_VALUE, MAX_ID_VALUE)));
+        return new Id("-%s%s-%012d".formatted(CLIENT_ID, CLIENT_VERSION, new Random().nextLong(MIN_ID_VALUE, MAX_ID_VALUE)));
     }
 }
