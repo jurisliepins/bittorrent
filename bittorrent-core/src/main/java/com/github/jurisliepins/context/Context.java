@@ -50,12 +50,12 @@ public record Context(
     ) { }
 
     public record Handlers(
-            @NonNull Handlers.Announcer announcer,
-            @NonNull Handlers.Torrent torrent,
-            @NonNull Handlers.Client client
+            @NonNull Announcer announcer,
+            @NonNull Torrent torrent,
+            @NonNull Client client
     ) {
         public record Announcer(
-                @NonNull Handlers.Announcer.Command command,
+                @NonNull Command command,
                 @NonNull CoreContextFailureHandler<AnnouncerState> failure
         ) {
             public record Command(
@@ -67,8 +67,8 @@ public record Context(
         }
 
         public record Torrent(
-                @NonNull Handlers.Torrent.Command command,
-                @NonNull Handlers.Torrent.Notification notification,
+                @NonNull Command command,
+                @NonNull Notification notification,
                 @NonNull CoreContextFailureHandler<TorrentState> failure
         ) {
             public record Command(
@@ -78,7 +78,7 @@ public record Context(
             ) { }
 
             public record Notification(
-                    @NonNull Torrent.Notification.Announcer announcer
+                    @NonNull Announcer announcer
             ) {
                 public record Announcer(
                         @NonNull CoreContextSuccessHandler<TorrentState, AnnouncerNotification.PeersReceived> peersReceived,
@@ -90,9 +90,9 @@ public record Context(
         }
 
         public record Client(
-                @NonNull Handlers.Client.Command command,
-                @NonNull Handlers.Client.Request request,
-                @NonNull Handlers.Client.Notification notification,
+                @NonNull Command command,
+                @NonNull Request request,
+                @NonNull Notification notification,
                 @NonNull CoreContextFailureHandler<ClientState> failure
         ) {
             public record Command(
@@ -107,8 +107,8 @@ public record Context(
             ) { }
 
             public record Notification(
-                    @NonNull Client.Notification.Torrent torrent,
-                    @NonNull Client.Notification.Announcer announcer
+                    @NonNull Torrent torrent,
+                    @NonNull Announcer announcer
             ) {
                 public record Torrent(
                         @NonNull CoreContextSuccessHandler<ClientState, TorrentNotification.StatusChanged> statusChanged,
