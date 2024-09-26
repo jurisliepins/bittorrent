@@ -20,5 +20,4 @@ public final class TorrentAnnouncerNotificationStatusChangedHandler
             final AnnouncerNotification.StatusChanged message) {
         return NextState.Receive;
     }
-
 }
