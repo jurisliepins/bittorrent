@@ -38,13 +38,13 @@ public final class HashTests {
     @Test
     @DisplayName("Should create hash from bytes")
     public void shouldCreateHashFromBytes() {
-        assertArrayEquals(HASH_BYTES, new Hash(HASH_BYTES).toBytes());
+        assertArrayEquals(HASH_BYTES, new Hash(HASH_BYTES).toByteArray());
     }
 
     @Test
     @DisplayName("Should create hash from string")
     public void shouldCreateHashFromString() {
-        assertArrayEquals(HASH_BYTES, new Hash(HASH_STRING).toBytes());
+        assertArrayEquals(HASH_BYTES, new Hash(HASH_STRING).toByteArray());
     }
 
     @Test

@@ -28,7 +28,7 @@ public final class Hash {
         this.value = "";
     }
 
-    public byte[] toBytes() {
+    public byte[] toByteArray() {
         return HexFormat.of().parseHex(value);
     }
 

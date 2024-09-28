@@ -42,7 +42,6 @@ public final class TrackerResponseParser {
                     yield new TrackerResponse.Failure(failureReason);
                 }
             }
-
             default -> throw new CoreException("Unexpected decoded response from tracker");
         };
     }
@@ -122,12 +121,15 @@ public final class TrackerResponseParser {
 
         var parsed = new ArrayList<InetSocketAddress>();
 
-        var b = value.toBytes();
-        for (var i = 0; i <= b.length - length; i += length) {
-            var addr = Arrays.copyOfRange(b, i, i + (length - 2));
-            var port = Arrays.copyOfRange(b, i + (length - 2), i + length);
+        var bytes = value.toBytes();
+        for (var i = 0; i <= bytes.length - length; i += length) {
+            var addr = Arrays.copyOfRange(bytes, i, i + (length - 2));
+            var port = Arrays.copyOfRange(bytes, i + (length - 2), i + length);
             try {
-                parsed.add(new InetSocketAddress(InetAddress.getByAddress(addr), ByteBuffer.wrap(port).getShort()));
+                parsed.add(new InetSocketAddress(
+                        InetAddress.getByAddress(addr).getHostAddress(),
+                        ByteBuffer.wrap(new byte[]{0, 0, port[0], port[1]}).getInt())
+                );
             } catch (Exception e) {
                 throw new CoreException("Failed to parse compact peer from tracker", e);
             }

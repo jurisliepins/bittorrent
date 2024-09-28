@@ -51,7 +51,7 @@ public final class TrackerRequestBuilder {
     }
 
     public TrackerRequestBuilder infoHash(final Hash infoHash) {
-        return parameter(TrackerRequest.INFO_HASH, requireNonNull(infoHash).toBytes());
+        return parameter(TrackerRequest.INFO_HASH, requireNonNull(infoHash).toByteArray());
     }
 
     public TrackerRequestBuilder peerId(final Id peerId) {

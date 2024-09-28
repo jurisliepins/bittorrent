@@ -35,7 +35,7 @@ public final class Id {
         this.value = "";
     }
 
-    public byte[] toBytes() {
+    public byte[] toByteArray() {
         return value.getBytes(StandardCharsets.US_ASCII);
     }
 
