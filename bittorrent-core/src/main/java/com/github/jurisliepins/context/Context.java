@@ -40,24 +40,30 @@ import com.github.jurisliepins.torrent.message.TorrentNotification;
 import com.github.jurisliepins.tracker.TrackerClient;
 import com.github.jurisliepins.tracker.TrackerClientImpl;
 import lombok.NonNull;
+import lombok.With;
 
+@With
 public record Context(
         @NonNull IO io,
         @NonNull Handlers handlers
 ) {
+    @With
     public record IO(
             @NonNull TrackerClient trackerClient
     ) { }
 
+    @With
     public record Handlers(
             @NonNull Announcer announcer,
             @NonNull Torrent torrent,
             @NonNull Client client
     ) {
+        @With
         public record Announcer(
                 @NonNull Command command,
                 @NonNull CoreContextFailureHandler<AnnouncerState> failure
         ) {
+            @With
             public record Command(
                     @NonNull CoreContextSuccessHandler<AnnouncerState, AnnouncerCommand.Announce> announce,
                     @NonNull CoreContextSuccessHandler<AnnouncerState, AnnouncerCommand.Start> start,
@@ -66,20 +72,24 @@ public record Context(
             ) { }
         }
 
+        @With
         public record Torrent(
                 @NonNull Command command,
                 @NonNull Notification notification,
                 @NonNull CoreContextFailureHandler<TorrentState> failure
         ) {
+            @With
             public record Command(
                     @NonNull CoreContextSuccessHandler<TorrentState, TorrentCommand.Start> start,
                     @NonNull CoreContextSuccessHandler<TorrentState, TorrentCommand.Stop> stop,
                     @NonNull CoreContextSuccessHandler<TorrentState, TorrentCommand.Terminate> terminate
             ) { }
 
+            @With
             public record Notification(
                     @NonNull Announcer announcer
             ) {
+                @With
                 public record Announcer(
                         @NonNull CoreContextSuccessHandler<TorrentState, AnnouncerNotification.PeersReceived> peersReceived,
                         @NonNull CoreContextSuccessHandler<TorrentState, AnnouncerNotification.StatusChanged> statusChanged,
@@ -89,12 +99,14 @@ public record Context(
             }
         }
 
+        @With
         public record Client(
                 @NonNull Command command,
                 @NonNull Request request,
                 @NonNull Notification notification,
                 @NonNull CoreContextFailureHandler<ClientState> failure
         ) {
+            @With
             public record Command(
                     @NonNull CoreContextSuccessHandler<ClientState, ClientCommand.Add> add,
                     @NonNull CoreContextSuccessHandler<ClientState, ClientCommand.Remove> remove,
@@ -102,20 +114,24 @@ public record Context(
                     @NonNull CoreContextSuccessHandler<ClientState, ClientCommand.Stop> stop
             ) { }
 
+            @With
             public record Request(
                     @NonNull CoreContextSuccessHandler<ClientState, ClientRequest.Get> get
             ) { }
 
+            @With
             public record Notification(
                     @NonNull Torrent torrent,
                     @NonNull Announcer announcer
             ) {
+                @With
                 public record Torrent(
                         @NonNull CoreContextSuccessHandler<ClientState, TorrentNotification.StatusChanged> statusChanged,
                         @NonNull CoreContextSuccessHandler<ClientState, TorrentNotification.Terminated> terminated,
                         @NonNull CoreContextSuccessHandler<ClientState, TorrentNotification.Failure> failure
                 ) { }
 
+                @With
                 public record Announcer(
                         @NonNull CoreContextSuccessHandler<ClientState, AnnouncerNotification.PeersReceived> peersReceived,
                         @NonNull CoreContextSuccessHandler<ClientState, AnnouncerNotification.StatusChanged> statusChanged,

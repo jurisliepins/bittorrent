@@ -10,10 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
-import static com.github.jurisliepins.utils.InfoUtils.MULTI_FILE_INFO_HASH;
-import static com.github.jurisliepins.utils.InfoUtils.UNI_FILE_INFO_HASH;
-import static com.github.jurisliepins.utils.InfoUtils.readMultiFileTorrent;
-import static com.github.jurisliepins.utils.InfoUtils.readUniFileTorrent;
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,6 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DisplayName("Meta-info mapper tests")
 public class MetaInfoMapperTests {
+
+    public static final String UNI_FILE_TORRENT_FILE = "uni_file.torrent";
+    public static final String MULTI_FILE_TORRENT_FILE = "multi_file.torrent";
+
+    public static final Hash UNI_FILE_INFO_HASH = new Hash("aa171ca77f14f55d6ec23d7e9541b7791e6c383c");
+    public static final Hash MULTI_FILE_INFO_HASH = new Hash("6e540ebbc92131138746231ff3e44f165fd3b373");
 
     @Test
     @DisplayName("Should decode uni file meta-info from bytes")
@@ -173,5 +176,17 @@ public class MetaInfoMapperTests {
             }
             default -> throw new RuntimeException("Should have decoded multi-file info");
         }
+    }
+
+    public static byte[] readUniFileTorrent() throws IOException {
+        return readFileAsBytes(UNI_FILE_TORRENT_FILE);
+    }
+
+    public static byte[] readMultiFileTorrent() throws IOException {
+        return readFileAsBytes(MULTI_FILE_TORRENT_FILE);
+    }
+
+    public static byte[] readFileAsBytes(final String name) throws IOException {
+        return requireNonNull(MetaInfoMapperTests.class.getClassLoader().getResourceAsStream(name)).readAllBytes();
     }
 }

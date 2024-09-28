@@ -88,5 +88,4 @@ public final class HashTests {
     public void shouldFailOnMalformedString() {
         assertThrows(IllegalArgumentException.class, () -> new Hash(""));
     }
-
 }
