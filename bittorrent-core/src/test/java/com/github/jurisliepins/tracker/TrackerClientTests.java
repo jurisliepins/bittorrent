@@ -25,16 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @DisplayName("Tracker client tests")
 public final class TrackerClientTests {
 
-    private HttpServer successTracker;
-    private HttpServer failureTracker;
-
+    private HttpServer trackerServer;
     private TrackerClientImpl trackerClient;
 
     @BeforeEach
     void setUp() throws IOException {
-        //
-        successTracker = HttpServer.create(new InetSocketAddress(8000), 0);
-        successTracker.createContext("/announce", exchange -> {
+        trackerServer = HttpServer.create(new InetSocketAddress(8000), 0);
+        trackerServer.createContext("/announce-success", exchange -> {
             exchange.sendResponseHeaders(200, 0);
             exchange.getResponseBody()
                     .write(BEncoder.toBytes(
@@ -46,10 +43,7 @@ public final class TrackerClientTests {
                     );
             exchange.getResponseBody().close();
         });
-        successTracker.start();
-        //
-        failureTracker = HttpServer.create(new InetSocketAddress(9000), 0);
-        failureTracker.createContext("/announce", exchange -> {
+        trackerServer.createContext("/announce-failure", exchange -> {
             exchange.sendResponseHeaders(200, 0);
             exchange.getResponseBody()
                     .write(BEncoder.toBytes(
@@ -60,23 +54,21 @@ public final class TrackerClientTests {
                     );
             exchange.getResponseBody().close();
         });
-        failureTracker.start();
-        //
+        trackerServer.start();
         trackerClient = new TrackerClientImpl();
     }
 
     @AfterEach
     void tearDown() {
+        trackerServer.stop(0);
         trackerClient.close();
-        successTracker.stop(0);
-        failureTracker.stop(0);
     }
 
     @Test
     @DisplayName("Should announce succeed with success response")
     public void shouldAnnounceSucceedWithSuccessResponse() throws IOException {
         switch (trackerClient.announce(
-                TrackerRequest.builder("http://localhost:8000/announce")
+                TrackerRequest.builder("http://localhost:8000/announce-success")
                         .infoHash(Hash.BLANK)
                         .peerId(Id.BLANK)
                         .port(6881)
@@ -105,7 +97,7 @@ public final class TrackerClientTests {
     @DisplayName("Should announce succeed with failure response")
     public void shouldAnnounceSucceedWithFailureResponse() {
         switch (trackerClient.announce(
-                TrackerRequest.builder("http://localhost:9000/announce")
+                TrackerRequest.builder("http://localhost:8000/announce-failure")
                         .infoHash(Hash.BLANK)
                         .peerId(Id.BLANK)
                         .port(6881)
