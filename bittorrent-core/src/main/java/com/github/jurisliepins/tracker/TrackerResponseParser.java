@@ -13,13 +13,13 @@ import lombok.experimental.UtilityClass;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.github.jurisliepins.value.BByteString.bstr;
 
@@ -116,26 +116,38 @@ public final class TrackerResponseParser {
         };
     }
 
+    private static final int LENGTH = 6;
+    private static final int OFFSET0 = 0;
+    private static final int OFFSET1 = 1;
+    private static final int OFFSET2 = 2;
+    private static final int OFFSET3 = 3;
+    private static final int OFFSET4 = 4;
+    private static final int OFFSET5 = 5;
+
     private static List<InetSocketAddress> parsePeers(@NonNull final BByteString value) {
-        final var length = 6;
-
-        var parsed = new ArrayList<InetSocketAddress>();
-
         var bytes = value.toBytes();
-        for (var i = 0; i <= bytes.length - length; i += length) {
-            var addr = Arrays.copyOfRange(bytes, i, i + (length - 2));
-            var port = Arrays.copyOfRange(bytes, i + (length - 2), i + length);
-            try {
-                parsed.add(new InetSocketAddress(
-                        InetAddress.getByAddress(addr).getHostAddress(),
-                        ByteBuffer.wrap(new byte[]{0, 0, port[0], port[1]}).getInt())
-                );
-            } catch (Exception e) {
-                throw new CoreException("Failed to parse compact peer from tracker", e);
-            }
-        }
 
-        return parsed;
+        return IntStream.range(0, bytes.length / LENGTH)
+                .mapToObj(idx -> {
+                    var addr = new byte[]{
+                            bytes[(idx * LENGTH) + OFFSET0],
+                            bytes[(idx * LENGTH) + OFFSET1],
+                            bytes[(idx * LENGTH) + OFFSET2],
+                            bytes[(idx * LENGTH) + OFFSET3]
+                    };
+                    var port = new byte[]{
+                            0,
+                            0,
+                            bytes[(idx * LENGTH) + OFFSET4],
+                            bytes[(idx * LENGTH) + OFFSET5]
+                    };
+                    try {
+                        return new InetSocketAddress(InetAddress.getByAddress(addr), ByteBuffer.wrap(port).getInt());
+                    } catch (UnknownHostException e) {
+                        throw new CoreException("Failed to parse compact peer from tracker", e);
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     private static List<InetSocketAddress> parsePeers(@NonNull final BList value) {
