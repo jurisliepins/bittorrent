@@ -23,7 +23,6 @@ public final class TorrentCommandStartHandler implements CoreContextSuccessHandl
         switch (state.getStatus()) {
             case Stopped -> {
                 state.getAnnouncerRef().post(AnnouncerCommand.Start.INSTANCE, mailbox.self());
-
                 state.setStatus(StatusType.Started);
                 state.getNotifiedRef().post(new TorrentNotification.StatusChanged(state.getInfoHash(), StatusType.Started), mailbox.self());
 
