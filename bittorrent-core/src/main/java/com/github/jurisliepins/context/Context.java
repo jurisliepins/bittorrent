@@ -26,6 +26,10 @@ import com.github.jurisliepins.client.handlers.notification.torrent.ClientTorren
 import com.github.jurisliepins.client.handlers.request.ClientRequestGetHandler;
 import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientRequest;
+import com.github.jurisliepins.network.ConnectionFactory;
+import com.github.jurisliepins.network.ConnectionListenerFactory;
+import com.github.jurisliepins.network.TcpConnectionFactory;
+import com.github.jurisliepins.network.TcpConnectionListenerFactory;
 import com.github.jurisliepins.torrent.TorrentState;
 import com.github.jurisliepins.torrent.handlers.TorrentFailureHandler;
 import com.github.jurisliepins.torrent.handlers.command.TorrentCommandStartHandler;
@@ -49,7 +53,9 @@ public record Context(
 ) {
     @With
     public record IO(
-            @NonNull TrackerClient trackerClient
+            @NonNull TrackerClient trackerClient,
+            @NonNull ConnectionFactory connectionFactory,
+            @NonNull ConnectionListenerFactory connectionListenerFactory
     ) { }
 
     @With
@@ -145,7 +151,9 @@ public record Context(
     public static Context defaultContext() {
         return new Context(
                 new IO(
-                        new TrackerClientImpl()
+                        new TrackerClientImpl(),
+                        new TcpConnectionFactory(),
+                        new TcpConnectionListenerFactory()
                 ),
                 new Handlers(
                         new Handlers.Announcer(
