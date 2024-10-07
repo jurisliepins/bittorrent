@@ -5,8 +5,8 @@ import java.net.SocketAddress;
 
 public interface ConnectionListenerFactory {
 
-    ConnectionListener create() throws IOException;
+    ConnectionListener listen() throws IOException;
 
-    ConnectionListener create(SocketAddress endpoint) throws IOException;
+    ConnectionListener listen(SocketAddress endpoint) throws IOException;
 
 }

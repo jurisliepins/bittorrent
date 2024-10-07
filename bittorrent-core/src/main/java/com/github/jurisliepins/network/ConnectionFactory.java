@@ -5,8 +5,8 @@ import java.net.SocketAddress;
 
 public interface ConnectionFactory {
 
-    Connection create() throws IOException;
+    Connection connect() throws IOException;
 
-    Connection create(SocketAddress endpoint) throws IOException;
+    Connection connect(SocketAddress endpoint) throws IOException;
 
 }
