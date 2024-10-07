@@ -132,18 +132,15 @@ public final class ClientState {
 
     public record Settings(
             int peerCount,
-            int port,
-            int intervalSeconds
+            int port
     ) {
         public static final int DEFAULT_PEER_COUNT = 30;
         public static final int DEFAULT_PORT = 6881;
-        public static final int DEFAULT_INTERVAL_SECONDS = 60;
 
         public static Settings defaultSettings() {
             return new Settings(
                     DEFAULT_PEER_COUNT,
-                    DEFAULT_PORT,
-                    DEFAULT_INTERVAL_SECONDS
+                    DEFAULT_PORT
             );
         }
     }

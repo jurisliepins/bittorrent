@@ -49,13 +49,18 @@ import lombok.With;
 @With
 public record Context(
         @NonNull IO io,
+        @NonNull Tracker tracker,
         @NonNull Handlers handlers
 ) {
     @With
     public record IO(
-            @NonNull TrackerClient trackerClient,
             @NonNull ConnectionFactory connectionFactory,
             @NonNull ConnectionListenerFactory connectionListenerFactory
+    ) { }
+
+    @With
+    public record Tracker(
+            @NonNull TrackerClient client
     ) { }
 
     @With
@@ -148,65 +153,70 @@ public record Context(
         }
     }
 
+    public static final Context DEFAULT_CONTEXT =
+            new Context(
+                    new IO(
+                            new TcpConnectionFactory(),
+                            new TcpConnectionListenerFactory()
+                    ),
+                    new Tracker(
+                            new TrackerClientImpl()
+                    ),
+                    new Handlers(
+                            new Handlers.Announcer(
+                                    new Handlers.Announcer.Command(
+                                            new AnnouncerCommandAnnounceHandler(),
+                                            new AnnouncerCommandStartHandler(),
+                                            new AnnouncerCommandStopHandler(),
+                                            new AnnouncerCommandTerminateHandler()
+                                    ),
+                                    new AnnouncerFailureHandler()
+                            ),
+                            new Handlers.Torrent(
+                                    new Handlers.Torrent.Command(
+                                            new TorrentCommandStartHandler(),
+                                            new TorrentCommandStopHandler(),
+                                            new TorrentCommandTerminateHandler()
+                                    ),
+                                    new Handlers.Torrent.Notification(
+                                            new Handlers.Torrent.Notification.Announcer(
+                                                    new TorrentAnnouncerNotificationPeersReceivedHandler(),
+                                                    new TorrentAnnouncerNotificationStatusChangedHandler(),
+                                                    new TorrentAnnouncerNotificationTerminatedHandler(),
+                                                    new TorrentAnnouncerNotificationFailureHandler()
+                                            )
+                                    ),
+                                    new TorrentFailureHandler()
+                            ),
+                            new Handlers.Client(
+                                    new Handlers.Client.Command(
+                                            new ClientCommandAddHandler(),
+                                            new ClientCommandRemoveHandler(),
+                                            new ClientCommandStartHandler(),
+                                            new ClientCommandStopHandler()
+                                    ),
+                                    new Handlers.Client.Request(
+                                            new ClientRequestGetHandler()
+                                    ),
+                                    new Handlers.Client.Notification(
+                                            new Handlers.Client.Notification.Torrent(
+                                                    new ClientTorrentNotificationStatusChangedHandler(),
+                                                    new ClientTorrentNotificationTerminatedHandler(),
+                                                    new ClientTorrentNotificationFailureHandler()
+                                            ),
+                                            new Handlers.Client.Notification.Announcer(
+                                                    new ClientAnnouncerNotificationPeersReceivedHandler(),
+                                                    new ClientAnnouncerNotificationStatusChangedHandler(),
+                                                    new ClientAnnouncerNotificationTerminatedHandler(),
+                                                    new ClientAnnouncerNotificationFailureHandler()
+                                            )
+                                    ),
+                                    new ClientFailureHandler()
+                            )
+                    )
+            );
+
     public static Context defaultContext() {
-        return new Context(
-                new IO(
-                        new TrackerClientImpl(),
-                        new TcpConnectionFactory(),
-                        new TcpConnectionListenerFactory()
-                ),
-                new Handlers(
-                        new Handlers.Announcer(
-                                new Handlers.Announcer.Command(
-                                        new AnnouncerCommandAnnounceHandler(),
-                                        new AnnouncerCommandStartHandler(),
-                                        new AnnouncerCommandStopHandler(),
-                                        new AnnouncerCommandTerminateHandler()
-                                ),
-                                new AnnouncerFailureHandler()
-                        ),
-                        new Handlers.Torrent(
-                                new Handlers.Torrent.Command(
-                                        new TorrentCommandStartHandler(),
-                                        new TorrentCommandStopHandler(),
-                                        new TorrentCommandTerminateHandler()
-                                ),
-                                new Handlers.Torrent.Notification(
-                                        new Handlers.Torrent.Notification.Announcer(
-                                                new TorrentAnnouncerNotificationPeersReceivedHandler(),
-                                                new TorrentAnnouncerNotificationStatusChangedHandler(),
-                                                new TorrentAnnouncerNotificationTerminatedHandler(),
-                                                new TorrentAnnouncerNotificationFailureHandler()
-                                        )
-                                ),
-                                new TorrentFailureHandler()
-                        ),
-                        new Handlers.Client(
-                                new Handlers.Client.Command(
-                                        new ClientCommandAddHandler(),
-                                        new ClientCommandRemoveHandler(),
-                                        new ClientCommandStartHandler(),
-                                        new ClientCommandStopHandler()
-                                ),
-                                new Handlers.Client.Request(
-                                        new ClientRequestGetHandler()
-                                ),
-                                new Handlers.Client.Notification(
-                                        new Handlers.Client.Notification.Torrent(
-                                                new ClientTorrentNotificationStatusChangedHandler(),
-                                                new ClientTorrentNotificationTerminatedHandler(),
-                                                new ClientTorrentNotificationFailureHandler()
-                                        ),
-                                        new Handlers.Client.Notification.Announcer(
-                                                new ClientAnnouncerNotificationPeersReceivedHandler(),
-                                                new ClientAnnouncerNotificationStatusChangedHandler(),
-                                                new ClientAnnouncerNotificationTerminatedHandler(),
-                                                new ClientAnnouncerNotificationFailureHandler()
-                                        )
-                                ),
-                                new ClientFailureHandler()
-                        )
-                )
-        );
+        return DEFAULT_CONTEXT;
     }
 }

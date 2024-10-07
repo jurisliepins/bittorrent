@@ -40,10 +40,6 @@ public final class AnnouncerState {
     private Integer port;
 
     @NonNull
-    @Setter(AccessLevel.NONE)
-    private Integer intervalSeconds;
-
-    @NonNull
     private Long downloaded;
 
     @NonNull

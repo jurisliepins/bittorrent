@@ -41,7 +41,6 @@ public final class ClientCommandAddHandler implements CoreContextSuccessHandler<
                                         .announceList(mi.announceList())
                                         .peerCount(state.getSettings().peerCount())
                                         .port(state.getSettings().port())
-                                        .intervalSeconds(state.getSettings().intervalSeconds())
                                         .downloaded(0L)
                                         .uploaded(0L)
                                         .left(mi.info().length())

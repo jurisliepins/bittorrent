@@ -25,9 +25,9 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
     public void shouldAnnouncerStartSucceedWithSuccessResponse() {
         var messageCount = 2;
         var context = Context.defaultContext()
-                .withIo(Context.defaultContext()
-                                .io()
-                                .withTrackerClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
+                .withTracker(Context.defaultContext()
+                                .tracker()
+                                .withClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(messageCount);
         var notifiedRef = system.spawn(awaiter);
         var state = AnnouncerState.builder()
@@ -38,7 +38,6 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
                 .announceList(new String[][]{})
                 .peerCount(0)
                 .port(0)
-                .intervalSeconds(1)
                 .downloaded(0L)
                 .uploaded(0L)
                 .left(0L)
@@ -61,9 +60,9 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
     public void shouldAnnouncerStartSucceedWithFailureResponse() {
         var messageCount = 1;
         var context = Context.defaultContext()
-                .withIo(Context.defaultContext()
-                                .io()
-                                .withTrackerClient(query -> new TrackerResponse.Failure("Failure!")));
+                .withTracker(Context.defaultContext()
+                                .tracker()
+                                .withClient(query -> new TrackerResponse.Failure("Failure!")));
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(messageCount);
         var notifiedRef = system.spawn(awaiter);
         var state = AnnouncerState.builder()
@@ -74,7 +73,6 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
                 .announceList(new String[][]{})
                 .peerCount(0)
                 .port(0)
-                .intervalSeconds(1)
                 .downloaded(0L)
                 .uploaded(0L)
                 .left(0L)
@@ -95,9 +93,9 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
     public void shouldAnnouncerStartFail() {
         var messageCount = 2;
         var context = Context.defaultContext()
-                .withIo(Context.defaultContext()
-                                .io()
-                                .withTrackerClient(query -> {
+                .withTracker(Context.defaultContext()
+                                .tracker()
+                                .withClient(query -> {
                                     throw new CoreException("Failed to call tracker!");
                                 }));
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(messageCount);
@@ -110,7 +108,6 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
                 .announceList(new String[][]{})
                 .peerCount(0)
                 .port(0)
-                .intervalSeconds(1)
                 .downloaded(0L)
                 .uploaded(0L)
                 .left(0L)
@@ -133,9 +130,9 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
     public void shouldAnnouncerNotStartAgainWhenAlreadyStarted() {
         var messageCount = 2;
         var context = Context.defaultContext()
-                .withIo(Context.defaultContext()
-                                .io()
-                                .withTrackerClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
+                .withTracker(Context.defaultContext()
+                                .tracker()
+                                .withClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(messageCount);
         var notifiedRef = system.spawn(awaiter);
         var state = AnnouncerState.builder()
@@ -146,7 +143,6 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
                 .announceList(new String[][]{})
                 .peerCount(0)
                 .port(0)
-                .intervalSeconds(1)
                 .downloaded(0L)
                 .uploaded(0L)
                 .left(0L)
@@ -170,9 +166,9 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
     public void shouldAnnouncerStopSucceed() {
         var messageCount = 2;
         var context = Context.defaultContext()
-                .withIo(Context.defaultContext()
-                                .io()
-                                .withTrackerClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
+                .withTracker(Context.defaultContext()
+                                .tracker()
+                                .withClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(messageCount);
         var notifiedRef = system.spawn(awaiter);
         var state = AnnouncerState.builder()
@@ -183,7 +179,6 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
                 .announceList(new String[][]{})
                 .peerCount(0)
                 .port(0)
-                .intervalSeconds(1)
                 .downloaded(0L)
                 .uploaded(0L)
                 .left(0L)
@@ -207,9 +202,9 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
     public void shouldAnnouncerStopFail() {
         var messageCount = 3;
         var context = Context.defaultContext()
-                .withIo(Context.defaultContext()
-                                .io()
-                                .withTrackerClient(query -> {
+                .withTracker(Context.defaultContext()
+                                .tracker()
+                                .withClient(query -> {
                                     throw new CoreException("Failed to call tracker!");
                                 }));
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(messageCount);
@@ -222,7 +217,6 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
                 .announceList(new String[][]{})
                 .peerCount(0)
                 .port(0)
-                .intervalSeconds(1)
                 .downloaded(0L)
                 .uploaded(0L)
                 .left(0L)
@@ -248,9 +242,9 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
     public void shouldAnnouncerNotStopAgainWhenAlreadyStopped() {
         var messageCount = 2;
         var context = Context.defaultContext()
-                .withIo(Context.defaultContext()
-                                .io()
-                                .withTrackerClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
+                .withTracker(Context.defaultContext()
+                                .tracker()
+                                .withClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(messageCount);
         var notifiedRef = system.spawn(awaiter);
         var state = AnnouncerState.builder()
@@ -261,7 +255,6 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
                 .announceList(new String[][]{})
                 .peerCount(0)
                 .port(0)
-                .intervalSeconds(1)
                 .downloaded(0L)
                 .uploaded(0L)
                 .left(0L)
@@ -296,7 +289,6 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
                 .announceList(new String[][]{})
                 .peerCount(0)
                 .port(0)
-                .intervalSeconds(1)
                 .downloaded(0L)
                 .uploaded(0L)
                 .left(0L)
@@ -316,9 +308,9 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
     public void shouldAnnouncerScheduleReAnnounce() {
         var messageCount = 3;
         var context = Context.defaultContext()
-                .withIo(Context.defaultContext()
-                                .io()
-                                .withTrackerClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
+                .withTracker(Context.defaultContext()
+                                .tracker()
+                                .withClient(query -> new TrackerResponse.Success(0L, 0L, 0L, 0L, List.of(), "", "")));
         var awaiter = new NotificationAwaiter<AnnouncerNotification>(messageCount);
         var notifiedRef = system.spawn(awaiter);
         var state = AnnouncerState.builder()
@@ -329,7 +321,6 @@ public final class AnnouncerMailboxReceiverTests extends MailboxReceiverTests {
                 .announceList(new String[][]{})
                 .peerCount(0)
                 .port(0)
-                .intervalSeconds(1)
                 .downloaded(0L)
                 .uploaded(0L)
                 .left(0L)

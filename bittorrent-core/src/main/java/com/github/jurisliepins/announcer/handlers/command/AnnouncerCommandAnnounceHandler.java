@@ -25,8 +25,8 @@ public final class AnnouncerCommandAnnounceHandler implements CoreContextSuccess
             final AnnouncerCommand.Announce message) {
         log.info("[{}] Announcing '{}' on '{}'", state.getInfoHash(), message.eventTypeOpt(), state.getAnnounce());
 
-        var response = context.io()
-                .trackerClient()
+        var response = context.tracker()
+                .client()
                 .announce(TrackerRequest.builder(state.getAnnounce())
                                   .infoHash(state.getInfoHash())
                                   .peerId(state.getSelfId())
@@ -45,15 +45,13 @@ public final class AnnouncerCommandAnnounceHandler implements CoreContextSuccess
 
                 switch (state.getStatus()) {
                     case Started, Errored -> {
-                        var interval = Math.max(success.interval(), state.getIntervalSeconds());
-
                         log.info("[{}] Scheduling re-announce on '{}' in {}s",
                                  state.getInfoHash(),
                                  state.getAnnounce(),
-                                 interval);
+                                 success.interval());
 
                         mailbox.system()
-                                .schedulePostOnce(interval,
+                                .schedulePostOnce(success.interval(),
                                                   TimeUnit.SECONDS,
                                                   mailbox.self(),
                                                   new AnnouncerCommand.Announce(Optional.empty()));
