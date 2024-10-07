@@ -26,32 +26,50 @@ public final class TcpConnection implements Connection {
 
     @Override
     public int write(@NonNull final ByteBuffer buffer) throws IOException {
-        return channel.write(buffer.rewind());
-    }
-
-    @Override
-    public void write(final long value) throws IOException {
-        write(ByteBuffer.allocate(Long.BYTES).putLong(value));
+        return channel.write(buffer);
     }
 
     @Override
     public void write(final byte @NonNull [] value) throws IOException {
-        write(ByteBuffer.wrap(value));
+        if (write(ByteBuffer.wrap(value).rewind()) != value.length) {
+            throw new CoreException("Failed to write bytes");
+        }
     }
 
     @Override
     public void write(final byte value) throws IOException {
-        write(ByteBuffer.allocate(Byte.BYTES).put(value));
+        if (write(ByteBuffer.allocate(Byte.BYTES)
+                          .put(value)
+                          .rewind()) != Byte.BYTES) {
+            throw new CoreException("Failed to write byte");
+        }
     }
 
     @Override
     public void write(final short value) throws IOException {
-        write(ByteBuffer.allocate(Short.BYTES).putShort(value));
+        if (write(ByteBuffer.allocate(Short.BYTES)
+                          .putShort(value)
+                          .rewind()) != Short.BYTES) {
+            throw new CoreException("Failed to write short");
+        }
     }
 
     @Override
     public void write(final int value) throws IOException {
-        write(ByteBuffer.allocate(Integer.BYTES).putInt(value));
+        if (write(ByteBuffer.allocate(Integer.BYTES)
+                          .putInt(value)
+                          .rewind()) != Integer.BYTES) {
+            throw new CoreException("Failed to write int");
+        }
+    }
+
+    @Override
+    public void write(final long value) throws IOException {
+        if (write(ByteBuffer.allocate(Long.BYTES)
+                          .putLong(value)
+                          .rewind()) != Long.BYTES) {
+            throw new CoreException("Failed to write long");
+        }
     }
 
     @Override
