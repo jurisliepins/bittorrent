@@ -9,7 +9,29 @@ public interface Connection extends Closeable {
 
     int write(ByteBuffer buffer) throws IOException;
 
+    void write(byte[] value) throws IOException;
+
+    void write(byte value) throws IOException;
+
+    void write(short value) throws IOException;
+
+    void write(int value) throws IOException;
+
+    void write(long value) throws IOException;
+
     int read(ByteBuffer buffer) throws IOException;
+
+    ByteBuffer readByteBuffer(int count) throws IOException;
+
+    byte[] readBytes(int count) throws IOException;
+
+    byte readByte() throws IOException;
+
+    short readShort() throws IOException;
+
+    int readInt() throws IOException;
+
+    long readLong() throws IOException;
 
     SocketAddress localEndpoint() throws IOException;
 

@@ -1,5 +1,6 @@
 package com.github.jurisliepins.network;
 
+import com.github.jurisliepins.CoreException;
 import lombok.NonNull;
 
 import java.io.IOException;
@@ -29,8 +30,8 @@ public final class TcpConnection implements Connection {
     }
 
     @Override
-    public int write(final ByteBuffer buffer) throws IOException {
-        return channel.write(buffer);
+    public void write(final long value) throws IOException {
+        write(ByteBuffer.allocate(Long.BYTES).putLong(value));
     }
 
     @Override
@@ -56,6 +57,40 @@ public final class TcpConnection implements Connection {
     @Override
     public int read(final ByteBuffer buffer) throws IOException {
         return channel.read(buffer);
+    }
+
+    @Override
+    public ByteBuffer readByteBuffer(final int count) throws IOException {
+        var buffer = ByteBuffer.allocate(count);
+        if (channel.read(buffer) != count) {
+            throw new CoreException("Failed to read %d bytes from channel".formatted(count));
+        }
+        return buffer.rewind();
+    }
+
+    @Override
+    public byte[] readBytes(final int count) throws IOException {
+        return readByteBuffer(count).array();
+    }
+
+    @Override
+    public byte readByte() throws IOException {
+        return readByteBuffer(Byte.BYTES).get();
+    }
+
+    @Override
+    public short readShort() throws IOException {
+        return readByteBuffer(Short.BYTES).getShort();
+    }
+
+    @Override
+    public int readInt() throws IOException {
+        return readByteBuffer(Integer.BYTES).getInt();
+    }
+
+    @Override
+    public long readLong() throws IOException {
+        return readByteBuffer(Long.BYTES).getLong();
     }
 
     @Override
