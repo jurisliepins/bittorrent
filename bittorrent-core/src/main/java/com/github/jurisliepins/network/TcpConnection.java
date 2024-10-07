@@ -24,8 +24,33 @@ public final class TcpConnection implements Connection {
     }
 
     @Override
+    public int write(@NonNull final ByteBuffer buffer) throws IOException {
+        return channel.write(buffer.rewind());
+    }
+
+    @Override
     public int write(final ByteBuffer buffer) throws IOException {
         return channel.write(buffer);
+    }
+
+    @Override
+    public void write(final byte @NonNull [] value) throws IOException {
+        write(ByteBuffer.wrap(value));
+    }
+
+    @Override
+    public void write(final byte value) throws IOException {
+        write(ByteBuffer.allocate(Byte.BYTES).put(value));
+    }
+
+    @Override
+    public void write(final short value) throws IOException {
+        write(ByteBuffer.allocate(Short.BYTES).putShort(value));
+    }
+
+    @Override
+    public void write(final int value) throws IOException {
+        write(ByteBuffer.allocate(Integer.BYTES).putInt(value));
     }
 
     @Override
