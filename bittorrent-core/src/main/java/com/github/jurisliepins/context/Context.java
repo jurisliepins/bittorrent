@@ -26,6 +26,8 @@ import com.github.jurisliepins.client.handlers.notification.torrent.ClientTorren
 import com.github.jurisliepins.client.handlers.request.ClientRequestGetHandler;
 import com.github.jurisliepins.client.message.ClientCommand;
 import com.github.jurisliepins.client.message.ClientRequest;
+import com.github.jurisliepins.handshake.HandshakeConnectionFactory;
+import com.github.jurisliepins.handshake.HandshakeConnectionFactoryImpl;
 import com.github.jurisliepins.network.ConnectionFactory;
 import com.github.jurisliepins.network.ConnectionListenerFactory;
 import com.github.jurisliepins.network.TcpConnectionFactory;
@@ -49,6 +51,7 @@ import lombok.With;
 @With
 public record Context(
         @NonNull IO io,
+        @NonNull Handshake handshake,
         @NonNull Tracker tracker,
         @NonNull Handlers handlers
 ) {
@@ -56,6 +59,11 @@ public record Context(
     public record IO(
             @NonNull ConnectionFactory connectionFactory,
             @NonNull ConnectionListenerFactory connectionListenerFactory
+    ) { }
+
+    @With
+    public record Handshake(
+            @NonNull HandshakeConnectionFactory handshakeConnectionFactory
     ) { }
 
     @With
@@ -158,6 +166,9 @@ public record Context(
                     new IO(
                             new TcpConnectionFactory(),
                             new TcpConnectionListenerFactory()
+                    ),
+                    new Handshake(
+                            new HandshakeConnectionFactoryImpl()
                     ),
                     new Tracker(
                             new TrackerClientImpl()

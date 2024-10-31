@@ -1,13 +1,13 @@
 /torrent/get
-     curl http://localhost:8080/torrent/4a3f5e08bcef825718eda30637230585e3330599
+     curl http://localhost:8080/torrent/3f9aac158c7de8dfcab171ea58a17aabdf7fbc93
 
 /torrent/add
      curl -X POST http://localhost:8080/torrent/add \
           -H "Content-Type: multipart/form-data" \
-          -F "file=@/Users/jurisliepins/Downloads/ubuntu-24.04.1-desktop-amd64.iso.torrent"
+          -F "file=@/Users/jurisliepins/Downloads/ubuntu-24.10-desktop-amd64.iso.torrent"
 
 /torrent/start
-     curl -X POST http://localhost:8080/torrent/start/4a3f5e08bcef825718eda30637230585e3330599
+     curl -X POST http://localhost:8080/torrent/start/3f9aac158c7de8dfcab171ea58a17aabdf7fbc93
 
 /torrent/stop
-     curl -X POST http://localhost:8080/torrent/stop/4a3f5e08bcef825718eda30637230585e3330599
+     curl -X POST http://localhost:8080/torrent/stop/3f9aac158c7de8dfcab171ea58a17aabdf7fbc93

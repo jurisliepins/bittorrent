@@ -63,7 +63,10 @@ public final class AnnouncerCommandAnnounceHandler implements CoreContextSuccess
             }
 
             case TrackerResponse.Failure failure ->
-                    log.error("[{}] Announced with failure response on '{}' with '{}'", state.getInfoHash(), state.getAnnounce(), failure);
+                    log.error("[{}] Announced with failure response on '{}' with '{}'",
+                              state.getInfoHash(),
+                              state.getAnnounce(),
+                              failure);
         }
         return NextState.Receive;
     }
